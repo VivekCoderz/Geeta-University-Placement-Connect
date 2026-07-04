@@ -16,7 +16,7 @@ router.get(
 router.put(
   "/:id/status",
   jwtVerify,
-  authorizeRoles("recruiter", "placementCell", "admin"),
+  authorizeRoles("recruiter", "company", "placementCell", "admin"),
   upload.single("offerLetter"),
   applicationsController.updateStatus
 );

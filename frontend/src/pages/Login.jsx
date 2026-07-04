@@ -89,21 +89,21 @@ export const Login = () => {
     >
       <div className="w-full max-w-md mx-auto space-y-8">
         <div>
-          <h3 className="text-2xl font-bold text-white tracking-tight">Sign In</h3>
-          <p className="text-sm text-slate-400 mt-1">
+          <h3 className="text-2xl font-bold text-text-primary tracking-tight">Sign In</h3>
+          <p className="text-sm text-text-secondary mt-1">
             Choose your login method below
           </p>
         </div>
 
         {/* Login Method Toggle */}
-        <div className="grid grid-cols-2 p-1 bg-slate-950/60 rounded-lg border border-white/5">
+        <div className="flex p-1 bg-slate-100 rounded-xl border border-slate-200 h-11 items-center">
           <button
             type="button"
             onClick={() => setLoginMethod("email")}
-            className={`py-2 text-xs font-semibold rounded-md transition-all duration-200 ${
+            className={`flex-1 flex items-center justify-center h-9 text-xs font-semibold rounded-lg transition-all duration-200 cursor-pointer ${
               loginMethod === "email"
-                ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/10"
-                : "text-slate-400 hover:text-slate-200"
+                ? "bg-primary text-white shadow-sm"
+                : "text-text-secondary hover:text-text-primary bg-transparent"
             }`}
           >
             Email Address
@@ -111,10 +111,10 @@ export const Login = () => {
           <button
             type="button"
             onClick={() => setLoginMethod("roll")}
-            className={`py-2 text-xs font-semibold rounded-md transition-all duration-200 ${
+            className={`flex-1 flex items-center justify-center h-9 text-xs font-semibold rounded-lg transition-all duration-200 cursor-pointer ${
               loginMethod === "roll"
-                ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/10"
-                : "text-slate-400 hover:text-slate-200"
+                ? "bg-primary text-white shadow-sm"
+                : "text-text-secondary hover:text-text-primary bg-transparent"
             }`}
           >
             Student Roll Number
@@ -124,22 +124,22 @@ export const Login = () => {
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Error Banner */}
           {error && (
-            <div className="flex items-start space-x-3 bg-red-500/10 border border-red-500/20 text-red-200 text-sm p-4 rounded-lg animate-shake">
-              <AlertCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
+            <div className="flex items-start space-x-3 bg-rose-50 border border-rose-100 text-rose-800 text-sm p-4 rounded-lg animate-shake">
+              <AlertCircle className="w-5 h-5 text-rose-500 shrink-0 mt-0.5" />
               <div className="flex-1">
                 <p className="font-semibold">Authentication Error</p>
-                <p className="text-red-300/80 text-xs mt-0.5">{error}</p>
+                <p className="text-rose-600/80 text-xs mt-0.5">{error}</p>
               </div>
             </div>
           )}
 
           {/* Identifier Input */}
           <div className="space-y-1">
-            <label className="text-xs font-semibold text-slate-300">
+            <label className="text-xs font-semibold text-text-secondary">
               {loginMethod === "email" ? "Email Address" : "Roll Number"}
             </label>
             <div className="relative">
-              <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
                 {loginMethod === "email" ? (
                   <Mail className="w-5 h-5" />
                 ) : (
@@ -153,7 +153,7 @@ export const Login = () => {
                 placeholder={
                   loginMethod === "email" ? "name@geetauniversity.edu.in" : "210304001"
                 }
-                className="w-full bg-slate-950/40 border border-white/10 text-white rounded-lg pl-10 pr-4 py-3 text-sm placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 transition-all duration-300"
+                className="w-full bg-slate-50 border border-slate-200 text-text-primary rounded-lg pl-10 pr-4 py-3 text-sm placeholder:text-slate-400 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 focus:bg-white transition-all duration-300"
                 disabled={isLoading}
               />
             </div>
@@ -162,10 +162,10 @@ export const Login = () => {
           {/* Password Input */}
           <div className="space-y-1">
             <div className="flex justify-between items-center">
-              <label className="text-xs font-semibold text-slate-300">Password</label>
+              <label className="text-xs font-semibold text-text-secondary">Password</label>
             </div>
             <div className="relative">
-              <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
                 <Lock className="w-5 h-5" />
               </span>
               <input
@@ -173,13 +173,13 @@ export const Login = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full bg-slate-950/40 border border-white/10 text-white rounded-lg pl-10 pr-10 py-3 text-sm placeholder:text-slate-600 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/20 transition-all duration-300"
+                className="w-full bg-slate-50 border border-slate-200 text-text-primary rounded-lg pl-10 pr-10 py-3 text-sm placeholder:text-slate-400 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 focus:bg-white transition-all duration-300"
                 disabled={isLoading}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-500 hover:text-slate-300"
+                className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-650 cursor-pointer"
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
@@ -190,7 +190,7 @@ export const Login = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full flex items-center justify-center space-x-2 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-lg text-sm hover:from-indigo-500 hover:to-purple-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 active:scale-[0.98] transition-all duration-200 cursor-pointer shadow-lg shadow-indigo-600/10 disabled:opacity-50 disabled:pointer-events-none"
+            className="w-full flex items-center justify-center space-x-2 py-3 bg-primary hover:bg-primary-hover text-white font-semibold rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 active:scale-[0.98] transition-all duration-200 cursor-pointer shadow-md shadow-primary/10 disabled:opacity-50 disabled:pointer-events-none"
           >
             {isLoading ? (
               <>
@@ -204,11 +204,11 @@ export const Login = () => {
         </form>
 
         <div className="text-center pt-2">
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-text-secondary">
             Don't have an account?{" "}
             <Link
               to="/register"
-              className="font-semibold text-indigo-400 hover:text-indigo-300 transition-colors"
+              className="font-semibold text-primary hover:text-primary-hover transition-colors"
             >
               Sign Up here
             </Link>

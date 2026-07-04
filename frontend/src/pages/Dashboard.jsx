@@ -81,35 +81,32 @@ export const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0d1a] relative overflow-hidden font-sans pb-12">
+    <div className="min-h-screen bg-bg-main text-text-primary relative overflow-hidden font-sans pb-12">
       {/* Background glowing orbs */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-600 rounded-full mix-blend-screen filter blur-[128px] opacity-25"></div>
-      <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-600 rounded-full mix-blend-screen filter blur-[128px] opacity-20"></div>
+      <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full filter blur-[128px] opacity-60"></div>
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-secondary/5 rounded-full filter blur-[128px] opacity-40"></div>
 
       {/* Navigation Header */}
-      <nav className="glass-panel sticky top-0 z-50 border-b border-white/5 px-6 py-4 flex items-center justify-between">
+      <nav className="glass-panel sticky top-0 z-50 border-b border-border-light px-6 py-4 flex items-center justify-between">
         <div className="flex items-center space-x-3">
-          <div className="w-9 h-9 rounded-lg bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white font-extrabold text-lg shadow-md shadow-indigo-500/20">
-            G
-          </div>
-          <div>
-            <span className="font-extrabold text-base bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent tracking-tight block leading-none">
-              PlacementConnect
-            </span>
-            <span className="text-[9px] text-indigo-400 tracking-wider font-semibold uppercase">
+          <div className="flex flex-col space-y-0.5">
+            <span className="font-extrabold text-base text-primary tracking-tight block leading-none">
               Geeta University
+            </span>
+            <span className="text-[9px] text-secondary tracking-widest font-semibold uppercase">
+              PlacementConnect
             </span>
           </div>
         </div>
 
         <div className="flex items-center space-x-4">
           <div className="hidden sm:flex flex-col text-right">
-            <span className="text-sm font-semibold text-white">{user?.name}</span>
-            <span className="text-[10px] text-slate-400">{user?.email}</span>
+            <span className="text-sm font-semibold text-text-primary">{user?.name}</span>
+            <span className="text-[10px] text-text-secondary">{user?.email}</span>
           </div>
           <button
             onClick={handleLogout}
-            className="flex items-center space-x-1.5 px-4 py-2 bg-white/5 hover:bg-red-500/10 hover:text-red-200 text-slate-300 rounded-lg text-xs font-semibold border border-white/5 hover:border-red-500/20 transition-all duration-300 cursor-pointer"
+            className="flex items-center space-x-1.5 px-4 py-2 bg-slate-50 hover:bg-rose-50 hover:text-rose-600 text-text-secondary rounded-lg text-xs font-semibold border border-slate-200 hover:border-rose-100 transition-all duration-300 cursor-pointer"
           >
             <LogOut className="w-3.5 h-3.5" />
             <span>Logout</span>
@@ -117,19 +114,19 @@ export const Dashboard = () => {
         </div>
       </nav>
 
-      {/* Main Dashboard Dashboard Content */}
+      {/* Main Dashboard Content */}
       <main className="max-w-5xl mx-auto px-6 mt-10 relative z-10">
         {user?.role === "student" ? (
           <StudentDashboard />
         ) : (
           <div className="space-y-8 animate-fade-in">
             {/* Welcome Section */}
-            <div className="glass-panel p-8 rounded-2xl border border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="bg-white p-8 rounded-2xl border border-slate-200/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
               <div>
-                <h1 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight">
+                <h1 className="text-2xl md:text-3xl font-extrabold text-text-primary tracking-tight">
                   {getGreeting()}, {user?.name}!
                 </h1>
-                <p className="text-slate-400 text-sm mt-1">
+                <p className="text-text-secondary text-sm mt-1">
                   Welcome to your workspace dashboard. Here is a summary of your profile details.
                 </p>
               </div>
@@ -140,9 +137,9 @@ export const Dashboard = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               
               {/* Main User Card (Left/Mid) */}
-              <div className="md:col-span-2 glass-panel p-8 rounded-2xl border border-white/10 space-y-6">
-                <h2 className="text-lg font-bold text-white flex items-center space-x-2 border-b border-white/5 pb-4">
-                  <User className="w-5 h-5 text-indigo-400" />
+              <div className="md:col-span-2 bg-white p-8 rounded-2xl border border-slate-200/60 space-y-6 shadow-sm">
+                <h2 className="text-lg font-bold text-text-primary flex items-center space-x-2 border-b border-slate-100 pb-4">
+                  <User className="w-5 h-5 text-primary" />
                   <span>Academic & Profile Information</span>
                 </h2>
 
@@ -150,26 +147,26 @@ export const Dashboard = () => {
                 {user?.role === "recruiter" && details && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-sm">
                     <div className="space-y-1">
-                      <span className="text-slate-400 text-xs uppercase font-semibold">Company Name</span>
-                      <p className="text-white font-medium bg-white/5 px-3 py-2 rounded-lg border border-white/5">
+                      <span className="text-text-secondary text-xs uppercase font-semibold">Company Name</span>
+                      <p className="text-text-primary font-medium bg-slate-50 px-3 py-2 rounded-lg border border-slate-150">
                         {details.name}
                       </p>
                     </div>
                     <div className="space-y-1">
-                      <span className="text-slate-400 text-xs uppercase font-semibold">Industry Vertical</span>
-                      <p className="text-white font-medium bg-white/5 px-3 py-2 rounded-lg border border-white/5">
+                      <span className="text-text-secondary text-xs uppercase font-semibold">Industry Vertical</span>
+                      <p className="text-text-primary font-medium bg-slate-50 px-3 py-2 rounded-lg border border-slate-150">
                         {details.industry || "Not Specified"}
                       </p>
                     </div>
                     <div className="space-y-1">
-                      <span className="text-slate-400 text-xs uppercase font-semibold">Recruiter Email</span>
-                      <p className="text-white font-medium bg-white/5 px-3 py-2 rounded-lg border border-white/5">
+                      <span className="text-text-secondary text-xs uppercase font-semibold">Recruiter Email</span>
+                      <p className="text-text-primary font-medium bg-slate-50 px-3 py-2 rounded-lg border border-slate-150">
                         {details.recruiterEmail}
                       </p>
                     </div>
                     <div className="space-y-1">
-                      <span className="text-slate-400 text-xs uppercase font-semibold">Verification Approval</span>
-                      <p className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold px-3 py-2 rounded-lg">
+                      <span className="text-text-secondary text-xs uppercase font-semibold">Verification Approval</span>
+                      <p className="bg-emerald-50 text-emerald-700 border border-emerald-150 font-semibold px-3 py-2 rounded-lg">
                         Approved & Active
                       </p>
                     </div>
@@ -179,23 +176,23 @@ export const Dashboard = () => {
                 {/* Admin or Staff who don't have separate profile collections yet */}
                 {(user?.role === "placementCell" || user?.role === "admin") && (
                   <div className="space-y-6 text-sm">
-                    <div className="flex items-center space-x-3 bg-indigo-500/5 border border-indigo-500/10 p-4 rounded-xl">
-                      <Info className="w-5 h-5 text-indigo-400 shrink-0" />
-                      <p className="text-xs text-indigo-200 leading-relaxed">
+                    <div className="flex items-center space-x-3 bg-primary/5 border border-primary/10 p-4 rounded-xl">
+                      <Info className="w-5 h-5 text-primary shrink-0" />
+                      <p className="text-xs text-text-primary leading-relaxed">
                         Staff and Administrators enjoy platform-wide access controls. You can review companies, audit drives, and upload result sheets once the backend administrative features are integrated.
                       </p>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                       <div className="space-y-1">
-                        <span className="text-slate-400 text-xs uppercase font-semibold">Admin Name</span>
-                        <p className="text-white font-medium bg-white/5 px-3 py-2 rounded-lg border border-white/5">
+                        <span className="text-text-secondary text-xs uppercase font-semibold">Admin Name</span>
+                        <p className="text-text-primary font-medium bg-slate-50 px-3 py-2 rounded-lg border border-slate-150">
                           {user?.name}
                         </p>
                       </div>
                       <div className="space-y-1">
-                        <span className="text-slate-400 text-xs uppercase font-semibold">Contact Email</span>
-                        <p className="text-white font-medium bg-white/5 px-3 py-2 rounded-lg border border-white/5">
+                        <span className="text-text-secondary text-xs uppercase font-semibold">Contact Email</span>
+                        <p className="text-text-primary font-medium bg-slate-50 px-3 py-2 rounded-lg border border-slate-150">
                           {user?.email}
                         </p>
                       </div>
@@ -205,42 +202,42 @@ export const Dashboard = () => {
               </div>
 
               {/* Action Center Checklist (Right) */}
-              <div className="glass-panel p-8 rounded-2xl border border-white/10 space-y-6 flex flex-col justify-between">
+              <div className="bg-white p-8 rounded-2xl border border-slate-200/60 space-y-6 flex flex-col justify-between shadow-sm">
                 <div className="space-y-6">
-                  <h2 className="text-lg font-bold text-white flex items-center space-x-2 border-b border-white/5 pb-4">
-                    <CheckCircle2 className="w-5 h-5 text-purple-400" />
+                  <h2 className="text-lg font-bold text-text-primary flex items-center space-x-2 border-b border-slate-100 pb-4">
+                    <CheckCircle2 className="w-5 h-5 text-secondary" />
                     <span>Next Milestones</span>
                   </h2>
 
                   <ul className="space-y-4">
                     {user?.role === "recruiter" && (
                       <>
-                        <li className="flex items-start space-x-2.5 text-xs text-slate-300">
-                          <span className="w-1.5 h-1.5 rounded-full bg-purple-500 mt-1.5 shrink-0" />
+                        <li className="flex items-start space-x-2.5 text-xs text-text-secondary">
+                          <span className="w-1.5 h-1.5 rounded-full bg-secondary mt-1.5 shrink-0" />
                           <span>Post fresh placement jobs & JD profiles</span>
                         </li>
-                        <li className="flex items-start space-x-2.5 text-xs text-slate-300">
-                          <span className="w-1.5 h-1.5 rounded-full bg-purple-500 mt-1.5 shrink-0" />
+                        <li className="flex items-start space-x-2.5 text-xs text-text-secondary">
+                          <span className="w-1.5 h-1.5 rounded-full bg-secondary mt-1.5 shrink-0" />
                           <span>Audit applicants and upload shortlists</span>
                         </li>
-                        <li className="flex items-start space-x-2.5 text-xs text-slate-300">
-                          <span className="w-1.5 h-1.5 rounded-full bg-purple-500 mt-1.5 shrink-0" />
+                        <li className="flex items-start space-x-2.5 text-xs text-text-secondary">
+                          <span className="w-1.5 h-1.5 rounded-full bg-secondary mt-1.5 shrink-0" />
                           <span>Mark final round selection results</span>
                         </li>
                       </>
                     )}
                     {(user?.role === "placementCell" || user?.role === "admin") && (
                       <>
-                        <li className="flex items-start space-x-2.5 text-xs text-slate-300">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0" />
+                        <li className="flex items-start space-x-2.5 text-xs text-text-secondary">
+                          <span className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
                           <span>Approve registering company accounts</span>
                         </li>
-                        <li className="flex items-start space-x-2.5 text-xs text-slate-300">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0" />
+                        <li className="flex items-start space-x-2.5 text-xs text-text-secondary">
+                          <span className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
                           <span>Inspect overall placement drives statistics</span>
                         </li>
-                        <li className="flex items-start space-x-2.5 text-xs text-slate-300">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0" />
+                        <li className="flex items-start space-x-2.5 text-xs text-text-secondary">
+                          <span className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 shrink-0" />
                           <span>Send stage updates to students</span>
                         </li>
                       </>
@@ -248,7 +245,7 @@ export const Dashboard = () => {
                   </ul>
                 </div>
 
-                <div className="pt-6 border-t border-white/5 flex items-center justify-between text-xs text-slate-500">
+                <div className="pt-6 border-t border-slate-100 flex items-center justify-between text-xs text-text-secondary">
                   <span className="flex items-center space-x-1">
                     <Mail className="w-3.5 h-3.5 text-slate-400" />
                     <span>support@geeta.edu.in</span>

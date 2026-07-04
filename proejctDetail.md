@@ -48,7 +48,8 @@ Think of it as a **LinkedIn-meets-placement-portal**, built specifically for Gee
 - **Job Listings** — Browse eligible drives filtered by CGPA and branch (MongoDB aggregation)
 - **Apply & Track** — One-click apply, live application status tracking (Applied / Shortlisted / Selected)
 - **My Applications Timeline** — Visual timeline: Applied → Aptitude → GD → HR → Selected/Rejected
-- **Resume Builder** *(Nice-to-Have)* — In-app resume builder with university-approved template, export via React-to-PDF
+- **Resume Builder** — In-app resume builder with university-approved template, pre-populated from profile, and print-ready PDF export [Fully Implemented]
+- **Saved Drives** *(Nice-to-Have)* — Bookmark placement drives for later review
 
 ### 🏢 Company / Recruiter Module
 - **Company Registration** — Recruiters register and await admin approval (role-based auth)
@@ -60,7 +61,7 @@ Think of it as a **LinkedIn-meets-placement-portal**, built specifically for Gee
 ### 🏫 Placement Cell / Admin Module
 - **Admin Control Panel** — Approve/reject company registrations, manage all drives and students
 - **Placement Cell Panel** — Centralized view of all drives, applications, and shortlists
-- **Placement Analytics** — Branch-wise, company-wise, and package-wise placement statistics (Chart.js — bar & pie charts)
+- **Placement Analytics** — Branch-wise, company-wise, and package-wise real-time placement statistics and custom SVG charts [Fully Implemented]
 - **HOD Dashboard** *(Nice-to-Have)* — Branch-wise placement progress view for department heads
 
 ### 🔔 Platform-Wide Features

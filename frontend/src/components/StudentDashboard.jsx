@@ -54,6 +54,56 @@ export const StudentDashboard = () => {
   // Resume File
   const [resumeFile, setResumeFile] = useState(null);
 
+  // Resume Builder States
+  const [resumePhone, setResumePhone] = useState("");
+  const [resumeLinkedIn, setResumeLinkedIn] = useState("");
+  const [resumeGitHub, setResumeGitHub] = useState("");
+  const [resumeObjective, setResumeObjective] = useState("Aspiring software engineer with solid foundations in full-stack web technologies, databases, and algorithms. Quick learner, looking to apply problem-solving capabilities to build scalable applications.");
+  const [tenSchool, setTenSchool] = useState("");
+  const [tenPct, setTenPct] = useState("");
+  const [twelveSchool, setTwelveSchool] = useState("");
+  const [twelvePct, setTwelvePct] = useState("");
+
+  // Saved Jobs State
+  const [savedJobIds, setSavedJobIds] = useState(() => {
+    try {
+      const saved = localStorage.getItem("gu_saved_jobs");
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const toggleSaveJob = (jobId) => {
+    let updated;
+    if (savedJobIds.includes(jobId)) {
+      updated = savedJobIds.filter(id => id !== jobId);
+    } else {
+      updated = [...savedJobIds, jobId];
+    }
+    setSavedJobIds(updated);
+    localStorage.setItem("gu_saved_jobs", JSON.stringify(updated));
+  };
+
+  useEffect(() => {
+    if (details) {
+      if (details.phone) {
+        setResumePhone(details.phone);
+        setPhone(details.phone);
+      }
+      if (details.skills) setSkills(details.skills);
+      if (details.projects) setProjects(details.projects);
+    }
+  }, [details]);
+
+  useEffect(() => {
+    if (user?.name) {
+      const slug = user.name.toLowerCase().replace(/\s+/g, "-");
+      setResumeLinkedIn(`linkedin.com/in/${slug}`);
+      setResumeGitHub(`github.com/${slug}`);
+    }
+  }, [user]);
+
   // Password edit
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -282,10 +332,10 @@ export const StudentDashboard = () => {
   const sidebarItems = [
     { id: "dashboard", label: "Dashboard", icon: Compass },
     { id: "profile", label: "My Profile", icon: User },
-    { id: "resume-builder", label: "Resume Builder", icon: FileText, disabled: true },
+    { id: "resume-builder", label: "Resume Builder", icon: FileText },
     { id: "resume-score", label: "Resume Score", icon: Award },
     { id: "applied-jobs", label: "Applied Jobs", icon: CheckSquare },
-    { id: "saved-jobs", label: "Saved Jobs", icon: Star, disabled: true },
+    { id: "saved-jobs", label: "Saved Jobs", icon: Star },
     { id: "recommended-jobs", label: "Recommended Jobs", icon: Briefcase },
     { id: "companies", label: "Companies", icon: Building2, disabled: true },
     { id: "placement-drive", label: "Placement Drive", icon: Calendar },
@@ -328,12 +378,12 @@ export const StudentDashboard = () => {
           {/* Logo Section */}
           <div className="h-16 border-b border-slate-50 flex items-center justify-between px-4">
             {!sidebarCollapsed && (
-              <span className="text-sm font-extrabold tracking-tight bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent uppercase">
+              <span className="text-sm font-extrabold tracking-tight text-primary uppercase">
                 PlacementConnect
               </span>
             )}
             {sidebarCollapsed && (
-              <span className="text-sm font-extrabold text-blue-600 mx-auto">PC</span>
+              <span className="text-sm font-extrabold text-primary mx-auto">PC</span>
             )}
             <button 
               onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
@@ -363,11 +413,11 @@ export const StudentDashboard = () => {
                     item.disabled 
                       ? "opacity-40 cursor-not-allowed text-slate-400 border-transparent"
                       : isTabActive
-                      ? "bg-blue-50/50 text-blue-600 border-blue-100/50 shadow-sm shadow-blue-50/10 font-bold"
+                      ? "bg-primary/5 text-primary border-primary/10 shadow-sm font-bold"
                       : "text-slate-500 hover:text-slate-800 hover:bg-slate-50 border-transparent"
                   }`}
                 >
-                  <Icon className={`w-4 h-4 shrink-0 ${isTabActive ? "text-blue-600" : "text-slate-400"}`} />
+                  <Icon className={`w-4 h-4 shrink-0 ${isTabActive ? "text-primary" : "text-slate-400"}`} />
                   {!sidebarCollapsed && <span>{item.label}</span>}
                 </button>
               );
@@ -425,7 +475,7 @@ export const StudentDashboard = () => {
             >
               <Bell className="w-4 h-4" />
               {notifications.filter(n => !n.read).length > 0 && (
-                <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-blue-500" />
+                <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-secondary" />
               )}
             </button>
 
@@ -434,8 +484,8 @@ export const StudentDashboard = () => {
                 <p className="text-xs font-bold text-slate-800">{user?.name}</p>
                 <p className="text-[10px] text-slate-400 mt-0.5">{details?.branch} · Sem 8</p>
               </div>
-              <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-500 p-0.5 shadow-sm shadow-blue-500/10">
-                <div className="w-full h-full rounded-full bg-white flex items-center justify-center font-bold text-blue-600 text-sm uppercase">
+              <div className="w-9 h-9 rounded-full bg-primary/20 p-0.5 shadow-sm shadow-primary/5">
+                <div className="w-full h-full rounded-full bg-white flex items-center justify-center font-bold text-primary text-sm uppercase">
                   {user?.name?.charAt(0)}
                 </div>
               </div>
@@ -618,10 +668,25 @@ export const StudentDashboard = () => {
                                 <p className="text-[10px] text-slate-450 mt-0.5 truncate">{job.companyInfo?.name} · {job.location || "On-Site"}</p>
                               </div>
                             </div>
-                            <div className="flex items-center space-x-3 shrink-0">
+                            <div className="flex items-center space-x-2 shrink-0">
                               <span className="text-[10px] font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded border border-slate-200/50">
                                 {job.package} LPA
                               </span>
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  toggleSaveJob(job._id);
+                                }}
+                                className={`p-1.5 rounded-lg border transition-all cursor-pointer ${
+                                  savedJobIds.includes(job._id)
+                                    ? "bg-amber-50 text-amber-500 border-amber-200"
+                                    : "bg-white text-slate-400 border-slate-200 hover:text-slate-650"
+                                }`}
+                                title={savedJobIds.includes(job._id) ? "Unsave Job" : "Save Job"}
+                              >
+                                <Star className={`w-3.5 h-3.5 ${savedJobIds.includes(job._id) ? "fill-amber-500" : ""}`} />
+                              </button>
                               <button
                                 onClick={() => setSelectedJob(job)}
                                 className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-[10px] font-semibold cursor-pointer shadow-sm shadow-blue-600/5"
@@ -838,6 +903,95 @@ export const StudentDashboard = () => {
             </div>
           )}
 
+          {/* ---------------- ACTIVE TAB: SAVED JOBS ---------------- */}
+          {activeTab === "saved-jobs" && (
+            <div className="space-y-6 animate-fade-in">
+              <div className="bg-white border border-slate-100 p-6 rounded-2xl shadow-sm shadow-slate-100">
+                <h2 className="text-lg font-bold text-slate-800">Saved Jobs & Bookmarked Drives</h2>
+                <p className="text-xs text-slate-400 mt-1">Review and apply to drives you bookmarked for later consideration.</p>
+              </div>
+
+              {jobs.filter(j => savedJobIds.includes(j._id)).length === 0 ? (
+                <div className="bg-white border border-slate-100 p-16 rounded-2xl text-center space-y-4">
+                  <Star className="w-12 h-12 text-slate-300 mx-auto" />
+                  <h3 className="text-sm font-bold text-slate-800">No saved jobs yet</h3>
+                  <p className="text-xs text-slate-400">Click the star icon on eligible job cards to bookmark them here.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {jobs.filter(j => savedJobIds.includes(j._id)).map(job => (
+                    <div 
+                      key={job._id}
+                      className="bg-white border border-slate-100 p-6 rounded-2xl shadow-sm shadow-slate-100 hover:-translate-y-0.5 transition-all duration-300 flex flex-col justify-between space-y-4 group relative"
+                    >
+                      {job.applied && (
+                        <span className="absolute top-3 right-3 bg-emerald-50 text-emerald-600 border border-emerald-100 text-[9px] font-bold px-2 py-0.5 rounded-md">
+                          Applied
+                        </span>
+                      )}
+
+                      <div className="space-y-3.5">
+                        <div className="flex items-start space-x-3">
+                          <div className="w-11 h-11 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm shrink-0">
+                            {job.companyInfo?.name?.charAt(0)}
+                          </div>
+                          <div>
+                            <h3 className="text-xs font-bold text-slate-800 leading-tight group-hover:text-blue-600 transition-colors">{job.title}</h3>
+                            <span className="text-[10px] text-slate-400 block mt-0.5 font-semibold">{job.companyInfo?.name}</span>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3 bg-slate-50/50 p-3.5 rounded-xl border border-slate-100 text-xs">
+                          <div className="flex items-center space-x-1.5">
+                            <DollarSign className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+                            <span>Package: <strong>{job.package} LPA</strong></span>
+                          </div>
+                          <div className="flex items-center space-x-1.5">
+                            <MapPin className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+                            <span className="truncate">Loc: {job.location || "On-Site"}</span>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-wrap gap-1 text-[9px] text-slate-500">
+                          <span className="bg-slate-100 px-2 py-0.5 rounded border border-slate-200/50">CGPA: {job.eligibility?.cgpa}</span>
+                          <span className="bg-slate-100 px-2 py-0.5 rounded border border-slate-200/50 truncate max-w-[150px]">
+                            {job.eligibility?.branches?.join(", ") || "All Branches"}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="pt-3 border-t border-slate-50 flex items-center justify-between text-[10px] text-slate-400">
+                        <span className="text-red-500 font-bold flex items-center space-x-1">
+                          <Calendar className="w-3 h-3" />
+                          <span>Close: {new Date(job.deadline).toLocaleDateString()}</span>
+                        </span>
+                        <div className="flex items-center space-x-2">
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleSaveJob(job._id);
+                            }}
+                            className="p-1.5 rounded-lg border bg-amber-50 text-amber-500 border-amber-200 cursor-pointer animate-pulse-once"
+                            title="Unsave Job"
+                          >
+                            <Star className="w-3.5 h-3.5 fill-amber-500" />
+                          </button>
+                          <button
+                            onClick={() => setSelectedJob(job)}
+                            className="px-4 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-[10px] font-semibold cursor-pointer shadow-sm shadow-blue-600/5"
+                          >
+                            View Details
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
           {/* ---------------- ACTIVE TAB: RECOMMENDED JOBS (JOB BOARD) ---------------- */}
           {activeTab === "recommended-jobs" && (
             <div className="space-y-6">
@@ -937,12 +1091,29 @@ export const StudentDashboard = () => {
                           <Calendar className="w-3 h-3" />
                           <span>Close: {new Date(job.deadline).toLocaleDateString()}</span>
                         </span>
-                        <button
-                          onClick={() => setSelectedJob(job)}
-                          className="px-4 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-[10px] font-semibold cursor-pointer shadow-sm shadow-blue-600/5"
-                        >
-                          View Details
-                        </button>
+                        <div className="flex items-center space-x-2">
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleSaveJob(job._id);
+                            }}
+                            className={`p-1.5 rounded-lg border transition-all cursor-pointer ${
+                              savedJobIds.includes(job._id)
+                                ? "bg-amber-50 text-amber-500 border-amber-200"
+                                : "bg-white text-slate-400 border-slate-200 hover:text-slate-650"
+                            }`}
+                            title={savedJobIds.includes(job._id) ? "Unsave Job" : "Save Job"}
+                          >
+                            <Star className={`w-3.5 h-3.5 ${savedJobIds.includes(job._id) ? "fill-amber-500" : ""}`} />
+                          </button>
+                          <button
+                            onClick={() => setSelectedJob(job)}
+                            className="px-4 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-[10px] font-semibold cursor-pointer shadow-sm shadow-blue-600/5"
+                          >
+                            View Details
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -994,10 +1165,12 @@ export const StudentDashboard = () => {
                         <div className="flex items-center space-x-3">
                           <span className={`px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider border ${
                             app.status === "Selected" 
-                              ? "bg-emerald-55 border-emerald-100 text-emerald-600"
+                              ? "bg-status-selected/10 border-status-selected/20 text-status-selected"
                               : app.status === "Rejected"
-                              ? "bg-rose-55 border-rose-105 text-rose-600"
-                              : "bg-blue-55 border-blue-105 text-blue-600"
+                              ? "bg-status-rejected/10 border-status-rejected/20 text-status-rejected"
+                              : app.status === "Shortlisted"
+                              ? "bg-status-shortlisted/10 border-status-shortlisted/20 text-status-shortlisted"
+                              : "bg-status-applied/10 border-status-applied/20 text-status-applied"
                           }`}>
                             {app.status}
                           </span>
@@ -1021,9 +1194,9 @@ export const StudentDashboard = () => {
                         <div className="relative py-4 flex items-center justify-between">
                           <div className="absolute left-0 right-0 h-0.5 bg-slate-100 z-0"></div>
                           
-                          {/* Node Applied */}
+                           {/* Node Applied */}
                           <div className="relative z-10 flex flex-col items-center">
-                            <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center shadow">
+                            <div className="w-8 h-8 rounded-full bg-status-applied text-white flex items-center justify-center shadow">
                               <Check className="w-4 h-4" />
                             </div>
                             <span className="text-[9px] font-bold text-slate-800 mt-2">Applied</span>
@@ -1033,7 +1206,7 @@ export const StudentDashboard = () => {
                           <div className="relative z-10 flex flex-col items-center">
                             <div className={`w-8 h-8 rounded-full flex items-center justify-center border transition-all ${
                               app.status === "Shortlisted" || app.status === "Selected"
-                                ? "bg-indigo-600 border-indigo-600 text-white shadow"
+                                ? "bg-status-shortlisted border-status-shortlisted text-white shadow"
                                 : "bg-white border-slate-200 text-slate-400"
                             }`}>
                               <ShieldCheck className="w-4 h-4" />
@@ -1045,9 +1218,9 @@ export const StudentDashboard = () => {
                           <div className="relative z-10 flex flex-col items-center">
                             <div className={`w-8 h-8 rounded-full flex items-center justify-center border transition-all ${
                               app.status === "Selected"
-                                ? "bg-emerald-500 border-emerald-500 text-white shadow"
+                                ? "bg-status-selected border-status-selected text-white shadow"
                                 : app.status === "Rejected"
-                                ? "bg-rose-500 border-rose-500 text-white shadow"
+                                ? "bg-status-rejected border-status-rejected text-white shadow"
                                 : "bg-white border-slate-200 text-slate-400"
                             }`}>
                               {app.status === "Rejected" ? <X className="w-4 h-4" /> : <Award className="w-4 h-4" />}
@@ -1282,6 +1455,272 @@ export const StudentDashboard = () => {
                   ))}
                 </div>
               )}
+            </div>
+          )}
+
+          {/* ---------------- ACTIVE TAB: RESUME BUILDER ---------------- */}
+          {activeTab === "resume-builder" && (
+            <div className="space-y-6 animate-fade-in">
+              <style>{`
+                @media print {
+                  body * {
+                    visibility: hidden !important;
+                  }
+                  #resume-print-area, #resume-print-area * {
+                    visibility: visible !important;
+                  }
+                  #resume-print-area {
+                    position: absolute !important;
+                    left: 0 !important;
+                    top: 0 !important;
+                    width: 210mm !important;
+                    height: 297mm !important;
+                    padding: 20mm !important;
+                    margin: 0 !important;
+                    border: none !important;
+                    box-shadow: none !important;
+                    background: white !important;
+                  }
+                }
+              `}</style>
+
+              <div className="bg-white border border-slate-100 p-6 rounded-2xl shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                  <h2 className="text-lg font-bold text-slate-800">In-App Resume Builder</h2>
+                  <p className="text-xs text-slate-400 mt-1">Generate a university-approved resume template dynamically compiled from your profile.</p>
+                </div>
+                <button
+                  onClick={() => window.print()}
+                  className="px-5 py-2.5 bg-secondary hover:bg-secondary-hover text-white rounded-lg text-xs font-bold flex items-center space-x-2 cursor-pointer shadow-md shadow-secondary/10 transition-colors"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>Download / Print PDF</span>
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 items-start">
+                {/* Left Side: Custom Form Fields */}
+                <div className="space-y-6">
+                  {/* Contact Information */}
+                  <div className="bg-white border border-slate-100 p-6 rounded-2xl shadow-sm space-y-4">
+                    <h3 className="text-xs font-bold text-slate-450 uppercase tracking-widest border-b border-slate-50 pb-2">1. Contact & Socials</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Contact Number</label>
+                        <input
+                          type="text"
+                          value={resumePhone}
+                          onChange={(e) => setResumePhone(e.target.value)}
+                          placeholder="e.g. +91 98765 43210"
+                          className="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-primary"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">LinkedIn URL</label>
+                        <input
+                          type="text"
+                          value={resumeLinkedIn}
+                          onChange={(e) => setResumeLinkedIn(e.target.value)}
+                          placeholder="linkedin.com/in/username"
+                          className="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-primary"
+                        />
+                      </div>
+                      <div className="space-y-1 sm:col-span-2">
+                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">GitHub Profile URL</label>
+                        <input
+                          type="text"
+                          value={resumeGitHub}
+                          onChange={(e) => setResumeGitHub(e.target.value)}
+                          placeholder="github.com/username"
+                          className="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-primary"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Resume Objective */}
+                  <div className="bg-white border border-slate-100 p-6 rounded-2xl shadow-sm space-y-4">
+                    <h3 className="text-xs font-bold text-slate-450 uppercase tracking-widest border-b border-slate-50 pb-2">2. Career Objective</h3>
+                    <div className="space-y-1">
+                      <textarea
+                        rows="3"
+                        value={resumeObjective}
+                        onChange={(e) => setResumeObjective(e.target.value)}
+                        placeholder="State your career summary..."
+                        className="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-lg px-3 py-2.5 text-xs focus:outline-none focus:border-primary resize-none"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Schooling details */}
+                  <div className="bg-white border border-slate-100 p-6 rounded-2xl shadow-sm space-y-4">
+                    <h3 className="text-xs font-bold text-slate-450 uppercase tracking-widest border-b border-slate-50 pb-2">3. Secondary Education (10th & 12th)</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">12th Grade Board/School</label>
+                        <input
+                          type="text"
+                          value={twelveSchool}
+                          onChange={(e) => setTwelveSchool(e.target.value)}
+                          className="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-primary"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">12th Percentage / CGPA</label>
+                        <input
+                          type="text"
+                          value={twelvePct}
+                          onChange={(e) => setTwelvePct(e.target.value)}
+                          className="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-primary"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">10th Grade Board/School</label>
+                        <input
+                          type="text"
+                          value={tenSchool}
+                          onChange={(e) => setTenSchool(e.target.value)}
+                          className="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-primary"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">10th Percentage / CGPA</label>
+                        <input
+                          type="text"
+                          value={tenPct}
+                          onChange={(e) => setTenPct(e.target.value)}
+                          className="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-primary"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right Side: A4 Live Resume Template Preview */}
+                <div className="bg-slate-50 border border-slate-200 p-4 sm:p-8 rounded-2xl flex justify-center overflow-x-auto">
+                  <div 
+                    id="resume-print-area" 
+                    className="w-[210mm] min-h-[297mm] bg-white text-slate-900 p-12 shadow-lg border border-slate-250 text-left shrink-0 text-[11px]"
+                    style={{ fontFamily: "'Times New Roman', Times, serif", lineHeight: "1.4" }}
+                  >
+                    {/* Header */}
+                    <div className="text-center space-y-1 pb-4 border-b-2 border-slate-800">
+                      <h1 className="text-2xl font-bold uppercase tracking-wide" style={{ fontFamily: "Georgia, serif" }}>{user?.name}</h1>
+                      <div className="flex flex-wrap justify-center items-center gap-x-3 gap-y-0.5 text-[10px] text-slate-700">
+                        <span>Email: {user?.email}</span>
+                        <span>•</span>
+                        <span>Phone: {resumePhone || "Not Provided"}</span>
+                        {resumeLinkedIn && (
+                          <>
+                            <span>•</span>
+                            <span>LinkedIn: {resumeLinkedIn}</span>
+                          </>
+                        )}
+                        {resumeGitHub && (
+                          <>
+                            <span>•</span>
+                            <span>GitHub: {resumeGitHub}</span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Objective Section */}
+                    <div className="mt-4 space-y-1">
+                      <h3 className="text-xs font-bold uppercase tracking-wider border-b border-slate-300 pb-0.5">Career Objective</h3>
+                      <p className="text-slate-700 text-justify text-[10px] leading-relaxed">
+                        {resumeObjective}
+                      </p>
+                    </div>
+
+                    {/* Education Section */}
+                    <div className="mt-4 space-y-2">
+                      <h3 className="text-xs font-bold uppercase tracking-wider border-b border-slate-300 pb-0.5">Education</h3>
+                      <table className="w-full text-left border-collapse text-[9.5px]">
+                        <thead>
+                          <tr className="border-b border-slate-300 text-[10px] font-bold text-slate-800">
+                            <th className="py-1">Degree / Course</th>
+                            <th className="py-1">Institution</th>
+                            <th className="py-1">Passing Year</th>
+                            <th className="py-1 text-right">CGPA / %</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100 text-slate-700">
+                          <tr>
+                            <td className="py-1.5 font-semibold">B.Tech ({details?.branch || "CSE"})</td>
+                            <td className="py-1.5">Geeta University, Panipat</td>
+                            <td className="py-1.5">{details?.year || "2026"}</td>
+                            <td className="py-1.5 text-right font-semibold">{details?.cgpa || "N/A"} / 10.0</td>
+                          </tr>
+                          <tr>
+                            <td className="py-1.5">Senior Secondary (12th)</td>
+                            <td className="py-1.5">{twelveSchool || "[Enter 12th Board/School Name]"}</td>
+                            <td className="py-1.5">{(details?.year - 4) || "2022"}</td>
+                            <td className="py-1.5 text-right">{twelvePct || "[12th %]"}</td>
+                          </tr>
+                          <tr>
+                            <td className="py-1.5">Matriculation (10th)</td>
+                            <td className="py-1.5">{tenSchool || "[Enter 10th Board/School Name]"}</td>
+                            <td className="py-1.5">{(details?.year - 6) || "2020"}</td>
+                            <td className="py-1.5 text-right">{tenPct || "[10th %]"}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+
+                    {/* Technical Skills Section */}
+                    <div className="mt-4 space-y-1.5">
+                      <h3 className="text-xs font-bold uppercase tracking-wider border-b border-slate-300 pb-0.5">Technical Skills</h3>
+                      <div className="text-[10px] text-slate-700 leading-relaxed">
+                        <span className="font-bold text-slate-900">Key Competencies: </span>
+                        {skills.length > 0 ? skills.join(", ") : "Full Stack Web Engineering, Algorithms, Software Design"}
+                      </div>
+                    </div>
+
+                    {/* Projects Section */}
+                    <div className="mt-4 space-y-2">
+                      <h3 className="text-xs font-bold uppercase tracking-wider border-b border-slate-300 pb-0.5">Key Projects</h3>
+                      {projects.length > 0 ? (
+                        projects.map((proj, idx) => (
+                          <div key={idx} className="space-y-0.5">
+                            <div className="flex justify-between items-center text-[10px] font-bold text-slate-800">
+                              <span>{proj.title}</span>
+                              {proj.stack && <span className="text-[9px] font-normal text-slate-500">[{proj.stack}]</span>}
+                            </div>
+                            <p className="text-[9.5px] text-slate-600 leading-normal text-justify">{proj.description}</p>
+                            {proj.link && (
+                              <a href={proj.link} className="text-[8.5px] text-blue-600 hover:underline block" target="_blank" rel="noopener noreferrer">
+                                Project Link: {proj.link}
+                              </a>
+                            )}
+                          </div>
+                        ))
+                      ) : (
+                        <div className="space-y-0.5">
+                          <div className="flex justify-between items-center text-[10px] font-bold text-slate-800">
+                            <span>Campus PlacementConnect Platform</span>
+                            <span className="text-[9px] font-normal text-slate-500">[MERN Stack, Socket.io]</span>
+                          </div>
+                          <p className="text-[9.5px] text-slate-600 leading-normal text-justify">
+                            Developed a secure, role-based internship recruitment portal using Node, Express, React, and MongoDB. Structured automated email notifications with Nodemailer and round-wise shortlist CSV upload.
+                          </p>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Declaration */}
+                    <div className="mt-8 pt-4 border-t border-slate-100 flex justify-between items-end text-[9px] text-slate-650">
+                      <div>
+                        <p>Date: {new Date().toLocaleDateString()}</p>
+                        <p>Place: Panipat, India</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="border-t border-slate-400 pt-1 w-32 inline-block font-semibold text-slate-800">Candidate Signature</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 
@@ -1900,7 +2339,7 @@ export const StudentDashboard = () => {
                 
                 {selectedJob.applied ? (
                   <button
-                    className="px-5 py-2.5 bg-emerald-55 border border-emerald-100 text-emerald-600 rounded-lg text-xs font-bold cursor-not-allowed flex items-center space-x-1.5"
+                    className="px-5 py-2.5 bg-emerald-50 border border-emerald-100 text-emerald-600 rounded-lg text-xs font-bold cursor-not-allowed flex items-center space-x-1.5"
                     disabled
                   >
                     <Check className="w-4 h-4" />
@@ -1910,7 +2349,7 @@ export const StudentDashboard = () => {
                   <button
                     onClick={() => handleApply(selectedJob._id)}
                     disabled={actionLoading}
-                    className="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-lg text-xs font-bold cursor-pointer shadow-md shadow-blue-650/10 flex items-center space-x-1.5 disabled:opacity-50"
+                    className="px-5 py-2.5 bg-secondary hover:bg-secondary-hover text-white rounded-lg text-xs font-bold cursor-pointer shadow-md shadow-secondary/10 flex items-center space-x-1.5 disabled:opacity-50"
                   >
                     {actionLoading ? (
                       <>

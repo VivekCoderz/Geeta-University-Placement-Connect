@@ -5,7 +5,9 @@ import {
   Trash2, X, Lock, Check, AlertTriangle, AlertCircle, ExternalLink, ArrowRight, 
   ArrowUpRight, Award, Compass, Key, Settings, HelpCircle, Download, Eye, 
   Clock, RefreshCw, BarChart2, CheckSquare, Upload, Calendar, CheckCircle2,
-  Users, Shield, Server, Activity, Database, LogOut
+  Users, Shield, Server, Activity, Database, LogOut,
+  ChevronLeft,
+  ShieldCheck
 } from "lucide-react";
 import api from "../utils/api";
 import { logoutState } from "../store/authSlice";
@@ -100,12 +102,12 @@ export const AdminDashboard = () => {
           {/* Header */}
           <div className="h-16 border-b border-slate-50 flex items-center justify-between px-4 shrink-0">
             {!sidebarCollapsed && (
-              <span className="text-sm font-extrabold tracking-tight bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent uppercase">
+              <span className="text-sm font-extrabold tracking-tight text-primary uppercase">
                 Admin Console
               </span>
             )}
             {sidebarCollapsed && (
-              <span className="text-sm font-extrabold text-blue-600 mx-auto">AC</span>
+              <span className="text-sm font-extrabold text-primary mx-auto">AC</span>
             )}
             <button 
               onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
@@ -119,51 +121,47 @@ export const AdminDashboard = () => {
           <nav className="p-3 space-y-0.5">
             <button
               onClick={() => setActiveTab("dashboard")}
-              className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition-all border ${
-                activeTab === "dashboard" ? "bg-blue-50/50 text-blue-600 border-blue-100/50 font-bold" : "text-slate-500 hover:bg-slate-50 border-transparent"
+              className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition-all border cursor-pointer ${
+                activeTab === "dashboard" ? "bg-primary/5 text-primary border-primary/10 font-bold" : "text-slate-500 hover:bg-slate-50 border-transparent"
               }`}
             >
-              <Compass className="w-4.5 h-4.5 shrink-0 text-slate-400" />
+              <Compass className={`w-4.5 h-4.5 shrink-0 ${activeTab === "dashboard" ? "text-primary" : "text-slate-400"}`} />
               {!sidebarCollapsed && <span>System Overview</span>}
             </button>
             
             <button
               onClick={() => setActiveTab("approvals")}
-              className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition-all border ${
-                activeTab === "approvals" ? "bg-blue-50/50 text-blue-600 border-blue-100/50 font-bold" : "text-slate-500 hover:bg-slate-50 border-transparent"
+              className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition-all border cursor-pointer ${
+                activeTab === "approvals" ? "bg-primary/5 text-primary border-primary/10 font-bold" : "text-slate-500 hover:bg-slate-50 border-transparent"
               }`}
             >
-              <Shield className="w-4.5 h-4.5 shrink-0 text-slate-400" />
-              {!sidebarCollapsed && (
-                <span className="flex-1 flex items-center justify-between">
-                  <span>Approve Companies</span>
-                  {pendingCompanies.length > 0 && (
-                    <span className="bg-blue-600 text-white text-[9px] px-2 py-0.5 rounded-full font-extrabold ml-auto">
-                      {pendingCompanies.length}
-                    </span>
-                  )}
+              <ShieldCheck className={`w-4.5 h-4.5 shrink-0 ${activeTab === "approvals" ? "text-primary" : "text-slate-400"}`} />
+              {!sidebarCollapsed && <span>Pending Approvals</span>}
+              {!sidebarCollapsed && pendingCompanies.length > 0 && (
+                <span className="bg-secondary text-white text-[9px] px-2 py-0.5 rounded-full font-extrabold ml-auto">
+                  {pendingCompanies.length}
                 </span>
               )}
             </button>
 
             <button
               onClick={() => setActiveTab("users")}
-              className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition-all border ${
-                activeTab === "users" ? "bg-blue-50/50 text-blue-600 border-blue-100/50 font-bold" : "text-slate-500 hover:bg-slate-50 border-transparent"
+              className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition-all border cursor-pointer ${
+                activeTab === "users" ? "bg-primary/5 text-primary border-primary/10 font-bold" : "text-slate-500 hover:bg-slate-50 border-transparent"
               }`}
             >
-              <Users className="w-4.5 h-4.5 shrink-0 text-slate-400" />
-              {!sidebarCollapsed && <span>System Users</span>}
+              <User className={`w-4.5 h-4.5 shrink-0 ${activeTab === "users" ? "text-primary" : "text-slate-400"}`} />
+              {!sidebarCollapsed && <span>Registered Users</span>}
             </button>
 
             <button
               onClick={() => setActiveTab("chat")}
-              className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition-all border ${
-                activeTab === "chat" ? "bg-blue-50/50 text-blue-600 border-blue-100/50 font-bold" : "text-slate-500 hover:bg-slate-50 border-transparent"
+              className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition-all border cursor-pointer ${
+                activeTab === "chat" ? "bg-primary/5 text-primary border-primary/10 font-bold" : "text-slate-500 hover:bg-slate-50 border-transparent"
               }`}
             >
-              <MessageSquare className="w-4.5 h-4.5 shrink-0 text-slate-400" />
-              {!sidebarCollapsed && <span>Chat Inbox</span>}
+              <MessageSquare className={`w-4.5 h-4.5 shrink-0 ${activeTab === "chat" ? "text-primary" : "text-slate-400"}`} />
+              {!sidebarCollapsed && <span>GU Placement Chat</span>}
             </button>
 
             <button
@@ -212,8 +210,8 @@ export const AdminDashboard = () => {
               <p className="text-xs font-bold text-slate-808">{user?.name}</p>
               <p className="text-[10px] text-slate-400 mt-0.5">{user?.email}</p>
             </div>
-            <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-500 p-0.5 shadow-sm">
-              <div className="w-full h-full rounded-full bg-white flex items-center justify-center font-extrabold text-blue-600 text-sm">
+            <div className="w-9 h-9 rounded-full bg-primary/20 p-0.5 shadow-sm">
+              <div className="w-full h-full rounded-full bg-white flex items-center justify-center font-extrabold text-primary text-sm">
                 A
               </div>
             </div>
@@ -391,7 +389,7 @@ export const AdminDashboard = () => {
                       <button
                         onClick={() => handleApproveCompany(company._id)}
                         disabled={actionLoading}
-                        className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-[10px] font-bold cursor-pointer disabled:opacity-50 shadow-sm"
+                        className="px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded-lg text-[10px] font-bold cursor-pointer disabled:opacity-50 shadow-sm shadow-primary/5 transition-colors"
                       >
                         {actionLoading ? "Processing..." : "Approve Company"}
                       </button>

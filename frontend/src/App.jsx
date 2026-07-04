@@ -32,20 +32,23 @@ const PublicRoute = ({ children }) => {
 
 const PageLoader = () => {
   return (
-    <div className="min-h-screen w-full flex flex-col items-center justify-center bg-[#0a0d1a] relative overflow-hidden font-sans">
-      <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-600 rounded-full mix-blend-screen filter blur-[128px] opacity-25"></div>
-      <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-600 rounded-full mix-blend-screen filter blur-[128px] opacity-20"></div>
+    <div className="min-h-screen w-full flex flex-col items-center justify-center bg-bg-main relative overflow-hidden font-sans">
+      {/* Subtle brand background glows */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full filter blur-[128px] opacity-60"></div>
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-secondary/5 rounded-full filter blur-[128px] opacity-40"></div>
 
       <div className="relative z-10 flex flex-col items-center space-y-4">
-        {/* Logo */}
-        <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-indigo-500 to-purple-500 flex items-center justify-center text-white font-extrabold text-3xl shadow-xl shadow-indigo-500/20 mb-4 animate-bounce">
-          G
+        {/* Brand Logo Text */}
+        <div className="flex flex-col items-center space-y-1 mb-4 text-center">
+          <div className="text-3xl font-extrabold text-primary tracking-tight">
+            Geeta University
+          </div>
+          <div className="text-xs font-bold text-secondary tracking-widest uppercase">
+            PlacementConnect
+          </div>
         </div>
-        <h2 className="text-xl font-bold text-white tracking-tight">
-          PlacementConnect
-        </h2>
-        <p className="text-xs text-slate-400">Restoring session...</p>
-        <Loader2 className="w-6 h-6 text-indigo-400 animate-spin mt-2" />
+        <p className="text-xs text-text-secondary">Restoring session...</p>
+        <Loader2 className="w-6 h-6 text-primary animate-spin mt-2" />
       </div>
     </div>
   );

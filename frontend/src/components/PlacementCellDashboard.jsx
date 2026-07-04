@@ -5,7 +5,10 @@ import {
   Trash2, X, Lock, Check, AlertTriangle, AlertCircle, ExternalLink, ArrowRight, 
   ArrowUpRight, Award, Compass, Key, Settings, HelpCircle, Download, Eye, 
   Clock, RefreshCw, BarChart2, CheckSquare, Upload, Calendar, CheckCircle2,
-  Users, TrendingUp, BarChart3, Database, LogOut
+  Users, TrendingUp, BarChart3, Database, LogOut,
+  ChevronRight,
+  ChevronLeft,
+  GraduationCap
 } from "lucide-react";
 import api from "../utils/api";
 import { logoutState } from "../store/authSlice";
@@ -24,6 +27,7 @@ export const PlacementCellDashboard = () => {
   const [drives, setDrives] = useState([]);
   const [applications, setApplications] = useState([]);
   const [loadingData, setLoadingData] = useState(false);
+  const [analyticsStats, setAnalyticsStats] = useState(null);
   
   // CSV Shortlist upload state
   const [shortlistFile, setShortlistFile] = useState(null);
@@ -50,6 +54,10 @@ export const PlacementCellDashboard = () => {
       // 3. Fetch Applications
       const resApps = await api.get("/placement/applications");
       setApplications(resApps.data.applications || []);
+
+      // 4. Fetch Analytics Stats
+      const resStats = await api.get("/analytics/placement-stats");
+      setAnalyticsStats(resStats.data || null);
     } catch (err) {
       console.error(err);
       setErrorMsg("Failed to load Placement Cell records");
@@ -115,12 +123,12 @@ export const PlacementCellDashboard = () => {
           {/* Sidebar Header */}
           <div className="h-16 border-b border-slate-50 flex items-center justify-between px-4 shrink-0">
             {!sidebarCollapsed && (
-              <span className="text-sm font-extrabold tracking-tight bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent uppercase">
+              <span className="text-sm font-extrabold tracking-tight text-primary uppercase">
                 Placement Cell
               </span>
             )}
             {sidebarCollapsed && (
-              <span className="text-sm font-extrabold text-blue-600 mx-auto">PC</span>
+              <span className="text-sm font-extrabold text-primary mx-auto">PC</span>
             )}
             <button 
               onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
@@ -134,57 +142,67 @@ export const PlacementCellDashboard = () => {
           <nav className="p-3 space-y-0.5">
             <button
               onClick={() => setActiveTab("dashboard")}
-              className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition-all border ${
-                activeTab === "dashboard" ? "bg-blue-50/50 text-blue-600 border-blue-100/50 font-bold" : "text-slate-500 hover:bg-slate-50 border-transparent"
+              className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition-all border cursor-pointer ${
+                activeTab === "dashboard" ? "bg-primary/5 text-primary border-primary/10 font-bold" : "text-slate-500 hover:bg-slate-50 border-transparent"
               }`}
             >
-              <Compass className="w-4.5 h-4.5 shrink-0 text-slate-400" />
+              <Compass className={`w-4.5 h-4.5 shrink-0 ${activeTab === "dashboard" ? "text-primary" : "text-slate-400"}`} />
               {!sidebarCollapsed && <span>Dashboard Overview</span>}
             </button>
             
             <button
               onClick={() => setActiveTab("students")}
-              className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition-all border ${
-                activeTab === "students" ? "bg-blue-50/50 text-blue-600 border-blue-100/50 font-bold" : "text-slate-500 hover:bg-slate-50 border-transparent"
+              className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition-all border cursor-pointer ${
+                activeTab === "students" ? "bg-primary/5 text-primary border-primary/10 font-bold" : "text-slate-500 hover:bg-slate-50 border-transparent"
               }`}
             >
-              <Users className="w-4.5 h-4.5 shrink-0 text-slate-400" />
-              {!sidebarCollapsed && <span>Manage Students</span>}
+              <GraduationCap className={`w-4.5 h-4.5 shrink-0 ${activeTab === "students" ? "text-primary" : "text-slate-400"}`} />
+              {!sidebarCollapsed && <span>Enrolled Students</span>}
             </button>
 
             <button
               onClick={() => setActiveTab("drives")}
-              className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition-all border ${
-                activeTab === "drives" ? "bg-blue-50/50 text-blue-600 border-blue-100/50 font-bold" : "text-slate-500 hover:bg-slate-50 border-transparent"
+              className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition-all border cursor-pointer ${
+                activeTab === "drives" ? "bg-primary/5 text-primary border-primary/10 font-bold" : "text-slate-500 hover:bg-slate-50 border-transparent"
               }`}
             >
-              <Briefcase className="w-4.5 h-4.5 shrink-0 text-slate-400" />
+              <Briefcase className={`w-4.5 h-4.5 shrink-0 ${activeTab === "drives" ? "text-primary" : "text-slate-400"}`} />
               {!sidebarCollapsed && <span>Placement Drives</span>}
             </button>
 
             <button
               onClick={() => setActiveTab("csv-shortlist")}
-              className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition-all border ${
-                activeTab === "csv-shortlist" ? "bg-blue-50/50 text-blue-600 border-blue-100/50 font-bold" : "text-slate-500 hover:bg-slate-50 border-transparent"
+              className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition-all border cursor-pointer ${
+                activeTab === "csv-shortlist" ? "bg-primary/5 text-primary border-primary/10 font-bold" : "text-slate-500 hover:bg-slate-50 border-transparent"
               }`}
             >
-              <Upload className="w-4.5 h-4.5 shrink-0 text-slate-400" />
+              <Upload className={`w-4.5 h-4.5 shrink-0 ${activeTab === "csv-shortlist" ? "text-primary" : "text-slate-400"}`} />
               {!sidebarCollapsed && <span>CSV Shortlists</span>}
             </button>
 
             <button
               onClick={() => setActiveTab("chat")}
-              className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition-all border ${
-                activeTab === "chat" ? "bg-blue-50/50 text-blue-600 border-blue-100/50 font-bold" : "text-slate-500 hover:bg-slate-50 border-transparent"
+              className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition-all border cursor-pointer ${
+                activeTab === "chat" ? "bg-primary/5 text-primary border-primary/10 font-bold" : "text-slate-500 hover:bg-slate-50 border-transparent"
               }`}
             >
-              <MessageSquare className="w-4.5 h-4.5 shrink-0 text-slate-400" />
-              {!sidebarCollapsed && <span>Chat Inbox</span>}
+              <MessageSquare className={`w-4.5 h-4.5 shrink-0 ${activeTab === "chat" ? "text-primary" : "text-slate-400"}`} />
+              {!sidebarCollapsed && <span>GU Placement Chat</span>}
+            </button>
+
+            <button
+              onClick={() => setActiveTab("analytics")}
+              className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition-all border cursor-pointer ${
+                activeTab === "analytics" ? "bg-primary/5 text-primary border-primary/10 font-bold" : "text-slate-500 hover:bg-slate-50 border-transparent"
+              }`}
+            >
+              <BarChart3 className={`w-4.5 h-4.5 shrink-0 ${activeTab === "analytics" ? "text-primary" : "text-slate-400"}`} />
+              {!sidebarCollapsed && <span>Placement Analytics</span>}
             </button>
 
             <button
               onClick={handleLogout}
-              className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition-all border text-slate-500 hover:bg-rose-50 hover:text-rose-600 border-transparent"
+              className="w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition-all border text-slate-500 hover:bg-rose-50 hover:text-rose-600 border-transparent cursor-pointer"
             >
               <LogOut className="w-4.5 h-4.5 shrink-0" />
               {!sidebarCollapsed && <span>Logout</span>}
@@ -228,8 +246,8 @@ export const PlacementCellDashboard = () => {
               <p className="text-xs font-bold text-slate-800">{user?.name}</p>
               <p className="text-[10px] text-slate-400 mt-0.5">{user?.email}</p>
             </div>
-            <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-500 p-0.5 shadow-sm">
-              <div className="w-full h-full rounded-full bg-white flex items-center justify-center font-extrabold text-blue-600 text-sm">
+            <div className="w-9 h-9 rounded-full bg-primary/20 p-0.5 shadow-sm">
+              <div className="w-full h-full rounded-full bg-white flex items-center justify-center font-extrabold text-primary text-sm">
                 U
               </div>
             </div>
@@ -566,7 +584,7 @@ export const PlacementCellDashboard = () => {
                 <div className="pt-4 border-t border-slate-50 flex justify-end">
                   <button
                     type="submit"
-                    className="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg text-xs transition-colors shadow-sm cursor-pointer disabled:opacity-50"
+                    className="px-6 py-2.5 bg-primary hover:bg-primary-hover text-white font-bold rounded-lg text-xs transition-colors shadow-sm cursor-pointer disabled:opacity-50"
                     disabled={actionLoading || !shortlistFile}
                   >
                     {actionLoading ? "Processing Sheet..." : "Upload & Notify Candidates"}
@@ -585,6 +603,121 @@ export const PlacementCellDashboard = () => {
               </div>
 
               <ChatPanel />
+            </div>
+          )}
+
+          {/* ---------------- ACTIVE TAB: PLACEMENT ANALYTICS ---------------- */}
+          {activeTab === "analytics" && (
+            <div className="space-y-6">
+              <div className="bg-white border border-slate-100 p-6 rounded-2xl shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                  <h2 className="text-lg font-bold text-slate-800">Placement Analytics & Reports</h2>
+                  <p className="text-xs text-slate-400 mt-1">Real-time statistics of branch distribution, packages, and recruiting companies.</p>
+                </div>
+                <button
+                  onClick={loadData}
+                  disabled={loadingData}
+                  className="px-4 py-2 bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 rounded-lg text-xs font-bold flex items-center space-x-1.5 cursor-pointer disabled:opacity-50"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${loadingData ? "animate-spin" : ""}`} />
+                  <span>Refresh Stats</span>
+                </button>
+              </div>
+
+              {/* Package statistics card grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
+                <div className="bg-gradient-to-br from-primary to-[#052152] p-6 rounded-2xl shadow-md border border-primary/10 text-white relative overflow-hidden">
+                  <div className="absolute right-0 bottom-0 translate-x-3 translate-y-3 opacity-10">
+                    <TrendingUp className="w-32 h-32 text-white" />
+                  </div>
+                  <span className="text-[10px] uppercase font-bold text-slate-350 block tracking-widest">Highest Package Offer</span>
+                  <span className="text-3xl font-black block mt-2">{(analyticsStats?.packageStats?.maxPackage) || 0} <span className="text-xs font-bold text-secondary">LPA</span></span>
+                  <span className="text-[10px] text-slate-400 block mt-1">Selected student max CTC</span>
+                </div>
+
+                <div className="bg-white border border-slate-100 p-6 rounded-2xl shadow-sm relative overflow-hidden">
+                  <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-widest">Average CTC Package</span>
+                  <span className="text-3xl font-black block mt-2 text-primary">{(analyticsStats?.packageStats?.avgPackage ? Math.round(analyticsStats.packageStats.avgPackage * 10) / 10 : 0)} <span className="text-xs font-bold text-slate-400">LPA</span></span>
+                  <span className="text-[10px] text-slate-400 block mt-1">Selected student mean CTC</span>
+                </div>
+
+                <div className="bg-white border border-slate-100 p-6 rounded-2xl shadow-sm relative overflow-hidden">
+                  <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-widest">Minimum CTC Package</span>
+                  <span className="text-3xl font-black block mt-2 text-slate-700">{(analyticsStats?.packageStats?.minPackage) || 0} <span className="text-xs font-bold text-slate-400">LPA</span></span>
+                  <span className="text-[10px] text-slate-400 block mt-1">Selected student min CTC</span>
+                </div>
+
+                <div className="bg-white border border-slate-100 p-6 rounded-2xl shadow-sm relative overflow-hidden">
+                  <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-widest">Total Offers Extended</span>
+                  <span className="text-3xl font-black block mt-2 text-emerald-600">{(analyticsStats?.packageStats?.totalOffers) || 0} <span className="text-xs font-bold text-slate-400">Selections</span></span>
+                  <span className="text-[10px] text-slate-400 block mt-1">Total active selected applications</span>
+                </div>
+              </div>
+
+              {/* Graphic charts comparison */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Branch statistics comparisons */}
+                <div className="bg-white border border-slate-100 p-6 rounded-2xl shadow-sm space-y-4">
+                  <h3 className="text-sm font-bold text-slate-800 border-b border-slate-50 pb-3 flex items-center space-x-2">
+                    <BarChart3 className="w-4.5 h-4.5 text-primary" />
+                    <span>Branch-wise Placement Rate</span>
+                  </h3>
+                  <div className="space-y-4">
+                    {analyticsStats?.branchStats?.length > 0 ? (
+                      analyticsStats.branchStats.map((b) => (
+                        <div key={b.branch} className="space-y-1">
+                          <div className="flex justify-between items-center text-xs">
+                            <span className="font-bold text-slate-700">{b.branch}</span>
+                            <span className="text-slate-500 font-semibold">{b.placedStudents} Placed / {b.totalStudents} Total ({Math.round(b.placementRate)}%)</span>
+                          </div>
+                          <div className="w-full h-2.5 bg-slate-50 rounded-full border border-slate-100 overflow-hidden">
+                            <div 
+                              className="h-full bg-primary rounded-full transition-all duration-500" 
+                              style={{ width: `${b.placementRate}%` }}
+                            />
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-center py-8 text-slate-400 text-xs">No branch placement metrics available yet.</p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Company Distribution comparisons */}
+                <div className="bg-white border border-slate-100 p-6 rounded-2xl shadow-sm space-y-4">
+                  <h3 className="text-sm font-bold text-slate-800 border-b border-slate-50 pb-3 flex items-center space-x-2">
+                    <Building2 className="w-4.5 h-4.5 text-primary" />
+                    <span>Company Selection Distribution</span>
+                  </h3>
+                  <div className="space-y-4">
+                    {analyticsStats?.companyStats?.length > 0 ? (
+                      analyticsStats.companyStats.map((c, i) => {
+                        const totalSelections = analyticsStats.companyStats.reduce((sum, comp) => sum + comp.selections, 0);
+                        const pct = totalSelections > 0 ? Math.round((c.selections / totalSelections) * 100) : 0;
+                        const colors = ["bg-emerald-550", "bg-secondary", "bg-indigo-500", "bg-rose-500", "bg-primary"];
+                        const colorClass = colors[i % colors.length];
+                        return (
+                          <div key={c.companyName} className="space-y-1">
+                            <div className="flex justify-between items-center text-xs">
+                              <span className="font-bold text-slate-700">{c.companyName}</span>
+                              <span className="text-slate-500 font-semibold">{c.selections} Hired ({pct}%)</span>
+                            </div>
+                            <div className="w-full h-2.5 bg-slate-50 rounded-full border border-slate-100 overflow-hidden">
+                              <div 
+                                className={`h-full ${colorClass} rounded-full transition-all duration-500`} 
+                                style={{ width: `${pct}%` }}
+                              />
+                            </div>
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <p className="text-center py-8 text-slate-400 text-xs">No company recruitment selections recorded yet.</p>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
           )}
         </main>

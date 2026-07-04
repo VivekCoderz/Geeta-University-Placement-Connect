@@ -11,7 +11,7 @@ const uploadMemory = multer({ storage: memoryStorage });
 router.post(
   "/shortlist/upload",
   jwtVerify,
-  authorizeRoles("placementCell", "recruiter", "admin"),
+  authorizeRoles("placementCell", "recruiter", "company", "admin"),
   uploadMemory.single("file"),
   placementController.uploadShortlist
 );

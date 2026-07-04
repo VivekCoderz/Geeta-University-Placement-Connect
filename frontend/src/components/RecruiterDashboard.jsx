@@ -5,7 +5,9 @@ import {
   Trash2, X, Lock, Check, AlertTriangle, AlertCircle, ExternalLink, ArrowRight, 
   ArrowUpRight, Award, Compass, Key, Settings, HelpCircle, Download, Eye, 
   Clock, RefreshCw, BarChart2, CheckSquare, Upload, Calendar, CheckCircle2,
-  LogOut
+  LogOut,
+  ChevronRight,
+  ChevronLeft
 } from "lucide-react";
 import api from "../utils/api";
 import { logoutState } from "../store/authSlice";
@@ -26,6 +28,7 @@ export const RecruiterDashboard = () => {
   const [newLocation, setNewLocation] = useState("On-Site");
   const [newCgpa, setNewCgpa] = useState("7.0");
   const [selectedBranches, setSelectedBranches] = useState(["Computer Science & Engineering", "Information Technology"]);
+  const [selectedYears, setSelectedYears] = useState(["2026"]);
   const [newDeadline, setNewDeadline] = useState("");
 
   // Application Pipeline / Review Modal state
@@ -116,7 +119,7 @@ export const RecruiterDashboard = () => {
         eligibility: {
           cgpa: Number(newCgpa),
           branches: selectedBranches,
-          years: ["2026", "2027"] // cohort targets
+          years: selectedYears
         },
         deadline: newDeadline
       });
@@ -219,12 +222,12 @@ export const RecruiterDashboard = () => {
           {/* Sidebar Header */}
           <div className="h-16 border-b border-slate-50 flex items-center justify-between px-4 shrink-0">
             {!sidebarCollapsed && (
-              <span className="text-sm font-extrabold tracking-tight bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent uppercase">
+              <span className="text-sm font-extrabold tracking-tight text-primary uppercase">
                 Recruiter Portal
               </span>
             )}
             {sidebarCollapsed && (
-              <span className="text-sm font-extrabold text-blue-600 mx-auto">RP</span>
+              <span className="text-sm font-extrabold text-primary mx-auto">RP</span>
             )}
             <button 
               onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
@@ -238,42 +241,42 @@ export const RecruiterDashboard = () => {
           <nav className="p-3 space-y-0.5">
             <button
               onClick={() => setActiveTab("dashboard")}
-              className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition-all border ${
-                activeTab === "dashboard" ? "bg-blue-50/50 text-blue-600 border-blue-100/50 font-bold" : "text-slate-500 hover:bg-slate-50 border-transparent"
+              className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition-all border cursor-pointer ${
+                activeTab === "dashboard" ? "bg-primary/5 text-primary border-primary/10 font-bold" : "text-slate-500 hover:bg-slate-50 border-transparent"
               }`}
             >
-              <Compass className="w-4.5 h-4.5 shrink-0 text-slate-400" />
+              <Compass className={`w-4.5 h-4.5 shrink-0 ${activeTab === "dashboard" ? "text-primary" : "text-slate-400"}`} />
               {!sidebarCollapsed && <span>Dashboard Overview</span>}
             </button>
             
             <button
               onClick={() => setActiveTab("create-job")}
-              className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition-all border ${
-                activeTab === "create-job" ? "bg-blue-50/50 text-blue-600 border-blue-100/50 font-bold" : "text-slate-500 hover:bg-slate-50 border-transparent"
+              className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition-all border cursor-pointer ${
+                activeTab === "create-job" ? "bg-primary/5 text-primary border-primary/10 font-bold" : "text-slate-500 hover:bg-slate-50 border-transparent"
               }`}
             >
-              <Plus className="w-4.5 h-4.5 shrink-0 text-slate-400" />
+              <Plus className={`w-4.5 h-4.5 shrink-0 ${activeTab === "create-job" ? "text-primary" : "text-slate-400"}`} />
               {!sidebarCollapsed && <span>Post Job Drive</span>}
             </button>
 
             <button
               onClick={() => setActiveTab("pipeline")}
-              className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition-all border ${
-                activeTab === "pipeline" ? "bg-blue-50/50 text-blue-600 border-blue-100/50 font-bold" : "text-slate-500 hover:bg-slate-50 border-transparent"
+              className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition-all border cursor-pointer ${
+                activeTab === "pipeline" ? "bg-primary/5 text-primary border-primary/10 font-bold" : "text-slate-500 hover:bg-slate-50 border-transparent"
               }`}
             >
-              <CheckSquare className="w-4.5 h-4.5 shrink-0 text-slate-400" />
+              <Briefcase className={`w-4.5 h-4.5 shrink-0 ${activeTab === "pipeline" ? "text-primary" : "text-slate-400"}`} />
               {!sidebarCollapsed && <span>Applications Pipeline</span>}
             </button>
 
             <button
               onClick={() => setActiveTab("chat")}
-              className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition-all border ${
-                activeTab === "chat" ? "bg-blue-50/50 text-blue-600 border-blue-100/50 font-bold" : "text-slate-500 hover:bg-slate-50 border-transparent"
+              className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition-all border cursor-pointer ${
+                activeTab === "chat" ? "bg-primary/5 text-primary border-primary/10 font-bold" : "text-slate-500 hover:bg-slate-50 border-transparent"
               }`}
             >
-              <MessageSquare className="w-4.5 h-4.5 shrink-0 text-slate-400" />
-              {!sidebarCollapsed && <span>Chat Inbox</span>}
+              <MessageSquare className={`w-4.5 h-4.5 shrink-0 ${activeTab === "chat" ? "text-primary" : "text-slate-400"}`} />
+              {!sidebarCollapsed && <span>GU Placement Chat</span>}
             </button>
 
             <button
@@ -322,8 +325,8 @@ export const RecruiterDashboard = () => {
               <p className="text-xs font-bold text-slate-800">{user?.name}</p>
               <p className="text-[10px] text-slate-400 mt-0.5">{user?.email}</p>
             </div>
-            <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-500 p-0.5 shadow-sm">
-              <div className="w-full h-full rounded-full bg-white flex items-center justify-center font-extrabold text-blue-600 text-sm">
+            <div className="w-9 h-9 rounded-full bg-primary/20 p-0.5 shadow-sm">
+              <div className="w-full h-full rounded-full bg-white flex items-center justify-center font-extrabold text-primary text-sm">
                 {user?.name?.charAt(0)}
               </div>
             </div>
@@ -366,7 +369,7 @@ export const RecruiterDashboard = () => {
               {/* Company Info Header card */}
               <div className="bg-white border border-slate-100 p-6 md:p-8 rounded-2xl shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
                 <div className="space-y-2">
-                  <div className="inline-flex items-center space-x-1.5 px-3 py-1 bg-blue-50 border border-blue-100 rounded-full text-blue-600 text-[10px] font-bold">
+                  <div className="inline-flex items-center space-x-1.5 px-3 py-1 bg-primary/5 border border-primary/10 rounded-full text-primary text-[10px] font-bold">
                     <Building2 className="w-3.5 h-3.5" />
                     <span>Verified Recruiter Profile</span>
                   </div>
@@ -378,7 +381,7 @@ export const RecruiterDashboard = () => {
                 <div className="flex space-x-3 shrink-0">
                   <button 
                     onClick={() => setActiveTab("create-job")}
-                    className="px-5 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-600/10 cursor-pointer transition-colors"
+                    className="px-5 py-3 bg-primary hover:bg-primary-hover text-white rounded-xl text-xs font-bold shadow-md shadow-primary/10 cursor-pointer transition-colors"
                   >
                     Post Placement Drive
                   </button>
@@ -476,13 +479,11 @@ export const RecruiterDashboard = () => {
               </div>
 
             </div>
-          )}
-
-          {/* ---------------- ACTIVE TAB: POST JOB DRIVE ---------------- */}
+          )}          {/* ---------------- ACTIVE TAB: POST JOB DRIVE ---------------- */}
           {activeTab === "create-job" && (
             <form onSubmit={handlePostJob} className="bg-white border border-slate-100 p-8 rounded-2xl shadow-sm max-w-3xl mx-auto space-y-6">
               <h3 className="text-sm font-bold text-slate-805 flex items-center space-x-2 border-b border-slate-50 pb-4">
-                <Plus className="w-5 h-5 text-blue-500" />
+                <Plus className="w-5 h-5 text-primary" />
                 <span>Configure New Job Recruitment Drive</span>
               </h3>
 
@@ -494,7 +495,7 @@ export const RecruiterDashboard = () => {
                     value={newTitle}
                     onChange={(e) => setNewTitle(e.target.value)}
                     placeholder="e.g. Associate Software Engineer"
-                    className="w-full bg-white border border-slate-200 text-slate-800 rounded-lg px-3.5 py-2.5 text-xs focus:outline-none focus:border-blue-500"
+                    className="w-full bg-white border border-slate-200 text-slate-800 rounded-lg px-3.5 py-2.5 text-xs focus:outline-none focus:border-primary"
                     disabled={actionLoading}
                     required
                   />
@@ -507,7 +508,7 @@ export const RecruiterDashboard = () => {
                     value={newPackage}
                     onChange={(e) => setNewPackage(e.target.value)}
                     placeholder="e.g. 12"
-                    className="w-full bg-white border border-slate-200 text-slate-800 rounded-lg px-3.5 py-2.5 text-xs focus:outline-none focus:border-blue-500"
+                    className="w-full bg-white border border-slate-200 text-slate-800 rounded-lg px-3.5 py-2.5 text-xs focus:outline-none focus:border-primary"
                     disabled={actionLoading}
                     required
                   />
@@ -520,7 +521,7 @@ export const RecruiterDashboard = () => {
                     value={newLocation}
                     onChange={(e) => setNewLocation(e.target.value)}
                     placeholder="e.g. Bangalore / Remote"
-                    className="w-full bg-white border border-slate-200 text-slate-800 rounded-lg px-3.5 py-2.5 text-xs focus:outline-none focus:border-blue-500"
+                    className="w-full bg-white border border-slate-200 text-slate-800 rounded-lg px-3.5 py-2.5 text-xs focus:outline-none focus:border-primary"
                     disabled={actionLoading}
                     required
                   />
@@ -533,7 +534,7 @@ export const RecruiterDashboard = () => {
                     value={newCgpa}
                     onChange={(e) => setNewCgpa(e.target.value)}
                     placeholder="e.g. 7.5"
-                    className="w-full bg-white border border-slate-200 text-slate-800 rounded-lg px-3.5 py-2.5 text-xs focus:outline-none focus:border-blue-500"
+                    className="w-full bg-white border border-slate-200 text-slate-800 rounded-lg px-3.5 py-2.5 text-xs focus:outline-none focus:border-primary"
                     disabled={actionLoading}
                     required
                   />
@@ -545,10 +546,77 @@ export const RecruiterDashboard = () => {
                     type="date"
                     value={newDeadline}
                     onChange={(e) => setNewDeadline(e.target.value)}
-                    className="w-full bg-white border border-slate-200 text-slate-800 rounded-lg px-3.5 py-2.5 text-xs focus:outline-none focus:border-blue-500 cursor-pointer"
+                    className="w-full bg-white border border-slate-200 text-slate-800 rounded-lg px-3.5 py-2.5 text-xs focus:outline-none focus:border-primary cursor-pointer"
                     disabled={actionLoading}
                     required
                   />
+                </div>
+              </div>
+
+              {/* Eligibility Criteria Details */}
+              <div className="space-y-4 pt-4 border-t border-slate-50">
+                <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Configure Eligibility Filters</h4>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Branches selector */}
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block">Eligible Branches</label>
+                    <div className="flex flex-wrap gap-2">
+                      {["Computer Science & Engineering", "Information Technology", "Electronics & Communication Engineering", "Mechanical Engineering", "Civil Engineering"].map((br) => {
+                        const isSel = selectedBranches.includes(br);
+                        return (
+                          <button
+                            key={br}
+                            type="button"
+                            onClick={() => {
+                              if (isSel) {
+                                setSelectedBranches(prev => prev.filter(x => x !== br));
+                              } else {
+                                setSelectedBranches(prev => [...prev, br]);
+                              }
+                            }}
+                            className={`px-3 py-1.5 rounded-lg text-[10px] font-bold border transition-colors cursor-pointer ${
+                              isSel 
+                                ? "bg-primary/5 text-primary border-primary/20" 
+                                : "bg-white text-slate-500 border-slate-200 hover:text-slate-700"
+                            }`}
+                          >
+                            {br}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Target Passing Year selector */}
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest block">Eligible Target Year</label>
+                    <div className="flex flex-wrap gap-2">
+                      {["2025", "2026", "2027", "2028"].map((yr) => {
+                        const isSel = selectedYears.includes(yr);
+                        return (
+                          <button
+                            key={yr}
+                            type="button"
+                            onClick={() => {
+                              if (isSel) {
+                                setSelectedYears(prev => prev.filter(x => x !== yr));
+                              } else {
+                                setSelectedYears(prev => [...prev, yr]);
+                              }
+                            }}
+                            className={`px-3 py-1.5 rounded-lg text-[10px] font-bold border transition-colors cursor-pointer ${
+                              isSel 
+                                ? "bg-primary/5 text-primary border-primary/20" 
+                                : "bg-white text-slate-500 border-slate-200 hover:text-slate-700"
+                            }`}
+                          >
+                            {yr} Batch
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -560,7 +628,7 @@ export const RecruiterDashboard = () => {
                   value={newDesc}
                   onChange={(e) => setNewDesc(e.target.value)}
                   placeholder="Elaborate key roles, tech stack requirements, and test patterns..."
-                  className="w-full bg-white border border-slate-200 text-slate-800 rounded-lg px-3.5 py-2.5 text-xs focus:outline-none focus:border-blue-500 resize-none"
+                  className="w-full bg-white border border-slate-200 text-slate-800 rounded-lg px-3.5 py-2.5 text-xs focus:outline-none focus:border-primary resize-none"
                   disabled={actionLoading}
                   required
                 />
@@ -789,7 +857,7 @@ export const RecruiterDashboard = () => {
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-bold shadow"
+                className="px-4 py-2 bg-primary hover:bg-primary-hover text-white rounded-lg font-bold shadow cursor-pointer transition-colors"
               >
                 Schedule & Dispatch Invite
               </button>
@@ -842,7 +910,7 @@ export const RecruiterDashboard = () => {
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-555 text-white rounded-lg font-bold shadow"
+                className="px-4 py-2 bg-status-selected hover:bg-status-selected/90 text-white rounded-lg font-bold shadow cursor-pointer transition-colors"
               >
                 Confirm Placement Selection
               </button>

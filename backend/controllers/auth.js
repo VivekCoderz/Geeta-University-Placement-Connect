@@ -208,21 +208,28 @@ module.exports.postRegister = ErrorWrapper(async (req, res, next) => {
 module.exports.postLogin = ErrorWrapper(async (req, res, next) => {
   const { email, rollNumber, password } = req.body;
 
-  if(!email && !rollNumber) {
+  if (!email && !rollNumber) {
     throw new ErrorHandler(400, "Please provide either email or roll number");
   }
 
-  if(!password) {
+  if (!password) {
     throw new ErrorHandler(400, "Please provide a password");
   }
-  const userExists = await User.findOne({
-    $or: [
-      {email : email},
-      {rollNumber : rollNumber}
-    ]
-  });
 
-  if(!userExists) {
+  let userExists;
+
+  if (rollNumber) {
+    const student = await Student.findOne({ rollNumber: rollNumber.trim() });
+    if (!student) {
+      throw new ErrorHandler(404, "No student found with this roll number");
+    }
+    userExists = await User.findById(student.userId);
+  } else {
+    const cleanEmail = email ? email.trim().toLowerCase() : "";
+    userExists = await User.findOne({ email: cleanEmail });
+  }
+
+  if (!userExists) {
     throw new ErrorHandler(404, "User not found");
   }
 
