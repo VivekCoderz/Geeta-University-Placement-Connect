@@ -1,221 +1,150 @@
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Mail, Lock, Eye, EyeOff, KeyRound, Loader2, AlertCircle } from "lucide-react";
-import { useSelector, useDispatch } from "react-redux";
-import { loginState } from "../store/authSlice";
-import api from "../utils/api";
-import AuthLayout from "../components/AuthLayout";
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Mail, Lock, LogIn, AlertCircle } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
-export const Login = () => {
+const Login = () => {
+  const { login } = useAuth();
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-
-  // Local state for simplified management
-  const [loginMethod, setLoginMethod] = useState("email");
-  const [identifier, setIdentifier] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
-
-  // Clear errors when toggling login method
-  useEffect(() => {
-    setError("");
-    setIdentifier("");
-  }, [loginMethod]);
-
-  // Redirect if authenticated
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate("/");
-    }
-  }, [isAuthenticated, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-
-    if (!identifier.trim()) {
-      setError(`${loginMethod === "email" ? "Email" : "Roll Number"} is required`);
+    setError('');
+    
+    if (!email || !password) {
+      setError('Please fill in all fields');
       return;
     }
-
-    if (!password) {
-      setError("Password is required");
-      return;
-    }
-
-    const payload = {};
-    if (loginMethod === "email") {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(identifier.trim())) {
-        setError("Please enter a valid email address");
-        return;
-      }
-      payload.email = identifier.trim();
-    } else {
-      payload.rollNumber = identifier.trim();
-    }
-
-    payload.password = password;
 
     setIsLoading(true);
     try {
-      // 1. Authenticate user (cookie is automatically set by browser)
-      const loginRes = await api.post("/auth/login", payload);
-
-      // 2. Fetch full profile (includes student/company details)
-      const profileRes = await api.get("/auth/me");
-      const user = { ...profileRes.data.data.user };
-      if (user.role === "company") {
-        user.role = "recruiter";
-      }
-      const details = profileRes.data.data.details;
-
-      // 3. Update Redux state
-      dispatch(loginState({ user, details }));
+      await login(email, password);
+      navigate('/');
     } catch (err) {
-      setError(err.response?.data?.message || "Invalid credentials or login failed");
+      setError(err.message || 'Login failed');
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <AuthLayout
-      title="Welcome Back"
-      subtitle="Access the Geeta University placement portal to track applications, post jobs, or manage drives."
-    >
-      <div className="w-full max-w-md mx-auto space-y-8">
-        <div>
-          <h3 className="text-2xl font-bold text-text-primary tracking-tight">Sign In</h3>
-          <p className="text-sm text-text-secondary mt-1">
-            Choose your login method below
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center py-16 px-6 sm:px-8 relative overflow-hidden">
+      {/* Premium Ambient Background Animations (Floating Green/Teal Gradient Orbs) */}
+      <div className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full bg-emerald-400/10 blur-[100px] pointer-events-none animate-float-slow" />
+      <div className="absolute bottom-1/4 right-1/4 translate-x-1/2 translate-y-1/2 w-96 h-96 rounded-full bg-teal-400/10 blur-[100px] pointer-events-none animate-float-medium" />
+
+      {/* Main Login Card - Entrance Animation */}
+      <div className="max-w-md w-full space-y-8 bg-white/90 backdrop-blur-md border border-slate-200/80 p-10 sm:p-12 rounded-3xl shadow-xl shadow-slate-200/50 relative z-10 animate-slide-up">
+        
+        {/* Header - Staggered Slide Up */}
+        <div className="text-center space-y-3 animate-slide-up animation-delay-100">
+          <div className="flex justify-center">
+            <div className="h-14 w-14 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-555 flex items-center justify-center shadow-lg shadow-emerald-500/20">
+              <LogIn className="w-7 h-7 text-white" />
+            </div>
+          </div>
+          <h2 className="text-center text-3xl font-extrabold text-slate-800 tracking-tight">
+            Welcome Back
+          </h2>
+          <p className="text-sm text-slate-500">
+            Sign in to your student account on{' '}
+            <span className="text-emerald-600 font-bold">PlacementConnect</span>
           </p>
         </div>
 
-        {/* Login Method Toggle */}
-        <div className="flex p-1 bg-slate-100 rounded-xl border border-slate-200 h-11 items-center">
-          <button
-            type="button"
-            onClick={() => setLoginMethod("email")}
-            className={`flex-1 flex items-center justify-center h-9 text-xs font-semibold rounded-lg transition-all duration-200 cursor-pointer ${
-              loginMethod === "email"
-                ? "bg-primary text-white shadow-sm"
-                : "text-text-secondary hover:text-text-primary bg-transparent"
-            }`}
-          >
-            Email Address
-          </button>
-          <button
-            type="button"
-            onClick={() => setLoginMethod("roll")}
-            className={`flex-1 flex items-center justify-center h-9 text-xs font-semibold rounded-lg transition-all duration-200 cursor-pointer ${
-              loginMethod === "roll"
-                ? "bg-primary text-white shadow-sm"
-                : "text-text-secondary hover:text-text-primary bg-transparent"
-            }`}
-          >
-            Student Roll Number
-          </button>
-        </div>
+        {error && (
+          <div className="bg-rose-50 border border-rose-100 rounded-2xl p-4 flex gap-3 text-rose-600 text-sm items-start animate-slide-up">
+            <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+            <p className="font-medium">{error}</p>
+          </div>
+        )}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Error Banner */}
-          {error && (
-            <div className="flex items-start space-x-3 bg-rose-50 border border-rose-100 text-rose-800 text-sm p-4 rounded-lg animate-shake">
-              <AlertCircle className="w-5 h-5 text-rose-500 shrink-0 mt-0.5" />
-              <div className="flex-1">
-                <p className="font-semibold">Authentication Error</p>
-                <p className="text-rose-600/80 text-xs mt-0.5">{error}</p>
+        {/* Form Area */}
+        <form className="space-y-6" onSubmit={handleSubmit}>
+          <div className="space-y-5">
+            {/* Email Field - Staggered Slide Up */}
+            <div className="animate-slide-up animation-delay-100">
+              <label htmlFor="email" className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+                Email Address
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                  <Mail className="h-5 w-5" />
+                </div>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="block w-full pl-11 pr-4 py-3.5 bg-slate-50/50 border border-slate-200 focus:bg-white rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all text-sm font-semibold"
+                  placeholder="student@university.com"
+                />
               </div>
             </div>
-          )}
 
-          {/* Identifier Input */}
-          <div className="space-y-1">
-            <label className="text-xs font-semibold text-text-secondary">
-              {loginMethod === "email" ? "Email Address" : "Roll Number"}
-            </label>
-            <div className="relative">
-              <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
-                {loginMethod === "email" ? (
-                  <Mail className="w-5 h-5" />
-                ) : (
-                  <KeyRound className="w-5 h-5" />
-                )}
-              </span>
-              <input
-                type={loginMethod === "email" ? "email" : "text"}
-                value={identifier}
-                onChange={(e) => setIdentifier(e.target.value)}
-                placeholder={
-                  loginMethod === "email" ? "name@geetauniversity.edu.in" : "210304001"
-                }
-                className="w-full bg-slate-50 border border-slate-200 text-text-primary rounded-lg pl-10 pr-4 py-3 text-sm placeholder:text-slate-400 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 focus:bg-white transition-all duration-300"
-                disabled={isLoading}
-              />
+            {/* Password Field - Staggered Slide Up */}
+            <div className="animate-slide-up animation-delay-200">
+              <label htmlFor="password" className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">
+                Password
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                  <Lock className="h-5 w-5" />
+                </div>
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  autoComplete="current-password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="block w-full pl-11 pr-4 py-3.5 bg-slate-50/50 border border-slate-200 focus:bg-white rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all text-sm font-semibold"
+                  placeholder="••••••••"
+                />
+              </div>
             </div>
           </div>
 
-          {/* Password Input */}
-          <div className="space-y-1">
-            <div className="flex justify-between items-center">
-              <label className="text-xs font-semibold text-text-secondary">Password</label>
-            </div>
-            <div className="relative">
-              <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
-                <Lock className="w-5 h-5" />
-              </span>
-              <input
-                type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                className="w-full bg-slate-50 border border-slate-200 text-text-primary rounded-lg pl-10 pr-10 py-3 text-sm placeholder:text-slate-400 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 focus:bg-white transition-all duration-300"
-                disabled={isLoading}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-650 cursor-pointer"
-              >
-                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </button>
-            </div>
+          {/* Hint details - Staggered Slide Up */}
+          <div className="flex items-center justify-between text-xs text-slate-400 animate-slide-up animation-delay-200">
+            <span className="text-slate-450 italic font-medium">Demo user: student@pc.com / password123</span>
           </div>
 
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full flex items-center justify-center space-x-2 py-3 bg-primary hover:bg-primary-hover text-white font-semibold rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 active:scale-[0.98] transition-all duration-200 cursor-pointer shadow-md shadow-primary/10 disabled:opacity-50 disabled:pointer-events-none"
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                <span>Signing In...</span>
-              </>
-            ) : (
-              <span>Sign In</span>
-            )}
-          </button>
+          {/* Submit Button - Hover and Focus animations */}
+          <div className="animate-slide-up animation-delay-300">
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="group relative w-full flex justify-center py-3.5 px-4 border border-transparent text-sm font-bold rounded-xl text-white bg-emerald-600 hover:bg-emerald-500 focus:outline-none focus:ring-4 focus:ring-emerald-500/25 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-md shadow-emerald-650/15 hover:shadow-lg hover:shadow-emerald-650/25 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98]"
+            >
+              {isLoading ? (
+                <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              ) : (
+                'Sign In'
+              )}
+            </button>
+          </div>
         </form>
 
-        <div className="text-center pt-2">
-          <p className="text-xs text-text-secondary">
-            Don't have an account?{" "}
-            <Link
-              to="/register"
-              className="font-semibold text-primary hover:text-primary-hover transition-colors"
-            >
-              Sign Up here
+        {/* Signup Redirect link */}
+        <div className="text-center mt-6 animate-slide-up animation-delay-300">
+          <p className="text-sm text-slate-500 font-semibold">
+            Don't have an account?{' '}
+            <Link to="/signup" className="text-emerald-650 hover:text-emerald-500 font-bold transition-colors">
+              Register here
             </Link>
           </p>
         </div>
       </div>
-    </AuthLayout>
+    </div>
   );
 };
 
