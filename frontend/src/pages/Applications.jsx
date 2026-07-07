@@ -1,26 +1,47 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronRight, Sparkles, CheckCircle2, XCircle } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
-import { mockJobs } from '../data/mockJobs';
+import { useSelector } from 'react-redux';
 import Stepper from '../components/Stepper';
-import * as storage from '../utils/storage';
+import api from '../utils/api';
 
 const Applications = () => {
-  const { user } = useAuth();
+  const user = useSelector((state) => state.auth.user);
   const [applications, setApplications] = useState([]);
   const [jobs, setJobs] = useState([]);
   const [showSimulator, setShowSimulator] = useState({});
 
-  const fetchApplicationsData = () => {
-    const allApps = storage.getApplications();
-    const studentApps = allApps.filter(a => a.studentId === user.id);
-    setApplications(studentApps);
-    setJobs(mockJobs);
+  const fetchApplicationsData = async () => {
+    try {
+      const response = await api.get('/api/applications/my-applications');
+      const data = response.data;
+      const mappedApps = (data.applications || []).map(app => ({
+        ...app,
+        id: app._id,
+        jobId: app.jobId?._id || app.jobId
+      }));
+      setApplications(mappedApps);
+      
+      const populatedJobs = (data.applications || []).map(app => {
+        if (app.jobId && typeof app.jobId === 'object') {
+          return {
+            ...app.jobId,
+            id: app.jobId._id,
+            companyName: app.jobId.companyId?.name || "Company"
+          };
+        }
+        return null;
+      }).filter(Boolean);
+      setJobs(populatedJobs);
+    } catch (err) {
+      console.error("Failed to fetch applications:", err);
+    }
   };
 
   useEffect(() => {
-    fetchApplicationsData();
+    if (user) {
+      fetchApplicationsData();
+    }
   }, [user]);
 
   const getJobDetails = (jobId) => {
@@ -28,37 +49,7 @@ const Applications = () => {
   };
 
   const handleSimulateStatus = (appId, nextStatus) => {
-    const allApps = storage.getApplications();
-    const idx = allApps.findIndex(a => a.id === appId);
-    if (idx !== -1) {
-      const app = allApps[idx];
-      const job = getJobDetails(app.jobId);
-      
-      allApps[idx].status = nextStatus;
-      localStorage.setItem('pc_applications', JSON.stringify(allApps));
-      fetchApplicationsData();
-
-      let msg = '';
-      let type = 'info';
-      if (nextStatus === 'Aptitude') {
-        msg = `Evaluation Update: You have been shortlisted for the Aptitude/Coding test for ${job.title} at ${job.companyName}.`;
-        type = 'calendar';
-      } else if (nextStatus === 'GD') {
-        msg = `Evaluation Update: You have cleared the Aptitude round. A Group Discussion has been scheduled for ${job.companyName}.`;
-        type = 'calendar';
-      } else if (nextStatus === 'HR') {
-        msg = `Evaluation Update: Congratulations! You are selected for the final HR round for ${job.title} at ${job.companyName}.`;
-        type = 'success';
-      } else if (nextStatus === 'Selected') {
-        msg = `🎉 CONGRATULATIONS! You have been Selected for the ${job.title} position at ${job.companyName} with a package of ${job.package} LPA!`;
-        type = 'success';
-      } else if (nextStatus === 'Rejected') {
-        msg = `Application Update: Unfortunately, your application for ${job.title} at ${job.companyName} was not selected in the recent evaluation round.`;
-        type = 'status';
-      }
-      
-      storage.addNotification(user.id, msg, type);
-    }
+    setApplications(prev => prev.map(a => a.id === appId ? { ...a, status: nextStatus } : a));
   };
 
   const toggleSimulatorDrawer = (appId) => {

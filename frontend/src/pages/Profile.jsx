@@ -4,11 +4,13 @@ import {
   Plus, Trash2, ExternalLink, Upload, Eye, FileText, 
   Briefcase, GraduationCap, Award, PlusCircle, Check, ArrowRight
 } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
-import * as storage from '../utils/storage';
+import { useSelector, useDispatch } from 'react-redux';
+import { setUser } from '../redux/authSlice';
+import api from '../utils/api';
 
 const Profile = () => {
-  const { user, updateUserProfile } = useAuth();
+  const user = useSelector((state) => state.auth.user);
+  const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState('edit'); // edit | preview
   const [successMsg, setSuccessMsg] = useState('');
 
@@ -101,7 +103,7 @@ const Profile = () => {
     setProjects(projects.filter(p => p.id !== projId));
   };
 
-  const handleResumeUpload = (e) => {
+  const handleResumeUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -111,17 +113,36 @@ const Profile = () => {
     }
 
     setIsUploading(true);
-    setTimeout(() => {
-      const simulatedUrl = `https://res.cloudinary.com/placementconnect/image/upload/v172021628/${file.name.replace(/\s+/g, '_')}`;
-      setResumeName(file.name);
-      setResumeUrl(simulatedUrl);
-      setIsUploading(false);
+    try {
+      const formData = new FormData();
+      formData.append('resume', file);
       
-      storage.addNotification(user.id, `Resume file "${file.name}" uploaded successfully via Cloudinary simulator.`, 'success');
-    }, 1500);
+      const response = await api.put('/api/students/resume', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      const data = response.data;
+
+      setResumeName(file.name);
+      setResumeUrl(data.resumeUrl);
+
+      // fetch fresh combined me data
+      const meResponse = await api.get('/api/auth/me');
+      const meRes = meResponse.data;
+      const combinedUser = {
+        ...meRes.data.user,
+        ...meRes.data.details,
+        id: meRes.data.user._id || meRes.data.user.id,
+      };
+      localStorage.setItem('user', JSON.stringify(combinedUser));
+      dispatch(setUser(combinedUser));
+    } catch (err) {
+      alert(err.response?.data?.message || err.message || 'Resume upload failed');
+    } finally {
+      setIsUploading(false);
+    }
   };
 
-  const handleSaveProfile = (e) => {
+  const handleSaveProfile = async (e) => {
     if (e) e.preventDefault();
     setSuccessMsg('');
 
@@ -131,19 +152,35 @@ const Profile = () => {
       return;
     }
 
-    const updatedData = {
-      ...formData,
-      year: parseInt(formData.year),
-      cgpa: parsedCgpa,
-      skills,
-      certifications,
-      projects,
-      resumeUrl,
-      resumeName
-    };
+    try {
+      // 1. Update Name/Email
+      await api.put('/api/students/updateEmailName', { name: formData.name, email: formData.email });
 
-    updateUserProfile(updatedData);
-    setSuccessMsg('Profile updated successfully! All eligible placement jobs synchronized.');
+      // 2. Update Branch, Year, Roll Number
+      await api.put('/api/students/updateBranchYearRollNumber', { branch: formData.branch, year: parseInt(formData.year), rollNumber: formData.rollNumber });
+
+      // 3. Update CGPA
+      await api.put('/api/students/updateCgpa', { cgpa: parsedCgpa });
+
+      // 4. Update Profile Details (skills, projects, certifications)
+      await api.put('/api/students/profile', { skills, projects, certifications });
+
+      // 5. Fetch me again to get fresh unified profile
+      const meResponse = await api.get('/api/auth/me');
+      const meRes = meResponse.data;
+
+      const combinedUser = {
+        ...meRes.data.user,
+        ...meRes.data.details,
+        id: meRes.data.user._id || meRes.data.user.id,
+      };
+
+      localStorage.setItem('user', JSON.stringify(combinedUser));
+      dispatch(setUser(combinedUser));
+      setSuccessMsg('Profile updated successfully! All eligible placement jobs synchronized.');
+    } catch (err) {
+      alert(err.response?.data?.message || err.message || 'Profile update failed');
+    }
     
     window.scrollTo({ top: 0, behavior: 'smooth' });
     setTimeout(() => setSuccessMsg(''), 4000);

@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, Calendar, Award, DollarSign, ArrowUpRight, ShieldCheck, ShieldAlert } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
-import { mockJobs } from '../data/mockJobs';
-import * as storage from '../utils/storage';
+import { useSelector } from 'react-redux';
+import api from '../utils/api';
 
 const JobListings = () => {
-  const { user } = useAuth();
+  const user = useSelector((state) => state.auth.user);
   const [jobs, setJobs] = useState([]);
   const [applications, setApplications] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -14,10 +13,38 @@ const JobListings = () => {
   const [showIneligible, setShowIneligible] = useState(false);
 
   useEffect(() => {
-    const allApps = storage.getApplications();
-    const studentApps = allApps.filter(a => a.studentId === user.id);
-    setApplications(studentApps);
-    setJobs(mockJobs);
+    const fetchData = async () => {
+      try {
+        const jobsResponse = await api.get('/api/jobs');
+        const jobsData = jobsResponse.data;
+        const mapped = (jobsData.jobs || []).map(job => ({
+          ...job,
+          id: job._id,
+          companyName: job.companyId?.name || job.companyInfo?.name || "Company",
+          eligibility: {
+            minCgpa: job.eligibility?.cgpa,
+            eligibleBranches: job.eligibility?.branches,
+            eligibleYears: job.eligibility?.years
+          }
+        }));
+        setJobs(mapped);
+
+        const appsResponse = await api.get('/api/applications/my-applications');
+        const appsData = appsResponse.data;
+        const mappedApps = (appsData.applications || []).map(app => ({
+          ...app,
+          id: app._id,
+          jobId: app.jobId?._id || app.jobId
+        }));
+        setApplications(mappedApps);
+      } catch (err) {
+        console.error("Failed to fetch data:", err);
+      }
+    };
+
+    if (user) {
+      fetchData();
+    }
   }, [user]);
 
   const checkEligibility = (job) => {

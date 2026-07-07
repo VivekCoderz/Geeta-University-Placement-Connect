@@ -3,52 +3,61 @@ import {
   Check, Trash2, MailOpen, Info, Calendar, 
   Briefcase, Bell, BellOff, CheckCircle2, ChevronRight, X
 } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
-import * as storage from '../utils/storage';
+import { useSelector } from 'react-redux';
+import api from '../utils/api';
 
 const Notifications = () => {
-  const { user } = useAuth();
+  const user = useSelector((state) => state.auth.user);
   const [notifications, setNotifications] = useState([]);
   const [filter, setFilter] = useState('all'); // all | unread
 
-  const fetchNotifs = () => {
+  const fetchNotifs = async () => {
     if (user) {
-      const allNotifs = storage.getNotifications();
-      const userNotifs = allNotifs.filter(n => !n.userId || n.userId === user.id);
-      setNotifications(userNotifs);
+      try {
+        const response = await api.get('/api/notifications');
+        const data = response.data;
+        const mapped = (data.notifications || []).map(n => ({
+          ...n,
+          id: n._id
+        }));
+        setNotifications(mapped);
+      } catch (err) {
+        console.error("Failed to fetch notifications:", err);
+      }
     }
   };
 
   useEffect(() => {
     fetchNotifs();
     // Poll for notifications updates (e.g. from app advancement simulator)
-    const interval = setInterval(fetchNotifs, 2000);
+    const interval = setInterval(fetchNotifs, 5000);
     return () => clearInterval(interval);
   }, [user]);
 
-  const handleMarkRead = (id) => {
-    storage.markNotificationRead(id);
-    fetchNotifs();
+  const handleMarkRead = async (id) => {
+    try {
+      await api.put(`/api/notifications/${id}/read`);
+      fetchNotifs();
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  const handleMarkAllRead = () => {
-    storage.markAllNotificationsRead();
-    fetchNotifs();
+  const handleMarkAllRead = async () => {
+    try {
+      await api.put('/api/notifications/read-all');
+      fetchNotifs();
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const handleDelete = (id) => {
-    const allNotifs = storage.getNotifications();
-    const filtered = allNotifs.filter(n => n.id !== id);
-    localStorage.setItem('pc_notifications', JSON.stringify(filtered));
-    fetchNotifs();
+    setNotifications(prev => prev.filter(n => n.id !== id));
   };
 
   const handleClearAll = () => {
-    const allNotifs = storage.getNotifications();
-    // Keep notifications for other users if there are any
-    const otherNotifs = allNotifs.filter(n => n.userId && n.userId !== user.id);
-    localStorage.setItem('pc_notifications', JSON.stringify(otherNotifs));
-    fetchNotifs();
+    setNotifications([]);
   };
 
   const getNotifIcon = (type) => {

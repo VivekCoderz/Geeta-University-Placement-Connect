@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, LogIn, AlertCircle } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
+import { useDispatch } from 'react-redux';
+import { setUser } from '../redux/authSlice';
+import api from '../utils/api';
 
 const Login = () => {
-  const { login } = useAuth();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -22,10 +24,26 @@ const Login = () => {
 
     setIsLoading(true);
     try {
-      await login(email, password);
+      const response = await api.post('/api/auth/login', { email, password });
+      const loginRes = response.data;
+
+      const { token } = loginRes.data;
+      localStorage.setItem('token', token);
+
+      const meResponse = await api.get('/api/auth/me');
+      const meRes = meResponse.data;
+
+      const combinedUser = {
+        ...meRes.data.user,
+        ...meRes.data.details,
+        id: meRes.data.user._id || meRes.data.user.id,
+      };
+
+      localStorage.setItem('user', JSON.stringify(combinedUser));
+      dispatch(setUser(combinedUser));
       navigate('/');
     } catch (err) {
-      setError(err.message || 'Login failed');
+      setError(err.response?.data?.message || err.message || 'Login failed');
     } finally {
       setIsLoading(false);
     }

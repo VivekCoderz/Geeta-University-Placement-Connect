@@ -1,27 +1,35 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Bell, Check, Info, Briefcase, Calendar } from 'lucide-react';
-import * as storage from '../utils/storage';
-import { useAuth } from '../context/AuthContext';
+import { useSelector } from 'react-redux';
+import api from '../utils/api';
 
 const NotificationBell = () => {
-  const { user } = useAuth();
+  const user = useSelector((state) => state.auth.user);
   const [notifications, setNotifications] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  const fetchNotifications = () => {
+  const fetchNotifications = async () => {
     if (user) {
-      const allNotifs = storage.getNotifications();
-      const userNotifs = allNotifs.filter(n => !n.userId || n.userId === user.id);
-      setNotifications(userNotifs);
+      try {
+        const response = await api.get('/api/notifications');
+        const data = response.data;
+        const mapped = (data.notifications || []).map(n => ({
+          ...n,
+          id: n._id
+        }));
+        setNotifications(mapped);
+      } catch (err) {
+        console.error("Failed to fetch notifications:", err);
+      }
     }
   };
 
   useEffect(() => {
     fetchNotifications();
 
-    const interval = setInterval(fetchNotifications, 2000);
+    const interval = setInterval(fetchNotifications, 5000);
 
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -38,17 +46,25 @@ const NotificationBell = () => {
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
-  const handleMarkAllRead = (e) => {
+  const handleMarkAllRead = async (e) => {
     e.stopPropagation();
-    storage.markAllNotificationsRead();
-    fetchNotifications();
+    try {
+      await api.put('/api/notifications/read-all');
+      fetchNotifications();
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  const handleMarkOneRead = (e, id) => {
+  const handleMarkOneRead = async (e, id) => {
     e.stopPropagation();
     e.preventDefault();
-    storage.markNotificationRead(id);
-    fetchNotifications();
+    try {
+      await api.put(`/api/notifications/${id}/read`);
+      fetchNotifications();
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const getNotifIcon = (type) => {

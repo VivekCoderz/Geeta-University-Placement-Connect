@@ -1,17 +1,27 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Menu, X, LogOut, Briefcase, FileText, User, LayoutDashboard } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
+import { useSelector, useDispatch } from 'react-redux';
+import { clearUser } from '../redux/authSlice';
+import api from '../utils/api';
 import NotificationBell from './NotificationBell';
 
 const Navbar = () => {
-  const { user, logout } = useAuth();
+  const user = useSelector((state) => state.auth.user);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    try {
+      await api.post('/api/auth/logout');
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    dispatch(clearUser());
     navigate('/login');
   };
 

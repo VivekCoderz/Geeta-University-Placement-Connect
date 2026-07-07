@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, DollarSign, Award, Calendar, ChevronRight, CheckCircle2, AlertTriangle, ShieldCheck, ShieldAlert } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
-import { mockJobs } from '../data/mockJobs';
-import * as storage from '../utils/storage';
+import { useSelector } from 'react-redux';
+import api from '../utils/api';
 
 const JobDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const user = useSelector((state) => state.auth.user);
   
   const [job, setJob] = useState(null);
   const [application, setApplication] = useState(null);
@@ -17,17 +16,42 @@ const JobDetail = () => {
   const [applySuccess, setApplySuccess] = useState(false);
 
   useEffect(() => {
-    const selectedJob = mockJobs.find(j => j.id === id);
-    if (!selectedJob) {
-      setError('Placement drive not found');
-      return;
-    }
-    setJob(selectedJob);
+    const fetchData = async () => {
+      try {
+        const jobResponse = await api.get(`/api/jobs/${id}`);
+        const jobData = jobResponse.data;
+        if (jobData.job) {
+          const mappedJob = {
+            ...jobData.job,
+            id: jobData.job._id,
+            companyName: jobData.job.companyId?.name || "Company",
+            eligibility: {
+              minCgpa: jobData.job.eligibility?.cgpa,
+              eligibleBranches: jobData.job.eligibility?.branches,
+              eligibleYears: jobData.job.eligibility?.years
+            }
+          };
+          setJob(mappedJob);
+        } else {
+          setError('Placement drive not found');
+        }
 
-    const allApps = storage.getApplications();
-    const existingApp = allApps.find(a => a.studentId === user.id && a.jobId === id);
-    if (existingApp) {
-      setApplication(existingApp);
+        const appsResponse = await api.get('/api/applications/my-applications');
+        const appsData = appsResponse.data;
+        const existingApp = (appsData.applications || []).find(
+          a => (a.jobId?._id || a.jobId) === id
+        );
+        if (existingApp) {
+          setApplication(existingApp);
+        }
+      } catch (err) {
+        console.error("Error fetching job details:", err);
+        setError('Failed to fetch details from server');
+      }
+    };
+
+    if (id && user) {
+      fetchData();
     }
   }, [id, user]);
 
@@ -49,18 +73,18 @@ const JobDetail = () => {
     setError('');
     setIsApplying(true);
 
-    setTimeout(() => {
-      try {
-        const newApp = storage.applyJob(job.id);
-        setApplication(newApp);
-        setApplySuccess(true);
-        setTimeout(() => setApplySuccess(false), 4000);
-      } catch (err) {
-        setError(err.message || 'Failed to submit application');
-      } finally {
-        setIsApplying(false);
-      }
-    }, 1200);
+    try {
+      const response = await api.post(`/api/jobs/${job.id}/apply`);
+      const data = response.data;
+
+      setApplication(data.application || { status: 'Applied' });
+      setApplySuccess(true);
+      setTimeout(() => setApplySuccess(false), 4000);
+    } catch (err) {
+      setError(err.response?.data?.message || err.message || 'Failed to submit application');
+    } finally {
+      setIsApplying(false);
+    }
   };
 
   if (error && !job) {

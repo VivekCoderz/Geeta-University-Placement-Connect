@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
+import { useDispatch } from 'react-redux';
+import { setUser, setLoading } from './redux/authSlice';
 import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/Layout';
+import api from './utils/api';
 
 // Pages
 import Login from './pages/Login';
@@ -14,10 +16,38 @@ import Applications from './pages/Applications';
 import Notifications from './pages/Notifications';
 
 function App() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const restoreSession = async () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        dispatch(setLoading(true));
+        try {
+          const response = await api.get('/api/auth/me');
+          const meData = response.data;
+          const combinedUser = {
+            ...meData.data.user,
+            ...meData.data.details,
+            id: meData.data.user._id || meData.data.user.id,
+          };
+          dispatch(setUser(combinedUser));
+          localStorage.setItem('user', JSON.stringify(combinedUser));
+        } catch (err) {
+          console.error("Session restore failed:", err);
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+        } finally {
+          dispatch(setLoading(false));
+        }
+      }
+    };
+    restoreSession();
+  }, [dispatch]);
+
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <Routes>
+      <Routes>
           {/* Public Auth Routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
@@ -77,7 +107,6 @@ function App() {
           {/* Fallback redirect */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-      </AuthProvider>
     </BrowserRouter>
   );
 }
