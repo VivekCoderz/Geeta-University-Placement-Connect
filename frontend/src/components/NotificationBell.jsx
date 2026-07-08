@@ -70,12 +70,16 @@ const NotificationBell = () => {
   const getNotifIcon = (type) => {
     switch (type) {
       case 'success':
+      case 'application_status':
         return <Check className="w-4 h-4 text-emerald-600" />;
       case 'job':
+      case 'job_post':
         return <Briefcase className="w-4 h-4 text-teal-600" />;
       case 'calendar':
       case 'status':
-        return <Calendar className="w-4 h-4 text-emerald-600" />;
+      case 'schedule_propose':
+      case 'announcement':
+        return <Calendar className="w-4 h-4 text-indigo-600" />;
       default:
         return <Info className="w-4 h-4 text-blue-600" />;
     }

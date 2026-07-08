@@ -18,6 +18,8 @@ const Login = () => {
     if (user) {
       if (user.role === 'company') {
         navigate('/recruiter/dashboard');
+      } else if (user.role === 'placementCell') {
+        navigate('/placement/dashboard');
       } else {
         navigate('/');
       }
@@ -52,7 +54,14 @@ const Login = () => {
 
       localStorage.setItem('user', JSON.stringify(combinedUser));
       dispatch(setUser(combinedUser));
-      navigate('/');
+      
+      if (combinedUser.role === 'company') {
+        navigate('/recruiter/dashboard');
+      } else if (combinedUser.role === 'placementCell') {
+        navigate('/placement/dashboard');
+      } else {
+        navigate('/');
+      }
     } catch (err) {
       setError(err.response?.data?.message || err.message || 'Login failed');
     } finally {

@@ -161,3 +161,114 @@ module.exports.getApplications = ErrorWrapper(async (req, res, next) => {
 
   return res.status(200).json({ applications });
 });
+
+// Send dynamic updates/notifications to students (general or drive-specific)
+module.exports.notifyStudents = ErrorWrapper(async (req, res, next) => {
+  const { jobId, message, roundName, roundDate } = req.body;
+
+  if (!message) {
+    throw new ErrorHandler(400, "Message is required");
+  }
+
+  let recipientCount = 0;
+
+  if (jobId) {
+    // Drive-specific notification
+    const job = await Job.findById(jobId).populate("companyId");
+    if (!job) {
+      throw new ErrorHandler(404, "Placement drive job posting not found");
+    }
+
+    const applications = await Application.find({ jobId }).populate("studentId");
+    for (const app of applications) {
+      if (!app.studentId) continue;
+
+      // Update rounds array if roundName and roundDate provided
+      if (roundName) {
+        const roundIdx = app.rounds.findIndex(r => r.name.toLowerCase() === roundName.toLowerCase());
+        if (roundIdx > -1) {
+          app.rounds[roundIdx].scheduledAt = roundDate ? new Date(roundDate) : new Date();
+          app.rounds[roundIdx].notes = message;
+        } else {
+          app.rounds.push({
+            name: roundName,
+            result: "Pending",
+            scheduledAt: roundDate ? new Date(roundDate) : new Date(),
+            notes: message
+          });
+        }
+        await app.save();
+      }
+
+      // Create notification
+      const notif = new Notification({
+        userId: app.studentId.userId,
+        message: `Placement Cell Update [${job.companyId?.name || "Drive"} - ${job.title}]: ${message}`,
+        type: "announcement"
+      });
+      await notif.save();
+
+      // Send Email
+      try {
+        await sendEmail({
+          to: app.studentId.email,
+          subject: `Placement Cell Update: ${job.companyId?.name || "Drive"} | ${job.title}`,
+          html: `
+            <h3>Placement Cell Update</h3>
+            <p>Dear ${app.studentId.name},</p>
+            <p>An update has been posted for the <strong>${job.title}</strong> drive at <strong>${job.companyId?.name || "Company"}</strong>:</p>
+            <blockquote style="background:#f1f5f9; padding: 15px; border-left: 4px solid #10b981; margin: 15px 0;">
+              ${message}
+            </blockquote>
+            ${roundName ? `<p><strong>Round Name:</strong> ${roundName}</p>` : ''}
+            ${roundDate ? `<p><strong>Scheduled Time:</strong> ${new Date(roundDate).toLocaleString()}</p>` : ''}
+            <br/>
+            <p>Regards,</p>
+            <p>Training & Placement Cell, Geeta University</p>
+          `
+        });
+      } catch (emailErr) {
+        console.error("Failed to send email notification:", emailErr);
+      }
+      recipientCount++;
+    }
+  } else {
+    // General campus notification
+    const students = await Student.find();
+    for (const student of students) {
+      const notif = new Notification({
+        userId: student.userId,
+        message: `T&P Cell Campus Notification: ${message}`,
+        type: "announcement"
+      });
+      await notif.save();
+
+      try {
+        await sendEmail({
+          to: student.email,
+          subject: `Campus Placement Notification from T&P Cell`,
+          html: `
+            <h3>Training & Placement Cell Announcement</h3>
+            <p>Dear ${student.name},</p>
+            <blockquote style="background:#f1f5f9; padding: 15px; border-left: 4px solid #10b981; margin: 15px 0;">
+              ${message}
+            </blockquote>
+            <p>Please log in to your dashboard to stay updated on latest recruitment schedules.</p>
+            <br/>
+            <p>Regards,</p>
+            <p>Training & Placement Cell, Geeta University</p>
+          `
+        });
+      } catch (emailErr) {
+        console.error("Failed to send email notification:", emailErr);
+      }
+      recipientCount++;
+    }
+  }
+
+  return res.status(200).json({
+    message: `Notification dispatched successfully to ${recipientCount} students.`,
+    recipientCount
+  });
+});
+

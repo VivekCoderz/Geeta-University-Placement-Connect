@@ -1,0 +1,786 @@
+import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { 
+  Building2, Briefcase, Users, Calendar, DollarSign, Award, Plus, Check, Eye, FileText, ArrowRight, Clock, MapPin, 
+  Globe, Phone, User, AlertCircle, RefreshCw, CheckCircle2, XCircle, ChevronRight, Download, Send, Search, BarChart3,
+  Upload, Filter, TrendingUp, GraduationCap, BellRing
+} from 'lucide-react';
+import api from '../utils/api';
+
+const PlacementDashboard = () => {
+  const user = useSelector((state) => state.auth.user);
+
+  const [activeTab, setActiveTab] = useState('overview'); // overview | monitor | analyser | notify | csv
+  const [drives, setDrives] = useState([]);
+  const [applications, setApplications] = useState([]);
+  const [students, setStudents] = useState([]);
+  const [proposals, setProposals] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Filter states
+  const [monitorSearch, setMonitorSearch] = useState('');
+  const [analyserBranch, setAnalyserBranch] = useState('All');
+  const [analyserCgpa, setAnalyserCgpa] = useState('0');
+  const [analyserSearch, setAnalyserSearch] = useState('');
+
+  // Notification form state
+  const [notifForm, setNotifForm] = useState({
+    jobId: '',
+    roundName: '',
+    roundDate: '',
+    message: ''
+  });
+  const [isSendingNotif, setIsSendingNotif] = useState(false);
+  const [notifSuccess, setNotifSuccess] = useState('');
+  const [notifError, setNotifError] = useState('');
+
+  // CSV Shortlist state
+  const [csvForm, setCsvForm] = useState({
+    jobId: '',
+    roundName: ''
+  });
+  const [csvFile, setCsvFile] = useState(null);
+  const [isUploadingCsv, setIsUploadingCsv] = useState(false);
+  const [csvSuccess, setCsvSuccess] = useState('');
+  const [csvError, setCsvError] = useState('');
+
+  const fetchDashboardData = async () => {
+    setIsLoading(true);
+    try {
+      // 1. Fetch drives
+      const drivesRes = await api.get('/api/placement/drives');
+      setDrives(drivesRes.data.drives || []);
+
+      // 2. Fetch applications
+      const appsRes = await api.get('/api/placement/applications');
+      setApplications(appsRes.data.applications || []);
+
+      // 3. Fetch proposals (notifications of type 'schedule_propose')
+      try {
+        const notifsRes = await api.get('/api/notifications');
+        const list = (notifsRes.data.notifications || []).filter(n => n.type === 'schedule_propose');
+        setProposals(list);
+      } catch (err) {
+        console.error('Failed to load proposals:', err);
+      }
+
+      // 4. Extract students list from applications or make distinct list
+      const extractedStudents = [];
+      const studentIdsSeen = new Set();
+      (appsRes.data.applications || []).forEach(app => {
+        if (app.studentId && !studentIdsSeen.has(app.studentId._id)) {
+          studentIdsSeen.add(app.studentId._id);
+          extractedStudents.push({
+            ...app.studentId,
+            appliedJobsCount: 1,
+            applicationStatus: app.status
+          });
+        } else if (app.studentId) {
+          const existing = extractedStudents.find(s => s._id === app.studentId._id);
+          if (existing) {
+            existing.appliedJobsCount++;
+            if (app.status === 'Selected') existing.applicationStatus = 'Selected';
+          }
+        }
+      });
+      setStudents(extractedStudents);
+    } catch (err) {
+      console.error('Failed to load placement cell data:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  const handleSendNotification = async (e) => {
+    e.preventDefault();
+    setNotifSuccess('');
+    setNotifError('');
+
+    if (!notifForm.message) {
+      setNotifError('Please type a notification message');
+      return;
+    }
+
+    setIsSendingNotif(true);
+    try {
+      const response = await api.post('/api/placement/notify', {
+        jobId: notifForm.jobId || undefined,
+        roundName: notifForm.roundName || undefined,
+        roundDate: notifForm.roundDate || undefined,
+        message: notifForm.message
+      });
+
+      if (response.status === 200) {
+        setNotifSuccess(response.data.message || 'Notification sent successfully to students!');
+        setNotifForm({ jobId: '', roundName: '', roundDate: '', message: '' });
+      }
+    } catch (err) {
+      setNotifError(err.response?.data?.message || err.message || 'Failed to dispatch notification');
+    } finally {
+      setIsSendingNotif(false);
+    }
+  };
+
+  const handleUploadCsv = async (e) => {
+    e.preventDefault();
+    setCsvSuccess('');
+    setCsvError('');
+
+    if (!csvForm.jobId || !csvForm.roundName) {
+      setCsvError('Please select a Job Drive and specify the Round Name');
+      return;
+    }
+
+    if (!csvFile) {
+      setCsvError('Please select a CSV file containing student emails or roll numbers');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('jobId', csvForm.jobId);
+    formData.append('roundName', csvForm.roundName);
+    formData.append('file', csvFile);
+
+    setIsUploadingCsv(true);
+    try {
+      const response = await api.post('/api/placement/shortlist/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
+
+      if (response.status === 200) {
+        setCsvSuccess(response.data.message || 'CSV shortlist processed successfully!');
+        setCsvFile(null);
+        setCsvForm({ jobId: '', roundName: '' });
+        fetchDashboardData(); // Refresh stats and lists
+      }
+    } catch (err) {
+      setCsvError(err.response?.data?.message || err.message || 'Failed to process CSV file');
+    } finally {
+      setIsUploadingCsv(false);
+    }
+  };
+
+  // Helper Stats calculations
+  const totalDrivesCount = drives.length;
+  const totalApplicationsCount = applications.length;
+  const selectedCount = applications.filter(a => a.status === 'Selected').length;
+  const shortlistedCount = applications.filter(a => a.status === 'Shortlisted').length;
+  const placementRate = totalApplicationsCount > 0 ? ((selectedCount / totalApplicationsCount) * 100).toFixed(1) : 0;
+
+  // Branch analytics
+  const branchesList = ['CSE', 'ECE', 'EEE', 'IT', 'MECH', 'CIVIL'];
+  const branchStats = branchesList.map(branch => {
+    const branchApps = applications.filter(a => a.studentId?.branch?.toUpperCase() === branch);
+    const branchSelected = branchApps.filter(a => a.status === 'Selected').length;
+    return {
+      branch,
+      applied: branchApps.length,
+      selected: branchSelected,
+      rate: branchApps.length > 0 ? ((branchSelected / branchApps.length) * 100).toFixed(0) : 0
+    };
+  });
+
+  // Action helper when approving recruiter proposed schedule
+  const handleApproveProposal = (proposal) => {
+    // Parse proposal.message lines
+    const lines = proposal.message.split('\n');
+    let roundName = 'Evaluation Round';
+    let roundDate = '';
+    
+    // Attempt basic extraction
+    lines.forEach(l => {
+      if (l.includes('- Rounds:')) roundName = `Round ${l.split(':')[1]?.trim() || ''}`;
+      if (l.includes('- Date/Time:')) {
+        const dateStr = l.substring(l.indexOf(':') + 1).trim();
+        try {
+          const parsed = new Date(dateStr);
+          if (!isNaN(parsed.getTime())) {
+            // format for datetime-local: yyyy-MM-ddThh:mm
+            const pad = (n) => n.toString().padStart(2, '0');
+            roundDate = `${parsed.getFullYear()}-${pad(parsed.getMonth()+1)}-${pad(parsed.getDate())}T${pad(parsed.getHours())}:${pad(parsed.getMinutes())}`;
+          }
+        } catch (e) {}
+      }
+    });
+
+    setNotifForm({
+      jobId: '', // Coordinator can select the matching drive manually
+      roundName: roundName,
+      roundDate: roundDate,
+      message: proposal.message
+    });
+    setActiveTab('notify');
+  };
+
+  return (
+    <div className="w-full max-w-7xl mx-auto space-y-8 font-sans px-4 sm:px-6 py-6">
+      
+      {/* Welcome Header */}
+      <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-950 text-white rounded-[2rem] p-8 md:p-10 border border-slate-800 shadow-2xl flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-500/10 rounded-full blur-[150px] pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-teal-500/10 rounded-full blur-[100px] pointer-events-none" />
+
+        <div className="relative z-10 space-y-4 flex-1">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+            <div className="h-16 w-16 rounded-2xl bg-gradient-to-tr from-emerald-50 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/20 ring-1 ring-white/20">
+              <GraduationCap className="w-8 h-8 text-slate-950" />
+            </div>
+            <div>
+              <span className="text-[10px] font-black text-emerald-450 uppercase tracking-widest bg-emerald-950/60 border border-emerald-800/40 px-3 py-1 rounded-full">T&P Officer Console</span>
+              <h1 className="text-3xl font-black tracking-tight text-white mt-2">{user?.name || 'T&P Officer'}</h1>
+              <p className="text-slate-400 font-bold text-sm mt-1">{user?.email || 'placementcell@university.edu'}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Stats Grid */}
+        <div className="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-4 w-full lg:w-auto">
+          <div className="bg-slate-950/50 backdrop-blur-xl p-4 px-6 rounded-2xl border border-slate-800/80 text-center">
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Active Drives</p>
+            <p className="text-2xl font-black text-emerald-400 mt-1">{totalDrivesCount}</p>
+          </div>
+          <div className="bg-slate-950/50 backdrop-blur-xl p-4 px-6 rounded-2xl border border-slate-800/80 text-center">
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Applications</p>
+            <p className="text-2xl font-black text-emerald-400 mt-1">{totalApplicationsCount}</p>
+          </div>
+          <div className="bg-slate-950/50 backdrop-blur-xl p-4 px-6 rounded-2xl border border-slate-800/80 text-center">
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Shortlisted</p>
+            <p className="text-2xl font-black text-cyan-400 mt-1">{shortlistedCount}</p>
+          </div>
+          <div className="bg-slate-950/50 backdrop-blur-xl p-4 px-6 rounded-2xl border border-slate-800/80 text-center">
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Placed</p>
+            <p className="text-2xl font-black text-teal-400 mt-1">{selectedCount}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Tabs */}
+      <div className="flex flex-wrap bg-slate-100 p-1.5 rounded-2xl border border-slate-200/60 max-w-3xl gap-1">
+        <button
+          onClick={() => setActiveTab('overview')}
+          className={`flex-1 min-w-[120px] flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-200 ${
+            activeTab === 'overview' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          <BarChart3 className="w-4 h-4" /> Overview
+        </button>
+        <button
+          onClick={() => setActiveTab('monitor')}
+          className={`flex-1 min-w-[120px] flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-200 ${
+            activeTab === 'monitor' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          <Briefcase className="w-4 h-4" /> Monitor Drives
+        </button>
+        <button
+          onClick={() => setActiveTab('analyser')}
+          className={`flex-1 min-w-[120px] flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-200 ${
+            activeTab === 'analyser' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          <Search className="w-4 h-4" /> Analyser
+        </button>
+        <button
+          onClick={() => setActiveTab('notify')}
+          className={`flex-1 min-w-[120px] flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-200 ${
+            activeTab === 'notify' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          <Send className="w-4 h-4" /> Send Update
+        </button>
+        <button
+          onClick={() => setActiveTab('csv')}
+          className={`flex-1 min-w-[120px] flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-200 ${
+            activeTab === 'csv' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          <Upload className="w-4 h-4" /> Shortlist CSV
+        </button>
+      </div>
+
+      {/* Tabs Content */}
+
+      {/* 1. OVERVIEW & ANALYTICS */}
+      {activeTab === 'overview' && (
+        <div className="space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Main Stats Graph representation */}
+            <div className="md:col-span-2 bg-white rounded-3xl border border-slate-200 p-6 md:p-8 space-y-6 shadow-sm">
+              <h3 className="text-lg font-black text-slate-800 tracking-tight flex items-center gap-2">
+                <TrendingUp className="w-5 h-5 text-emerald-600" /> Branch-wise Placement Analytics
+              </h3>
+
+              <div className="space-y-5">
+                {branchStats.map(stat => (
+                  <div key={stat.branch} className="space-y-2">
+                    <div className="flex justify-between items-center text-xs font-bold">
+                      <span className="text-slate-800 font-black">{stat.branch} branch</span>
+                      <span className="text-slate-500">{stat.selected} Placed / {stat.applied} Applied ({stat.rate}%)</span>
+                    </div>
+                    <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
+                      <div 
+                        className="bg-gradient-to-r from-emerald-500 to-teal-400 h-full rounded-full transition-all duration-500" 
+                        style={{ width: `${Math.min(stat.rate, 100)}%` }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Placement Summary */}
+            <div className="bg-white rounded-3xl border border-slate-200 p-6 md:p-8 space-y-6 shadow-sm">
+              <h3 className="text-lg font-black text-slate-800 tracking-tight">Placement Summary</h3>
+              
+              <div className="space-y-4 text-xs font-bold">
+                <div className="flex justify-between py-2 border-b border-slate-100">
+                  <span className="text-slate-450">Overall Placement Rate</span>
+                  <span className="text-emerald-650 font-black">{placementRate}%</span>
+                </div>
+                <div className="flex justify-between py-2 border-b border-slate-100">
+                  <span className="text-slate-450">Selected Candidates</span>
+                  <span className="text-slate-800 font-black">{selectedCount}</span>
+                </div>
+                <div className="flex justify-between py-2 border-b border-slate-100">
+                  <span className="text-slate-450">Evaluation Shortlists</span>
+                  <span className="text-slate-800 font-black">{shortlistedCount}</span>
+                </div>
+                <div className="flex justify-between py-2 border-b border-slate-100">
+                  <span className="text-slate-450">Direct Applications</span>
+                  <span className="text-slate-800 font-black">{totalApplicationsCount - shortlistedCount}</span>
+                </div>
+              </div>
+
+              <div className="bg-emerald-50/50 border border-emerald-250 p-5 rounded-2xl text-center space-y-1.5">
+                <CheckCircle2 className="w-7 h-7 text-emerald-600 mx-auto" />
+                <p className="text-xs font-black text-emerald-800 uppercase tracking-widest">Portal Active</p>
+                <p className="text-[10px] text-slate-500 font-semibold leading-relaxed">Notifications and shortlists are automatically synced with student dashboards and recruiter portals.</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Recruiter proposed schedule list - matches the exact requested flow */}
+          <div className="bg-white rounded-3xl border border-slate-200 p-6 md:p-8 space-y-6 shadow-sm">
+            <h3 className="text-lg font-black text-slate-800 tracking-tight flex items-center gap-2">
+              <BellRing className="w-5 h-5 text-emerald-600" /> Recruiter Round Schedule Proposals
+            </h3>
+            <p className="text-xs text-slate-450 font-semibold">Incoming proposals from company recruiters specifying round counts, target intake, and timings. Review and notify students.</p>
+
+            {proposals.length === 0 ? (
+              <div className="text-center py-10 bg-slate-50 rounded-2xl border border-dashed border-slate-250">
+                <Clock className="w-8 h-8 text-slate-350 mx-auto mb-2" />
+                <p className="text-xs font-bold text-slate-500">No round schedule proposals received from recruiters yet.</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {proposals.map((proposal) => (
+                  <div key={proposal._id} className="p-5 bg-slate-50 rounded-2xl border border-slate-200/80 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 transition-all hover:bg-white hover:border-slate-350 hover:shadow-sm">
+                    <div className="space-y-2 flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
+                        <span className="text-[10px] font-black text-amber-600 uppercase tracking-wider bg-amber-50 px-2 py-0.5 rounded border border-amber-200">Pending Evaluation Setup</span>
+                      </div>
+                      <p className="text-xs font-semibold text-slate-700 whitespace-pre-wrap leading-relaxed">{proposal.message}</p>
+                      <p className="text-[9px] text-slate-400 font-bold">Received: {new Date(proposal.createdAt).toLocaleString()}</p>
+                    </div>
+
+                    <button
+                      onClick={() => handleApproveProposal(proposal)}
+                      className="px-4 py-2 bg-emerald-650 hover:bg-emerald-600 text-white text-xs font-black rounded-xl shadow-sm hover:shadow transition-all whitespace-nowrap self-end sm:self-center"
+                    >
+                      Approve & Dispatch Update
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* 2. DRIVES MONITOR */}
+      {activeTab === 'monitor' && (
+        <div className="bg-white rounded-3xl border border-slate-200 p-6 md:p-8 space-y-6 shadow-sm">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-slate-200">
+            <div>
+              <h3 className="text-lg font-black text-slate-800 tracking-tight">Monitor Campus Placement Drives</h3>
+              <p className="text-xs text-slate-455 font-semibold mt-1">Real-time drive status, eligibility statistics, and applications received.</p>
+            </div>
+            
+            <div className="relative w-full sm:w-64">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                <Search className="w-4 h-4" />
+              </div>
+              <input
+                type="text"
+                value={monitorSearch}
+                onChange={(e) => setMonitorSearch(e.target.value)}
+                className="pl-9 block w-full py-2 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-bold"
+                placeholder="Search drive or company..."
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {drives
+              .filter(drive => 
+                drive.title.toLowerCase().includes(monitorSearch.toLowerCase()) || 
+                (drive.companyId?.name || '').toLowerCase().includes(monitorSearch.toLowerCase())
+              )
+              .map(drive => {
+                const driveApps = applications.filter(a => a.jobId?._id === drive._id);
+                const driveSelected = driveApps.filter(a => a.status === 'Selected').length;
+                const driveShortlisted = driveApps.filter(a => a.status === 'Shortlisted').length;
+                
+                return (
+                  <div key={drive._id} className="p-6 rounded-[1.8rem] border border-slate-200 bg-slate-50/30 hover:bg-white hover:border-slate-300 hover:shadow-lg transition-all duration-300 space-y-4">
+                    <div className="flex justify-between items-start gap-2">
+                      <div className="flex items-center gap-3">
+                        <div className="h-11 w-11 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center font-bold text-emerald-700 text-sm">
+                          {drive.companyId?.name ? drive.companyId.name.substring(0,2).toUpperCase() : 'CO'}
+                        </div>
+                        <div>
+                          <h4 className="font-extrabold text-slate-800 text-sm tracking-tight">{drive.title}</h4>
+                          <p className="text-[10px] text-slate-500 font-bold mt-0.5">{drive.companyId?.name || 'Company Profile'}</p>
+                        </div>
+                      </div>
+                      <span className="text-[10px] bg-emerald-50 border border-emerald-200 text-emerald-750 font-black px-2.5 py-1 rounded-full uppercase">
+                        {drive.package} LPA
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-3 bg-white p-3.5 rounded-xl border border-slate-200/60 text-center">
+                      <div>
+                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Applicants</p>
+                        <p className="text-sm font-black text-slate-700 mt-1">{driveApps.length}</p>
+                      </div>
+                      <div>
+                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Shortlisted</p>
+                        <p className="text-sm font-black text-cyan-600 mt-1">{driveShortlisted}</p>
+                      </div>
+                      <div>
+                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Selected</p>
+                        <p className="text-sm font-black text-emerald-600 mt-1">{driveSelected}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-between items-center text-[10px] text-slate-500 font-bold pt-2 border-t border-slate-200/50">
+                      <span>Cut-off: &gt;={drive.eligibility?.cgpa} CGPA</span>
+                      <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> Deadline: {new Date(drive.deadline).toLocaleDateString()}</span>
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
+        </div>
+      )}
+
+      {/* 3. STUDENT ANALYSER */}
+      {activeTab === 'analyser' && (
+        <div className="bg-white rounded-3xl border border-slate-200 p-6 md:p-8 space-y-6 shadow-sm">
+          <div className="border-b border-slate-200 pb-5 space-y-4">
+            <div>
+              <h3 className="text-lg font-black text-slate-800 tracking-tight">Student Talent Analyser</h3>
+              <p className="text-xs text-slate-455 font-semibold mt-1">Filter, examine, and track selection metrics for campus registered students.</p>
+            </div>
+
+            {/* Filters Bar */}
+            <div className="flex flex-wrap gap-4 items-center">
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-black text-slate-400 tracking-wider">Branch:</span>
+                <select
+                  value={analyserBranch}
+                  onChange={(e) => setAnalyserBranch(e.target.value)}
+                  className="py-1.5 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none"
+                >
+                  <option value="All">All Branches</option>
+                  {branchesList.map(b => <option key={b} value={b}>{b}</option>)}
+                </select>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-black text-slate-400 tracking-wider">Min CGPA:</span>
+                <select
+                  value={analyserCgpa}
+                  onChange={(e) => setAnalyserCgpa(e.target.value)}
+                  className="py-1.5 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none"
+                >
+                  <option value="0">All CGPA</option>
+                  <option value="6.0">&gt;= 6.0 CGPA</option>
+                  <option value="7.0">&gt;= 7.0 CGPA</option>
+                  <option value="8.0">&gt;= 8.0 CGPA</option>
+                  <option value="9.0">&gt;= 9.0 CGPA</option>
+                </select>
+              </div>
+
+              <div className="relative flex-grow sm:flex-grow-0 sm:w-64 ml-auto">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                  <Search className="w-4 h-4" />
+                </div>
+                <input
+                  type="text"
+                  value={analyserSearch}
+                  onChange={(e) => setAnalyserSearch(e.target.value)}
+                  className="pl-9 block w-full py-1.5 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-bold"
+                  placeholder="Search student name..."
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {students
+              .filter(s => analyserBranch === 'All' || s.branch?.toUpperCase() === analyserBranch.toUpperCase())
+              .filter(s => parseFloat(s.cgpa) >= parseFloat(analyserCgpa))
+              .filter(s => s.name?.toLowerCase().includes(analyserSearch.toLowerCase()))
+              .map(student => (
+                <div key={student._id} className="p-5 bg-slate-50/50 rounded-2xl border border-slate-200 space-y-4 hover:shadow-md transition-all">
+                  <div className="flex justify-between items-start gap-2">
+                    <div>
+                      <h4 className="font-extrabold text-slate-800 text-sm leading-tight">{student.name}</h4>
+                      <p className="text-[10px] text-slate-455 font-mono mt-0.5">{student.rollNumber}</p>
+                    </div>
+                    <span className="text-[10px] font-black px-2 py-0.5 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-md">
+                      CGPA: {student.cgpa}
+                    </span>
+                  </div>
+
+                  <div className="space-y-1.5 text-[11px] font-bold text-slate-550 border-t border-slate-200/50 pt-3">
+                    <p>Branch: {student.branch}</p>
+                    <p>Study Year: {student.year} Year</p>
+                    <p>Email: {student.email}</p>
+                    <p>Applied Drives: {student.appliedJobsCount} drives</p>
+                  </div>
+
+                  {student.skills && student.skills.length > 0 && (
+                    <div className="flex flex-wrap gap-1 pt-1.5">
+                      {student.skills.slice(0,3).map((s, idx) => (
+                        <span key={idx} className="bg-white border border-slate-200 text-slate-600 text-[9px] px-2 py-0.5 rounded font-bold">
+                          {s}
+                        </span>
+                      ))}
+                      {student.skills.length > 3 && (
+                        <span className="text-[9px] text-slate-400 font-bold self-center">+{student.skills.length - 3} more</span>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ))}
+          </div>
+        </div>
+      )}
+
+      {/* 4. SEND UPDATE / SCHEDULE ROUND */}
+      {activeTab === 'notify' && (
+        <div className="bg-white rounded-3xl border border-slate-200 p-8 max-w-2xl mx-auto space-y-6 shadow-sm">
+          <div className="border-b border-slate-200 pb-5">
+            <h2 className="text-xl font-black text-slate-850 tracking-tight">Broadcast Placement Cell Updates</h2>
+            <p className="text-xs text-slate-455 font-semibold mt-1">Send round schedules, guidelines, or announcements directly to student profiles and emails.</p>
+          </div>
+
+          {notifSuccess && (
+            <div className="bg-emerald-50 border border-emerald-100 text-emerald-700 p-4 rounded-xl flex items-center gap-3">
+              <CheckCircle2 className="w-5 h-5 text-emerald-500 flex-shrink-0" />
+              <p className="text-xs font-bold leading-normal">{notifSuccess}</p>
+            </div>
+          )}
+
+          {notifError && (
+            <div className="bg-rose-50 border border-rose-100 text-rose-655 p-4 rounded-xl flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-rose-500 mt-0.5 flex-shrink-0" />
+              <p className="text-xs font-bold leading-normal">{notifError}</p>
+            </div>
+          )}
+
+          <form className="space-y-6 text-slate-800" onSubmit={handleSendNotification}>
+            {/* Target Job Selector */}
+            <div className="space-y-2">
+              <label className="text-xs font-extrabold text-slate-655 uppercase tracking-wider">Target Placement Drive (Optional)</label>
+              <select
+                value={notifForm.jobId}
+                onChange={(e) => setNotifForm(prev => ({ ...prev, jobId: e.target.value }))}
+                className="block w-full py-3.5 px-4 bg-slate-50 border border-slate-250 focus:bg-white rounded-xl text-sm font-semibold text-slate-800 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500"
+              >
+                <option value="">-- General Campus Broadcast (Send to All Students) --</option>
+                {drives.map(drive => (
+                  <option key={drive._id} value={drive._id}>
+                    {drive.companyId?.name || 'Company'} - {drive.title}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Drive specific round scheduler */}
+            {notifForm.jobId && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 p-5 bg-slate-50/50 border border-slate-200 rounded-2xl animate-fade-in">
+                {/* Round Name */}
+                <div className="space-y-2">
+                  <label className="text-xs font-extrabold text-slate-655 uppercase tracking-wider">Round Name *</label>
+                  <input
+                    type="text"
+                    required={!!notifForm.jobId}
+                    value={notifForm.roundName}
+                    onChange={(e) => setNotifForm(prev => ({ ...prev, roundName: e.target.value }))}
+                    className="block w-full py-3 px-4 bg-white border border-slate-250 rounded-xl text-sm font-semibold text-slate-800 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500"
+                    placeholder="e.g. Aptitude Round, Technical Interview"
+                  />
+                </div>
+
+                {/* Round Date */}
+                <div className="space-y-2">
+                  <label className="text-xs font-extrabold text-slate-655 uppercase tracking-wider">Scheduled Date/Time *</label>
+                  <input
+                    type="datetime-local"
+                    required={!!notifForm.jobId}
+                    value={notifForm.roundDate}
+                    onChange={(e) => setNotifForm(prev => ({ ...prev, roundDate: e.target.value }))}
+                    className="block w-full py-3 px-4 bg-white border border-slate-250 rounded-xl text-sm font-semibold text-slate-800 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Message */}
+            <div className="space-y-2">
+              <label className="text-xs font-extrabold text-slate-655 uppercase tracking-wider">Announcement / Instructions *</label>
+              <textarea
+                required
+                rows="5"
+                value={notifForm.message}
+                onChange={(e) => setNotifForm(prev => ({ ...prev, message: e.target.value }))}
+                className="block w-full py-3.5 px-4 bg-slate-50/50 border border-slate-250 focus:bg-white rounded-xl text-sm font-semibold text-slate-800 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500"
+                placeholder="Type update guidelines, test links, venue or dates..."
+              />
+            </div>
+
+            <div className="pt-2">
+              <button
+                type="submit"
+                disabled={isSendingNotif}
+                className="group relative w-full flex justify-center py-3.5 px-4 border border-transparent text-sm font-extrabold rounded-xl text-white bg-emerald-600 hover:bg-emerald-500 focus:outline-none focus:ring-4 focus:ring-emerald-500/25 disabled:opacity-50 transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98]"
+              >
+                {isSendingNotif ? (
+                  <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <span className="flex items-center gap-2">
+                    <Send className="w-4 h-4" /> Send Update
+                  </span>
+                )}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* 5. UPLOAD SHORTLIST CSV */}
+      {activeTab === 'csv' && (
+        <div className="bg-white rounded-3xl border border-slate-200 p-8 max-w-2xl mx-auto space-y-6 shadow-sm">
+          <div className="border-b border-slate-200 pb-5">
+            <h2 className="text-xl font-black text-slate-850 tracking-tight">Upload Round-wise Shortlist CSV</h2>
+            <p className="text-xs text-slate-455 font-semibold mt-1">Upload student roll numbers or emails. System matches student records, updates round results, and emails notifications automatically.</p>
+          </div>
+
+          {csvSuccess && (
+            <div className="bg-emerald-50 border border-emerald-100 text-emerald-700 p-4 rounded-xl flex items-center gap-3">
+              <CheckCircle2 className="w-5 h-5 text-emerald-500 flex-shrink-0" />
+              <p className="text-xs font-bold leading-normal">{csvSuccess}</p>
+            </div>
+          )}
+
+          {csvError && (
+            <div className="bg-rose-50 border border-rose-100 text-rose-655 p-4 rounded-xl flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-rose-500 mt-0.5 flex-shrink-0" />
+              <p className="text-xs font-bold leading-normal">{csvError}</p>
+            </div>
+          )}
+
+          <form className="space-y-6 text-slate-800" onSubmit={handleUploadCsv}>
+            {/* Target Job Selector */}
+            <div className="space-y-2">
+              <label className="text-xs font-extrabold text-slate-655 uppercase tracking-wider">Placement Drive *</label>
+              <select
+                required
+                value={csvForm.jobId}
+                onChange={(e) => setCsvForm(prev => ({ ...prev, jobId: e.target.value }))}
+                className="block w-full py-3.5 px-4 bg-slate-50 border border-slate-250 focus:bg-white rounded-xl text-sm font-semibold text-slate-800 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500"
+              >
+                <option value="">-- Select Drive --</option>
+                {drives.map(drive => (
+                  <option key={drive._id} value={drive._id}>
+                    {drive.companyId?.name || 'Company'} - {drive.title}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Round Name */}
+            <div className="space-y-2">
+              <label className="text-xs font-extrabold text-slate-655 uppercase tracking-wider">Round Name *</label>
+              <input
+                type="text"
+                required
+                value={csvForm.roundName}
+                onChange={(e) => setCsvForm(prev => ({ ...prev, roundName: e.target.value }))}
+                className="block w-full py-3.5 px-4 bg-slate-50 border border-slate-250 focus:bg-white rounded-xl text-sm font-semibold text-slate-800 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500"
+                placeholder="e.g. Aptitude Test, GD Round, Interview Round"
+              />
+            </div>
+
+            {/* File Upload Area */}
+            <div className="space-y-2">
+              <label className="text-xs font-extrabold text-slate-655 uppercase tracking-wider">Upload Shortlist CSV *</label>
+              
+              <div className="border-2 border-dashed border-slate-250 hover:border-emerald-500/50 rounded-2xl p-6 text-center cursor-pointer bg-slate-50/50 hover:bg-white transition-all relative">
+                <input
+                  type="file"
+                  required
+                  accept=".csv"
+                  onChange={(e) => setCsvFile(e.target.files[0])}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                />
+                
+                <div className="space-y-2.5">
+                  <div className="h-10 w-10 rounded-xl bg-white shadow-sm border border-slate-200 flex items-center justify-center mx-auto text-slate-550">
+                    <Upload className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-slate-700">
+                      {csvFile ? csvFile.name : 'Click to upload or drag & drop CSV'}
+                    </p>
+                    <p className="text-[10px] text-slate-400 font-semibold mt-1">
+                      File must contain roll numbers or emails (one per line)
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="pt-2">
+              <button
+                type="submit"
+                disabled={isUploadingCsv}
+                className="group relative w-full flex justify-center py-3.5 px-4 border border-transparent text-sm font-extrabold rounded-xl text-white bg-emerald-600 hover:bg-emerald-500 focus:outline-none focus:ring-4 focus:ring-emerald-500/25 disabled:opacity-50 transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98]"
+              >
+                {isUploadingCsv ? (
+                  <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <span className="flex items-center gap-2">
+                    <Upload className="w-4 h-4" /> Process & Shortlist Students
+                  </span>
+                )}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default PlacementDashboard;

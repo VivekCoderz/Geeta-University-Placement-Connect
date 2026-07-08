@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { 
   Building2, Briefcase, Users, Calendar, DollarSign, Award, Plus, Check, Eye, FileText, ArrowRight, Clock, MapPin, 
-  Globe, Phone, User, AlertCircle, RefreshCw, CheckCircle2, XCircle, ChevronRight, Download
+  Globe, Phone, User, AlertCircle, RefreshCw, CheckCircle2, XCircle, ChevronRight, Download, Send
 } from 'lucide-react';
 import { setUser } from '../redux/authSlice';
 import api from '../utils/api';
@@ -11,7 +11,7 @@ const RecruiterDashboard = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
   
-  const [activeTab, setActiveTab] = useState('openings'); // openings | post
+  const [activeTab, setActiveTab] = useState('openings'); // openings | post | propose
   const [drives, setDrives] = useState([]);
   const [selectedJob, setSelectedJob] = useState(null);
   const [applicants, setApplicants] = useState([]);
@@ -43,6 +43,18 @@ const RecruiterDashboard = () => {
 
   const [formError, setFormError] = useState('');
   const [formSuccess, setFormSuccess] = useState('');
+
+  // Propose Schedule Form State
+  const [proposeForm, setProposeForm] = useState({
+    jobId: '',
+    numRounds: '',
+    scheduleDate: '',
+    studentsNeeded: '',
+    message: ''
+  });
+  const [submittingPropose, setSubmittingPropose] = useState(false);
+  const [proposeSuccess, setProposeSuccess] = useState('');
+  const [proposeError, setProposeError] = useState('');
 
   // Fetch drives posted by recruiter
   const fetchMyDrives = async () => {
@@ -172,6 +184,47 @@ const RecruiterDashboard = () => {
     }
   };
 
+  const handleProposeSchedule = async (e) => {
+    e.preventDefault();
+    setProposeError('');
+    setProposeSuccess('');
+
+    const { jobId, numRounds, scheduleDate, studentsNeeded, message } = proposeForm;
+    if (!jobId || !numRounds || !scheduleDate || !studentsNeeded) {
+      setProposeError('Please fill in all required fields');
+      return;
+    }
+
+    setSubmittingPropose(true);
+    try {
+      const response = await api.post('/api/company/propose-schedule', {
+        jobId,
+        numRounds: parseInt(numRounds),
+        scheduleDate,
+        studentsNeeded: parseInt(studentsNeeded),
+        message
+      });
+      if (response.status === 200) {
+        setProposeSuccess('Schedule proposal successfully submitted to the Placement Cell!');
+        setProposeForm({
+          jobId: '',
+          numRounds: '',
+          scheduleDate: '',
+          studentsNeeded: '',
+          message: ''
+        });
+        setTimeout(() => {
+          setProposeSuccess('');
+          setActiveTab('openings');
+        }, 3000);
+      }
+    } catch (err) {
+      setProposeError(err.response?.data?.message || err.message || 'Failed to submit proposal');
+    } finally {
+      setSubmittingPropose(false);
+    }
+  };
+
   return (
     <div className="w-full max-w-7xl mx-auto space-y-8 font-sans px-4 sm:px-6 py-6">
       
@@ -183,7 +236,7 @@ const RecruiterDashboard = () => {
         <div className="relative z-10 space-y-5 flex-1">
           <div className="flex flex-col sm:flex-row sm:items-center gap-4">
             <div className="h-16 w-16 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/20 ring-1 ring-white/20">
-              <Building2 className="w-8 h-8 text-slate-950" />
+              <Building2 className="w-8 h-8 text-slate-955" />
             </div>
             <div>
               <span className="text-[10px] font-black text-emerald-450 uppercase tracking-widest bg-emerald-950/60 border border-emerald-800/40 px-3 py-1 rounded-full">Recruiter Portal</span>
@@ -221,10 +274,10 @@ const RecruiterDashboard = () => {
       </div>
 
       {/* Main Tabs - Glassmorphic design (Emerald aligned) */}
-      <div className="flex bg-slate-100/80 backdrop-blur-md p-1.5 rounded-2xl border border-slate-200/60 max-w-sm">
+      <div className="flex bg-slate-100/80 backdrop-blur-md p-1.5 rounded-2xl border border-slate-200/60 max-w-lg gap-1">
         <button
           onClick={() => { setActiveTab('openings'); setSelectedJob(null); }}
-          className={`flex-1 flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-300 ${
+          className={`flex-1 flex items-center justify-center gap-2 px-4 py-3.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-300 ${
             activeTab === 'openings'
               ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/10'
               : 'text-slate-550 hover:text-slate-900'
@@ -235,7 +288,7 @@ const RecruiterDashboard = () => {
         </button>
         <button
           onClick={() => { setActiveTab('post'); setSelectedJob(null); }}
-          className={`flex-1 flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-300 ${
+          className={`flex-1 flex items-center justify-center gap-2 px-4 py-3.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-300 ${
             activeTab === 'post'
               ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/10'
               : 'text-slate-550 hover:text-slate-900'
@@ -243,6 +296,17 @@ const RecruiterDashboard = () => {
         >
           <Plus className="w-4 h-4" />
           Post Drive
+        </button>
+        <button
+          onClick={() => { setActiveTab('propose'); setSelectedJob(null); }}
+          className={`flex-1 flex items-center justify-center gap-2 px-4 py-3.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-300 ${
+            activeTab === 'propose'
+              ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/10'
+              : 'text-slate-550 hover:text-slate-900'
+          }`}
+        >
+          <Send className="w-4 h-4" />
+          Propose Schedule
         </button>
       </div>
 
@@ -358,7 +422,7 @@ const RecruiterDashboard = () => {
                   </div>
                 ) : applicants.length === 0 ? (
                   <div className="text-center py-16">
-                    <Users className="w-12 h-12 text-slate-350 mx-auto mb-3" />
+                    <Users className="w-12 h-12 text-slate-300 mx-auto mb-3" />
                     <p className="text-sm font-bold text-slate-500">No students have applied to this drive yet.</p>
                   </div>
                 ) : (
@@ -440,7 +504,7 @@ const RecruiterDashboard = () => {
                               </button>
                               <button
                                 onClick={() => handleUpdateStatus(app._id, 'Selected')}
-                                className="px-3.5 py-2 text-xs font-black bg-emerald-550 border border-emerald-600 text-white hover:bg-emerald-600 rounded-xl transition-all duration-200 active:scale-95 shadow-sm"
+                                className="px-3.5 py-2 text-xs font-black bg-emerald-550 border border-emerald-650 text-white hover:bg-emerald-655 rounded-xl transition-all duration-200 active:scale-95 shadow-sm"
                               >
                                 Select
                               </button>
@@ -475,7 +539,7 @@ const RecruiterDashboard = () => {
         <div className="bg-white rounded-[2rem] border border-slate-200 p-8 max-w-3xl mx-auto space-y-8 shadow-sm">
           <div className="border-b border-slate-200 pb-5">
             <h2 className="text-xl font-black text-slate-850 tracking-tight">Post New Placement Drive</h2>
-            <p className="text-xs text-slate-500 font-semibold mt-1">Specify eligibility benchmarks, compensation packages, and submission timelines.</p>
+            <p className="text-xs text-slate-550 font-semibold mt-1">Specify eligibility benchmarks, compensation packages, and submission timelines.</p>
           </div>
 
           {formError && (
@@ -624,6 +688,119 @@ const RecruiterDashboard = () => {
                   <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 ) : (
                   'Publish Placement Drive'
+                )}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* PROPOSE SCHEDULE FORM TAB */}
+      {activeTab === 'propose' && (
+        <div className="bg-white rounded-[2rem] border border-slate-200 p-8 max-w-3xl mx-auto space-y-8 shadow-sm">
+          <div className="border-b border-slate-200 pb-5">
+            <h2 className="text-xl font-black text-slate-850 tracking-tight">Propose Round Schedule to Placement Cell</h2>
+            <p className="text-xs text-slate-550 font-semibold mt-1">Submit proposed dates, round count, and target selection intake directly to the T&P Cell coordinators.</p>
+          </div>
+
+          {proposeSuccess && (
+            <div className="bg-emerald-50 border border-emerald-100 text-emerald-700 p-4 rounded-xl flex items-center gap-3">
+              <CheckCircle2 className="w-5 h-5 text-emerald-500 flex-shrink-0" />
+              <p className="text-xs font-bold leading-normal">{proposeSuccess}</p>
+            </div>
+          )}
+
+          {proposeError && (
+            <div className="bg-rose-50 border border-rose-100 text-rose-655 p-4 rounded-2xl flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-rose-500 mt-0.5 flex-shrink-0" />
+              <p className="text-xs font-bold leading-normal">{proposeError}</p>
+            </div>
+          )}
+
+          <form className="space-y-6 text-slate-800" onSubmit={handleProposeSchedule}>
+            {/* Target Job Selector */}
+            <div className="space-y-2">
+              <label className="text-xs font-extrabold text-slate-655 uppercase tracking-wider">Select Active Job Drive *</label>
+              <select
+                required
+                value={proposeForm.jobId}
+                onChange={(e) => setProposeForm(prev => ({ ...prev, jobId: e.target.value }))}
+                className="block w-full py-3.5 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-800 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500"
+              >
+                <option value="">-- Choose Drive --</option>
+                {drives.map(drive => (
+                  <option key={drive._id} value={drive._id}>
+                    {drive.title}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+              {/* Number of Rounds */}
+              <div className="space-y-2">
+                <label className="text-xs font-extrabold text-slate-655 uppercase tracking-wider">Total Rounds count *</label>
+                <input
+                  type="number"
+                  min="1"
+                  required
+                  value={proposeForm.numRounds}
+                  onChange={(e) => setProposeForm(prev => ({ ...prev, numRounds: e.target.value }))}
+                  className="block w-full py-3.5 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-850 placeholder-slate-450 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500"
+                  placeholder="e.g. 3 rounds"
+                />
+              </div>
+
+              {/* Target Students needed */}
+              <div className="space-y-2">
+                <label className="text-xs font-extrabold text-slate-655 uppercase tracking-wider">Students Needed *</label>
+                <input
+                  type="number"
+                  min="1"
+                  required
+                  value={proposeForm.studentsNeeded}
+                  onChange={(e) => setProposeForm(prev => ({ ...prev, studentsNeeded: e.target.value }))}
+                  className="block w-full py-3.5 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-850 placeholder-slate-450 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500"
+                  placeholder="e.g. 15 students"
+                />
+              </div>
+
+              {/* Proposed Date & Time */}
+              <div className="space-y-2">
+                <label className="text-xs font-extrabold text-slate-655 uppercase tracking-wider">Proposed Date & Time *</label>
+                <input
+                  type="datetime-local"
+                  required
+                  value={proposeForm.scheduleDate}
+                  onChange={(e) => setProposeForm(prev => ({ ...prev, scheduleDate: e.target.value }))}
+                  className="block w-full py-3.5 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-850 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500"
+                />
+              </div>
+            </div>
+
+            {/* Message/Proposal Details */}
+            <div className="space-y-2">
+              <label className="text-xs font-extrabold text-slate-655 uppercase tracking-wider">Schedule Proposal details / message *</label>
+              <textarea
+                required
+                rows="4"
+                value={proposeForm.message}
+                onChange={(e) => setProposeForm(prev => ({ ...prev, message: e.target.value }))}
+                className="block w-full py-3.5 px-4 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-850 placeholder-slate-450 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500"
+                placeholder="Details of test venue, platform links, round criteria or batch timings..."
+              />
+            </div>
+
+            <div className="pt-2">
+              <button
+                type="submit"
+                disabled={submittingPropose}
+                className="group relative w-full flex justify-center py-4 px-4 border border-transparent text-sm font-extrabold rounded-xl text-white bg-emerald-650 hover:bg-emerald-600 focus:outline-none focus:ring-4 focus:ring-emerald-500/25 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-md shadow-emerald-600/10 hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98]"
+              >
+                {submittingPropose ? (
+                  <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  'Submit Proposal to T&P Cell'
                 )}
               </button>
             </div>

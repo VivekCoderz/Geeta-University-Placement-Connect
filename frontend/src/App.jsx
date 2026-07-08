@@ -16,6 +16,7 @@ import Applications from './pages/Applications';
 import Notifications from './pages/Notifications';
 import RecruiterSignup from './pages/RecruiterSignup';
 import RecruiterDashboard from './pages/RecruiterDashboard';
+import PlacementDashboard from './pages/PlacementDashboard';
 
 function App() {
   const dispatch = useDispatch();
@@ -67,6 +68,17 @@ function App() {
             }
           />
 
+          <Route
+            path="/placement/dashboard"
+            element={
+              <ProtectedRoute allowedRoles={['placementCell']}>
+                <Layout>
+                  <PlacementDashboard />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+
           {/* Protected Student Portal Routes */}
           <Route
             path="/"
@@ -111,7 +123,7 @@ function App() {
           <Route
             path="/notifications"
             element={
-              <ProtectedRoute allowedRoles={['student']}>
+              <ProtectedRoute allowedRoles={['student', 'company', 'placementCell']}>
                 <Layout>
                   <Notifications />
                 </Layout>

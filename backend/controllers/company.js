@@ -59,7 +59,7 @@ module.exports.postJob = ErrorWrapper(async (req, res, next) => {
   for (const student of eligibleStudents) {
     const jobAlert = new Notification({
       userId: student.userId,
-      message: `New Job Drive posted: ${title} at ${company.name}. Package: ${package} LPA. Deadline: ${new Date(deadline).toLocaleDateString()}`,
+      message: `Placement Cell: ${company.name} has uploaded a new job drive for "${title}" (Package: ${package} LPA). Eligible students are requested to apply now! Deadline: ${new Date(deadline).toLocaleDateString()}.`,
       type: "job_post",
     });
     await jobAlert.save();
@@ -102,3 +102,46 @@ module.exports.getApplications = ErrorWrapper(async (req, res, next) => {
     applications,
   });
 });
+
+// Propose evaluation round schedule to Placement Cell
+module.exports.proposeSchedule = ErrorWrapper(async (req, res, next) => {
+  const { jobId, numRounds, scheduleDate, studentsNeeded, message } = req.body;
+
+  if (!jobId || !numRounds || !scheduleDate || !studentsNeeded) {
+    throw new ErrorHandler(400, "jobId, numRounds, scheduleDate, and studentsNeeded are required");
+  }
+
+  const company = req.company;
+  if (!company) {
+    throw new ErrorHandler(404, "Recruiter company details not found");
+  }
+
+  const job = await Job.findById(jobId);
+  if (!job) {
+    throw new ErrorHandler(404, "Job drive not found");
+  }
+
+  // Find all placement cell users
+  const User = require("../models/User");
+  const placementCellUsers = await User.find({ role: "placementCell" });
+
+  const formattedMsg = `Recruiter Schedule Proposal from ${company.name} for "${job.title}":
+- Rounds: ${numRounds}
+- Date/Time: ${new Date(scheduleDate).toLocaleString()}
+- Students Target: ${studentsNeeded} students
+- Message: ${message || 'No additional details.'}`;
+
+  for (const cellUser of placementCellUsers) {
+    const notif = new Notification({
+      userId: cellUser._id,
+      message: formattedMsg,
+      type: "schedule_propose"
+    });
+    await notif.save();
+  }
+
+  return res.status(200).json({
+    message: "Schedule proposal successfully sent to Placement Cell coordinators!"
+  });
+});
+

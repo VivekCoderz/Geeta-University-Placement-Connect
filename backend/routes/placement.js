@@ -20,4 +20,12 @@ router.post(
 router.get("/drives", jwtVerify, authorizeRoles("placementCell", "admin"), placementController.getDrives);
 router.get("/applications", jwtVerify, authorizeRoles("placementCell", "admin"), placementController.getApplications);
 
+// Send round schedule notification to students - accessible by placementCell and admin
+router.post(
+  "/notify",
+  jwtVerify,
+  authorizeRoles("placementCell", "admin"),
+  placementController.notifyStudents
+);
+
 module.exports = router;

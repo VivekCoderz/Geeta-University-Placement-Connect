@@ -33,6 +33,10 @@ const Navbar = () => {
     ? [
         { name: 'Dashboard', path: '/recruiter/dashboard', icon: LayoutDashboard },
       ]
+    : user?.role === 'placementCell'
+    ? [
+        { name: 'Dashboard', path: '/placement/dashboard', icon: LayoutDashboard },
+      ]
     : [
         { name: 'Job Drives', path: '/', icon: Briefcase },
         { name: 'My Applications', path: '/applications', icon: FileText },
@@ -45,7 +49,7 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-20"> {/* Increased navbar height for breathing room */}
           {/* Logo */}
           <div className="flex items-center">
-            <Link to={user?.role === 'company' ? '/recruiter/dashboard' : '/'} className="flex items-center space-x-3">
+            <Link to={user?.role === 'company' ? '/recruiter/dashboard' : user?.role === 'placementCell' ? '/placement/dashboard' : '/'} className="flex items-center space-x-3">
               <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-555 flex items-center justify-center shadow-md shadow-emerald-600/10">
                 <LayoutDashboard className="w-5 h-5 text-white" />
               </div>
@@ -91,7 +95,7 @@ const Navbar = () => {
                   </div>
                   <div className="flex flex-col">
                     <span className="text-sm font-bold text-slate-800 max-w-[130px] truncate leading-tight">{user.name}</span>
-                    <span className="text-[10px] text-slate-400 font-mono mt-0.5">{user.role === 'company' ? 'Recruiter' : user.rollNumber}</span>
+                    <span className="text-[10px] text-slate-400 font-mono mt-0.5">{user.role === 'company' ? 'Recruiter' : user.role === 'placementCell' ? 'T&P Cell' : user.rollNumber}</span>
                   </div>
                 </div>
                 <button
