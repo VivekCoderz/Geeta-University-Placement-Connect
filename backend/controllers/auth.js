@@ -79,13 +79,13 @@ module.exports.postRegister = ErrorWrapper(async (req, res, next) => {
       throw new ErrorHandler(400, "Company name is required for company recruiters");
     }
 
-    // Create User (Company) - initial isApproved is true for instant testing!
+    // Create User (Company) - initial isApproved is false, needs admin approval!
     const newUser = new User({ 
       name, 
       email, 
       password, 
       role, 
-      isApproved: true 
+      isApproved: false 
     });
     savedUser = await newUser.save();
 
@@ -99,7 +99,7 @@ module.exports.postRegister = ErrorWrapper(async (req, res, next) => {
       hrContactName,
       hrContactPhone,
       address,
-      approved: true
+      approved: false
     });
     const savedCompany = await newCompany.save();
 
@@ -110,7 +110,7 @@ module.exports.postRegister = ErrorWrapper(async (req, res, next) => {
 
     return res.status(201).json({
       success: true,
-      message: "Company recruiter registered and approved successfully.",
+      message: "Company recruiter registered successfully. Pending admin approval.",
       data: {
         userId: savedUser._id,
         companyId: savedCompany._id,
