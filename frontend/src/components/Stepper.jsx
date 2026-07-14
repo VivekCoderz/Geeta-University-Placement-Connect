@@ -44,12 +44,12 @@ const Stepper = ({ currentStatus }) => {
                 <div
                   className={`w-14 h-14 rounded-full border-2 flex items-center justify-center transition-all duration-300 z-10 ${
                     isCompleted
-                      ? 'bg-emerald-500/10 border-emerald-500 text-emerald-600 shadow-[0_0_15px_-2px_rgba(16,185,129,0.2)]'
+                      ? 'bg-[#22C55E]/10 border-[#22C55E] text-[#22C55E] shadow-[0_0_15px_-2px_rgba(34,197,94,0.2)]'
                       : isFailed
-                      ? 'bg-rose-50 border-rose-500 text-rose-500 shadow-[0_0_15px_-2px_rgba(244,63,94,0.2)]'
+                      ? 'bg-rose-50 border-rose-500 text-rose-600 shadow-[0_0_15px_-2px_rgba(239,68,68,0.2)]'
                       : isActive
-                      ? 'bg-emerald-50 border-emerald-600 text-emerald-600 ring-4 ring-emerald-500/10 shadow-[0_0_15px_1px_rgba(16,185,129,0.25)] animate-pulse'
-                      : 'bg-slate-100 border-slate-200 text-slate-400'
+                      ? 'bg-[#22C55E]/10 border-[#22C55E] text-[#22C55E] ring-4 ring-[#22C55E]/20 shadow-[0_0_15px_1px_rgba(34,197,94,0.25)] animate-pulse'
+                      : 'bg-white border-[#E5E7EB] text-[#94A3B8]'
                   }`}
                 >
                   {isCompleted ? (
@@ -66,17 +66,17 @@ const Stepper = ({ currentStatus }) => {
                   <p
                     className={`text-sm font-bold transition-colors duration-300 ${
                       isActive
-                        ? 'text-emerald-700'
+                        ? 'text-[#22C55E]'
                         : isCompleted
-                        ? 'text-emerald-600'
+                        ? 'text-[#22C55E]'
                         : isFailed
-                        ? 'text-rose-500'
-                        : 'text-slate-500'
+                        ? 'text-rose-650'
+                        : 'text-[#4B5563]'
                     }`}
                   >
                     {index === 4 ? (isSelected ? 'Selected' : isRejected ? 'Rejected' : 'Decision') : step.label}
                   </p>
-                  <p className="text-[10px] text-slate-400 mt-1 leading-tight max-w-[120px] mx-auto font-medium">
+                  <p className="text-[10px] text-[#94A3B8] mt-1.5 leading-tight max-w-[120px] mx-auto font-medium">
                     {step.desc}
                   </p>
                 </div>
@@ -84,9 +84,9 @@ const Stepper = ({ currentStatus }) => {
 
               {/* Connecting line */}
               {showLine && (
-                <div className="flex-1 h-0.5 bg-slate-200 -mt-20 mx-[-15px] relative">
+                <div className="flex-1 h-0.5 bg-[#E5E7EB] -mt-20 mx-[-15px] relative">
                   <div
-                    className={`absolute top-0 left-0 h-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-500 ${
+                    className={`absolute top-0 left-0 h-full bg-gradient-to-r from-[#22C55E] to-[#16A34A] transition-all duration-500 ${
                       lineCompleted ? 'w-full' : 'w-0'
                     }`}
                   />
@@ -98,7 +98,7 @@ const Stepper = ({ currentStatus }) => {
       </div>
 
       {/* Mobile Vertical View */}
-      <div className="md:hidden flex flex-col space-y-8 relative pl-6 border-l-2 border-slate-250 ml-5 py-2">
+      <div className="md:hidden flex flex-col space-y-8 relative pl-6 border-l-2 border-[#E5E7EB] ml-5 py-2">
         {steps.map((step, index) => {
           const StepIcon = step.icon;
           let isCompleted = index < currentIndex || (index === 4 && isSelected);
@@ -111,12 +111,12 @@ const Stepper = ({ currentStatus }) => {
               <div
                 className={`absolute left-[-35px] w-6 h-6 rounded-full border-2 flex items-center justify-center z-10 transition-colors ${
                   isCompleted
-                    ? 'bg-emerald-550 border-emerald-550 text-white'
+                    ? 'bg-[#22C55E] border-[#22C55E] text-white'
                     : isFailed
                     ? 'bg-rose-500 border-rose-500 text-white'
                     : isActive
-                    ? 'bg-emerald-600 border-emerald-500 text-white shadow-[0_0_8px_rgba(16,185,129,0.4)]'
-                    : 'bg-white border-slate-250 text-slate-350'
+                    ? 'bg-[#22C55E] border-[#16A34A] text-white shadow-[0_0_8px_rgba(34,197,94,0.4)]'
+                    : 'bg-white border-[#E5E7EB] text-[#94A3B8]'
                 }`}
               >
                 {isCompleted ? (
@@ -129,47 +129,47 @@ const Stepper = ({ currentStatus }) => {
               </div>
 
               {/* Detail list item - increased padding for cards */}
-              <div className="flex-1 bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+              <div className="flex-1 bg-[#F8FAFC] border border-[#E5E7EB] rounded-2xl p-5 shadow-sm">
                 <div className="flex items-center gap-2.5">
                   <StepIcon
                     className={`w-4.5 h-4.5 ${
                       isActive
-                        ? 'text-emerald-600'
+                        ? 'text-[#22C55E]'
                         : isCompleted
-                        ? 'text-emerald-600'
+                        ? 'text-[#22C55E]'
                         : isFailed
-                        ? 'text-rose-500'
-                        : 'text-slate-450'
+                        ? 'text-rose-600'
+                        : 'text-[#94A3B8]'
                     }`}
                   />
                   <h4
                     className={`text-sm font-bold ${
                       isActive
-                        ? 'text-emerald-700'
+                        ? 'text-[#22C55E]'
                         : isCompleted
-                        ? 'text-emerald-600'
+                        ? 'text-[#22C55E]'
                         : isFailed
-                        ? 'text-rose-500'
-                        : 'text-slate-700'
+                        ? 'text-rose-600'
+                        : 'text-[#4B5563]'
                     }`}
                   >
                     {index === 4 ? (isSelected ? 'Selected' : isRejected ? 'Rejected' : 'Decision') : step.label}
                   </h4>
                 </div>
-                <p className="text-xs text-slate-500 mt-1.5 leading-relaxed">{step.desc}</p>
+                <p className="text-xs text-[#4B5563] mt-1.5 leading-relaxed">{step.desc}</p>
                 
                 {isActive && (
-                  <span className="inline-flex items-center gap-1 mt-3 text-[10px] bg-emerald-50 text-emerald-600 border border-emerald-250 px-2.5 py-0.5 rounded-full font-bold">
+                  <span className="inline-flex items-center gap-1 mt-3 text-[10px] bg-[#22C55E]/10 text-[#22C55E] border border-[#22C55E]/20 px-2.5 py-0.5 rounded-full font-bold">
                     Current Stage
                   </span>
                 )}
                 {isCompleted && index === 4 && (
-                  <span className="inline-flex items-center gap-1 mt-3 text-[10px] bg-emerald-50 text-emerald-600 border border-emerald-200 px-2.5 py-0.5 rounded-full font-bold">
+                  <span className="inline-flex items-center gap-1 mt-3 text-[10px] bg-[#22C55E]/10 text-[#22C55E] border border-[#22C55E]/20 px-2.5 py-0.5 rounded-full font-bold">
                     Offer Secured 🎉
                   </span>
                 )}
                 {isFailed && (
-                  <span className="inline-flex items-center gap-1 mt-3 text-[10px] bg-rose-50 text-rose-550 border border-rose-200 px-2.5 py-0.5 rounded-full font-bold">
+                  <span className="inline-flex items-center gap-1 mt-3 text-[10px] bg-rose-50 text-rose-600 border border-rose-200 px-2.5 py-0.5 rounded-full font-bold">
                     Rejected
                   </span>
                 )}

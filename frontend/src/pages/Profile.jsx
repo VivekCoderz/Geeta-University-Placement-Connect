@@ -187,25 +187,26 @@ const Profile = () => {
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto space-y-8"> {/* Expanded top space */}
+    <div className="w-full max-w-5xl mx-auto space-y-8 animate-in fade-in duration-300 text-[#4B5563]">
       {/* Title Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 border-b border-slate-200 pb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 border-b border-[#E5E7EB] pb-6">
         <div>
-          <h1 className="text-3xl font-extrabold text-slate-800 tracking-tight">Student Portfolio</h1>
-          <p className="text-sm text-slate-500 mt-1">Configure your professional details, credentials, and resume.</p>
+          <h1 className="text-xl md:text-2xl font-bold text-[#111827] tracking-tight">Student Portfolio</h1>
+          <p className="text-xs text-[#4B5563] mt-1">Configure your professional details, credentials, and resume.</p>
         </div>
 
         {/* Tab Buttons */}
-        <div className="flex bg-slate-200/60 p-1.5 rounded-2xl border border-slate-200 self-start">
+        <div className="flex bg-white p-1 rounded-xl border border-[#E5E7EB] self-start shadow-sm">
           <button
             onClick={() => setActiveTab('edit')}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
               activeTab === 'edit'
-                ? 'bg-emerald-600 text-white shadow-md'
-                : 'text-slate-650 hover:text-slate-900'
+                ? 'bg-[#22C55E] text-white shadow-sm font-bold'
+                : 'text-[#94A3B8] hover:text-[#4B5563]'
             }`}
+            type="button"
           >
-            <User className="w-4 h-4" />
+            <User className="w-3.5 h-3.5" />
             Edit Details
           </button>
           <button
@@ -213,102 +214,103 @@ const Profile = () => {
               handleSaveProfile();
               setActiveTab('preview');
             }}
-            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
               activeTab === 'preview'
-                ? 'bg-emerald-600 text-white shadow-md'
-                : 'text-slate-650 hover:text-slate-900'
+                ? 'bg-[#22C55E] text-white shadow-sm font-bold'
+                : 'text-[#94A3B8] hover:text-[#4B5563]'
             }`}
+            type="button"
           >
-            <Eye className="w-4 h-4" />
+            <Eye className="w-3.5 h-3.5" />
             Profile Preview
           </button>
         </div>
       </div>
 
       {successMsg && (
-        <div className="bg-emerald-50 border border-emerald-250 text-emerald-700 p-5 rounded-2xl flex items-center gap-3.5 text-sm animate-in fade-in duration-300">
-          <Check className="w-5 h-5 flex-shrink-0" />
+        <div className="bg-[#22C55E]/10 border border-[#22C55E]/20 text-[#22C55E] p-5 rounded-xl flex items-center gap-3 text-xs animate-in fade-in duration-300">
+          <Check className="w-4 h-4 flex-shrink-0 text-[#22C55E]" />
           <p className="font-semibold">{successMsg}</p>
         </div>
       )}
 
       {activeTab === 'edit' ? (
-        <form onSubmit={handleSaveProfile} className="grid grid-cols-1 lg:grid-cols-3 gap-8"> {/* Expanded gap */}
+        <form onSubmit={handleSaveProfile} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column: Personal info form */}
-          <div className="lg:col-span-2 space-y-8"> {/* Expanded spacing */}
-            <div className="bg-white border border-slate-200/80 p-8 rounded-3xl space-y-6 shadow-sm">
-              <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2.5 pb-4 border-b border-slate-100">
-                <GraduationCap className="w-5 h-5 text-emerald-600" />
+          <div className="lg:col-span-2 space-y-8">
+            <div className="bg-white border border-[#E5E7EB] p-8 rounded-2xl space-y-6 shadow-sm">
+              <h2 className="text-base font-bold text-[#111827] flex items-center gap-2.5 pb-4 border-b border-[#E5E7EB]">
+                <GraduationCap className="w-4.5 h-4.5 text-[#22C55E]" />
                 Academic & Personal Information
               </h2>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Full Name</label>
+                  <label className="block text-[10px] font-bold text-[#94A3B8] uppercase tracking-wider mb-2">Full Name</label>
                   <input
                     type="text"
                     name="name"
                     value={formData.name}
                     onChange={handleInputChange}
-                    className="block w-full px-4 py-3 bg-slate-50/50 border border-slate-200 focus:bg-white rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all text-sm font-semibold"
+                    className="block w-full px-4 py-2.5 bg-[#F8FAFC] border border-[#E5E7EB] focus:bg-white rounded-xl text-[#111827] placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-[#7C3AED]/10 focus:border-[#7C3AED] transition-all text-xs font-semibold"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Email Address</label>
+                  <label className="block text-[10px] font-bold text-[#94A3B8] uppercase tracking-wider mb-2">Email Address</label>
                   <input
                     type="email"
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    className="block w-full px-4 py-3 bg-slate-50/50 border border-slate-200 focus:bg-white rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all text-sm font-semibold"
+                    className="block w-full px-4 py-2.5 bg-[#F8FAFC] border border-[#E5E7EB] focus:bg-white rounded-xl text-[#111827] placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-[#7C3AED]/10 focus:border-[#7C3AED] transition-all text-xs font-semibold"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Roll Number / ID</label>
+                  <label className="block text-[10px] font-bold text-[#94A3B8] uppercase tracking-wider mb-2">Roll Number / ID</label>
                   <input
                     type="text"
                     name="rollNumber"
                     value={formData.rollNumber}
                     onChange={handleInputChange}
-                    className="block w-full px-4 py-3 bg-slate-50/50 border border-slate-200 focus:bg-white rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all text-sm font-semibold"
+                    className="block w-full px-4 py-2.5 bg-[#F8FAFC] border border-[#E5E7EB] focus:bg-white rounded-xl text-[#111827] placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-[#7C3AED]/10 focus:border-[#7C3AED] transition-all text-xs font-semibold"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Branch</label>
+                  <label className="block text-[10px] font-bold text-[#94A3B8] uppercase tracking-wider mb-2">Branch</label>
                   <select
                     name="branch"
                     value={formData.branch}
                     onChange={handleInputChange}
-                    className="block w-full px-4 py-3 bg-slate-50/50 border border-slate-200 focus:bg-white rounded-xl text-slate-800 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all text-sm font-semibold appearance-none"
+                    className="block w-full px-4 py-2.5 bg-[#F8FAFC] border border-[#E5E7EB] focus:bg-white rounded-xl text-[#4B5563] focus:outline-none focus:ring-4 focus:ring-[#7C3AED]/10 focus:border-[#7C3AED] transition-all text-xs font-semibold"
                   >
                     {branches.map(b => (
-                      <option key={b} value={b}>{b}</option>
+                      <option key={b} value={b} className="bg-white text-[#4B5563]">{b}</option>
                     ))}
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Current Year</label>
+                  <label className="block text-[10px] font-bold text-[#94A3B8] uppercase tracking-wider mb-2">Current Year</label>
                   <select
                     name="year"
                     value={formData.year}
                     onChange={handleInputChange}
-                    className="block w-full px-4 py-3 bg-slate-50/50 border border-slate-200 focus:bg-white rounded-xl text-slate-800 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all text-sm font-semibold appearance-none"
+                    className="block w-full px-4 py-2.5 bg-[#F8FAFC] border border-[#E5E7EB] focus:bg-white rounded-xl text-[#4B5563] focus:outline-none focus:ring-4 focus:ring-[#7C3AED]/10 focus:border-[#7C3AED] transition-all text-xs font-semibold"
                   >
                     {years.map(y => (
-                      <option key={y} value={y}>{y === 4 ? '4th Year (Final)' : `${y}nd Year`}</option>
+                      <option key={y} value={y} className="bg-white text-[#4B5563]">{y === 4 ? '4th Year (Final)' : `${y}nd Year`}</option>
                     ))}
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">CGPA</label>
+                  <label className="block text-[10px] font-bold text-[#94A3B8] uppercase tracking-wider mb-2">CGPA</label>
                   <input
                     type="number"
                     step="0.01"
@@ -317,72 +319,72 @@ const Profile = () => {
                     name="cgpa"
                     value={formData.cgpa}
                     onChange={handleInputChange}
-                    className="block w-full px-4 py-3 bg-slate-50/50 border border-slate-200 focus:bg-white rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all text-sm font-semibold"
+                    className="block w-full px-4 py-2.5 bg-[#F8FAFC] border border-[#E5E7EB] focus:bg-white rounded-xl text-[#111827] placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-[#7C3AED]/10 focus:border-[#7C3AED] transition-all text-xs font-semibold"
                     required
                   />
                 </div>
               </div>
             </div>
 
-            {/* Projects Management - Spacious block */}
-            <div className="bg-white border border-slate-200/80 p-8 rounded-3xl space-y-6 shadow-sm">
-              <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-                <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2.5">
-                  <Briefcase className="w-5 h-5 text-emerald-600" />
+            {/* Projects Management */}
+            <div className="bg-white border border-[#E5E7EB] p-8 rounded-2xl space-y-6 shadow-sm">
+              <div className="flex items-center justify-between pb-4 border-b border-[#E5E7EB]">
+                <h2 className="text-base font-bold text-[#111827] flex items-center gap-2.5">
+                  <Briefcase className="w-4.5 h-4.5 text-[#22C55E]" />
                   Key Projects ({projects.length})
                 </h2>
                 <button
                   type="button"
                   onClick={() => setShowProjectForm(!showProjectForm)}
-                  className="flex items-center gap-1.5 text-xs font-bold text-emerald-600 hover:text-emerald-500 transition-colors"
+                  className="flex items-center gap-1.5 text-xs font-bold text-[#22C55E] hover:text-[#16A34A] transition-colors"
                 >
-                  <PlusCircle className="w-4 h-4" />
+                  <PlusCircle className="w-3.5 h-3.5" />
                   {showProjectForm ? 'Cancel' : 'Add Project'}
                 </button>
               </div>
 
-              {/* Add Project Form Drawer - Spacious padding */}
+              {/* Add Project Form Drawer */}
               {showProjectForm && (
-                <div className="bg-slate-50 p-6 border border-slate-200 rounded-2xl space-y-5 animate-in slide-in-from-top-2 duration-200">
+                <div className="bg-[#F8FAFC] p-6 border border-[#E5E7EB] rounded-xl space-y-5 animate-in slide-in-from-top-2 duration-200 font-semibold text-[#4B5563]">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
-                      <label className="block text-[11px] font-bold text-slate-500 uppercase mb-2">Project Title</label>
+                      <label className="block text-[10px] font-bold text-[#94A3B8] uppercase mb-2">Project Title</label>
                       <input
                         type="text"
                         placeholder="PlacementConnect"
                         value={newProject.title}
                         onChange={(e) => setNewProject({ ...newProject, title: e.target.value })}
-                        className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 text-xs font-semibold"
+                        className="block w-full px-4 py-2.5 bg-white border border-[#E5E7EB] rounded-xl text-[#111827] placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-[#7C3AED]/10 focus:border-[#7C3AED] text-xs font-semibold"
                       />
                     </div>
                     <div>
-                      <label className="block text-[11px] font-bold text-slate-500 uppercase mb-2">Repository/Deployment Link</label>
+                      <label className="block text-[10px] font-bold text-[#94A3B8] uppercase mb-2">Repository/Deployment Link</label>
                       <input
                         type="url"
                         placeholder="https://github.com/..."
                         value={newProject.link}
                         onChange={(e) => setNewProject({ ...newProject, link: e.target.value })}
-                        className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 text-xs font-semibold"
+                        className="block w-full px-4 py-2.5 bg-white border border-[#E5E7EB] rounded-xl text-[#111827] placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-[#7C3AED]/10 focus:border-[#7C3AED] text-xs font-semibold"
                       />
                     </div>
                     <div className="md:col-span-2">
-                      <label className="block text-[11px] font-bold text-slate-500 uppercase mb-2">Tech Stack (Comma-separated)</label>
+                      <label className="block text-[10px] font-bold text-[#94A3B8] uppercase mb-2">Tech Stack (Comma-separated)</label>
                       <input
                         type="text"
                         placeholder="React.js, Node.js, Express, MongoDB"
                         value={newProject.techStack}
                         onChange={(e) => setNewProject({ ...newProject, techStack: e.target.value })}
-                        className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 text-xs font-semibold"
+                        className="block w-full px-4 py-2.5 bg-white border border-[#E5E7EB] rounded-xl text-[#111827] placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-[#7C3AED]/10 focus:border-[#7C3AED] text-xs font-semibold"
                       />
                     </div>
                     <div className="md:col-span-2">
-                      <label className="block text-[11px] font-bold text-slate-500 uppercase mb-2">Brief Description</label>
+                      <label className="block text-[10px] font-bold text-[#94A3B8] uppercase mb-2">Brief Description</label>
                       <textarea
                         rows="4"
                         placeholder="Describe the application features, challenges solved, and components built..."
                         value={newProject.description}
                         onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
-                        className="block w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-800 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 text-xs font-semibold resize-none"
+                        className="block w-full px-4 py-2.5 bg-white border border-[#E5E7EB] rounded-xl text-[#111827] placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-[#7C3AED]/10 focus:border-[#7C3AED] text-xs font-semibold resize-none"
                       />
                     </div>
                   </div>
@@ -390,7 +392,7 @@ const Profile = () => {
                     type="button"
                     onClick={handleAddProject}
                     disabled={!newProject.title || !newProject.description}
-                    className="px-5 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold disabled:opacity-50 transition-colors shadow-sm"
+                    className="px-4 py-2 bg-[#22C55E] hover:bg-[#16A34A] text-white font-bold rounded-xl text-xs disabled:opacity-50 transition-all shadow-sm"
                   >
                     Save Project
                   </button>
@@ -400,32 +402,32 @@ const Profile = () => {
               {/* Projects List Grid */}
               <div className="space-y-5">
                 {projects.length === 0 ? (
-                  <p className="text-slate-400 text-xs py-3 italic">No projects listed. Add one to strengthen your CV.</p>
+                  <p className="text-[#4B5563] text-xs py-1 italic font-medium">No projects listed. Add one to strengthen your CV.</p>
                 ) : (
                   projects.map((proj) => (
-                    <div key={proj.id} className="p-6 bg-slate-50/50 border border-slate-200 rounded-2xl relative group">
+                    <div key={proj.id} className="p-6 bg-[#F8FAFC] border border-[#E5E7EB] rounded-xl relative group">
                       <button
                         type="button"
                         onClick={() => handleRemoveProject(proj.id)}
-                        className="absolute top-5 right-5 text-slate-400 hover:text-rose-500 p-2 rounded-xl hover:bg-rose-50 transition-all duration-200"
+                        className="absolute top-5 right-5 text-[#94A3B8] hover:text-rose-600 p-1.5 rounded-lg border border-[#E5E7EB] bg-white hover:bg-rose-50 transition-all duration-200 shadow-sm"
                         title="Remove Project"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 className="w-3.5 h-3.5" />
                       </button>
-                      <h4 className="text-sm font-extrabold text-slate-800 flex items-center gap-2">
+                      <h4 className="text-sm font-bold text-[#111827] flex items-center gap-2">
                         {proj.title}
                         {proj.link && (
-                          <a href={proj.link} target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-slate-600">
-                            <ExternalLink className="w-4 h-4" />
+                          <a href={proj.link} target="_blank" rel="noopener noreferrer" className="text-[#94A3B8] hover:text-[#4B5563]">
+                            <ExternalLink className="w-3.5 h-3.5" />
                           </a>
                         )}
                       </h4>
-                      <p className="text-xs text-slate-500 mt-2 leading-relaxed max-w-[90%] font-medium">{proj.description}</p>
+                      <p className="text-xs text-[#4B5563] mt-2 leading-relaxed max-w-[90%] font-medium">{proj.description}</p>
                       
                       {proj.techStack && proj.techStack.length > 0 && (
                         <div className="flex flex-wrap gap-2 mt-4">
                           {proj.techStack.map((tech, i) => (
-                            <span key={i} className="text-[10px] bg-white text-slate-600 px-3 py-1 rounded-full border border-slate-200">
+                            <span key={i} className="text-[10px] bg-white text-[#4B5563] px-3 py-1 rounded-full border border-[#E5E7EB] font-semibold shadow-sm">
                               {tech}
                             </span>
                           ))}
@@ -441,13 +443,13 @@ const Profile = () => {
           {/* Right Column: Skills, certifications, resume */}
           <div className="space-y-8">
             {/* Resume Upload Box */}
-            <div className="bg-white border border-slate-200/80 p-8 rounded-3xl space-y-5 shadow-sm">
-              <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2.5 pb-4 border-b border-slate-100">
-                <FileText className="w-5 h-5 text-emerald-600" />
+            <div className="bg-white border border-[#E5E7EB] p-8 rounded-2xl space-y-5 shadow-sm">
+              <h2 className="text-base font-bold text-[#111827] flex items-center gap-2.5 pb-4 border-b border-[#E5E7EB]">
+                <FileText className="w-4.5 h-4.5 text-[#22C55E]" />
                 Resume Document
               </h2>
 
-              <div className="border-2 border-dashed border-slate-200 rounded-2xl p-6 text-center bg-slate-50/50 hover:border-emerald-500/50 transition-all relative">
+              <div className="border-2 border-dashed border-[#E5E7EB] rounded-xl p-6 text-center bg-[#F8FAFC] hover:bg-[#F1F5F9] hover:border-[#22C55E]/40 transition-all relative cursor-pointer">
                 <input
                   type="file"
                   accept="application/pdf"
@@ -458,21 +460,21 @@ const Profile = () => {
                 
                 {isUploading ? (
                   <div className="py-6 space-y-3">
-                    <div className="h-8 w-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto" />
-                    <p className="text-xs text-slate-500 font-semibold">Uploading to Cloudinary...</p>
+                    <div className="h-6 w-6 border-2 border-[#22C55E] border-t-transparent rounded-full animate-spin mx-auto" />
+                    <p className="text-[10px] text-[#4B5563] font-semibold">Uploading to Cloudinary...</p>
                   </div>
                 ) : resumeName ? (
                   <div className="space-y-3">
-                    <Check className="w-10 h-10 text-emerald-600 mx-auto" />
-                    <p className="text-xs font-bold text-slate-850 truncate px-2">{resumeName}</p>
-                    <p className="text-[10px] text-slate-400 font-semibold">PDF Document Uploaded</p>
+                    <Check className="w-8 h-8 text-[#22C55E] mx-auto" />
+                    <p className="text-xs font-bold text-[#111827] truncate px-2">{resumeName}</p>
+                    <p className="text-[10px] text-[#94A3B8] font-semibold">PDF Document Uploaded</p>
                     
-                    <div className="flex justify-center gap-2 pt-3">
+                    <div className="flex justify-center gap-2 pt-3 font-semibold">
                       <a
                         href={resumeUrl}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex items-center gap-1.5 text-[10px] font-bold text-emerald-600 bg-white px-4 py-2 rounded-xl border border-slate-200 hover:text-emerald-500 hover:border-slate-300 transition-colors"
+                        className="inline-flex items-center gap-1.5 text-[10px] font-bold text-[#22C55E] bg-white px-3 py-1.5 rounded-lg border border-[#E5E7EB] hover:text-[#16A34A] hover:border-[#22C55E]/20 transition-all shadow-sm"
                       >
                         <Eye className="w-3.5 h-3.5" /> View Resume
                       </a>
@@ -480,51 +482,51 @@ const Profile = () => {
                   </div>
                 ) : (
                   <div className="space-y-3 py-6">
-                    <Upload className="w-10 h-10 text-slate-400 mx-auto" />
-                    <p className="text-xs font-bold text-slate-600">Choose PDF Resume</p>
-                    <p className="text-[10px] text-slate-400 font-semibold">Max size 5MB (PDF only)</p>
+                    <Upload className="w-8 h-8 text-[#94A3B8] mx-auto" />
+                    <p className="text-xs font-bold text-[#4B5563]">Choose PDF Resume</p>
+                    <p className="text-[10px] text-[#94A3B8] font-semibold">Max size 5MB (PDF only)</p>
                   </div>
                 )}
               </div>
             </div>
 
             {/* Skills tags list */}
-            <div className="bg-white border border-slate-200/80 p-8 rounded-3xl space-y-5 shadow-sm">
-              <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2.5 pb-4 border-b border-slate-100">
-                <Award className="w-5 h-5 text-emerald-600" />
+            <div className="bg-white border border-[#E5E7EB] p-8 rounded-2xl space-y-5 shadow-sm">
+              <h2 className="text-base font-bold text-[#111827] flex items-center gap-2.5 pb-4 border-b border-[#E5E7EB]">
+                <Award className="w-4.5 h-4.5 text-[#22C55E]" />
                 Technical Skills
               </h2>
 
-              <form onSubmit={handleAddSkill} className="flex gap-3">
+              <form onSubmit={handleAddSkill} className="flex gap-2.5">
                 <input
                   type="text"
                   placeholder="React, Java, Python..."
                   value={skillInput}
                   onChange={(e) => setSkillInput(e.target.value)}
-                  className="flex-grow px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-450 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 text-xs font-semibold"
+                  className="flex-grow px-3 py-2 bg-[#F8FAFC] border border-[#E5E7EB] focus:bg-white rounded-xl text-[#111827] placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-[#7C3AED]/10 focus:border-[#7C3AED] text-xs font-semibold"
                 />
                 <button
                   type="submit"
-                  className="p-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl transition-colors shadow-sm"
+                  className="p-2.5 bg-[#22C55E] hover:bg-[#16A34A] text-white rounded-xl transition-all shadow-sm"
                 >
-                  <Plus className="w-4 h-4" />
+                  <Plus className="w-4 h-4 text-white" />
                 </button>
               </form>
 
               <div className="flex flex-wrap gap-2 pt-2">
                 {skills.length === 0 ? (
-                  <span className="text-xs text-slate-400 italic">No skills added yet.</span>
+                  <span className="text-xs text-[#94A3B8] italic font-medium">No skills added yet.</span>
                 ) : (
                   skills.map((skill) => (
                     <span 
                       key={skill} 
-                      className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 border border-emerald-250/50 px-3.5 py-1.5 rounded-full text-xs font-bold"
+                      className="inline-flex items-center gap-1.5 bg-[#22C55E]/10 text-[#22C55E] border border-[#22C55E]/20 px-3 py-1.5 rounded-full text-xs font-bold"
                     >
                       {skill}
                       <button
                         type="button"
                         onClick={() => handleRemoveSkill(skill)}
-                        className="text-emerald-500 hover:text-rose-500 focus:outline-none text-[10px] font-extrabold"
+                        className="text-[#22C55E] hover:text-rose-600 focus:outline-none text-[10px] font-extrabold"
                       >
                         ×
                       </button>
@@ -535,42 +537,42 @@ const Profile = () => {
             </div>
 
             {/* Certifications list */}
-            <div className="bg-white border border-slate-200/80 p-8 rounded-3xl space-y-5 shadow-sm">
-              <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2.5 pb-4 border-b border-slate-100">
-                <Award className="w-5 h-5 text-emerald-600" />
+            <div className="bg-white border border-[#E5E7EB] p-8 rounded-2xl space-y-5 shadow-sm">
+              <h2 className="text-base font-bold text-[#111827] flex items-center gap-2.5 pb-4 border-b border-[#E5E7EB]">
+                <Award className="w-4.5 h-4.5 text-[#22C55E]" />
                 Certifications
               </h2>
 
-              <form onSubmit={handleAddCert} className="flex gap-3">
+              <form onSubmit={handleAddCert} className="flex gap-2.5">
                 <input
                   type="text"
                   placeholder="AWS, FreeCodeCamp..."
                   value={certInput}
                   onChange={(e) => setCertInput(e.target.value)}
-                  className="flex-grow px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-450 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 text-xs font-semibold"
+                  className="flex-grow px-3 py-2 bg-[#F8FAFC] border border-[#E5E7EB] focus:bg-white rounded-xl text-[#111827] placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-[#7C3AED]/10 focus:border-[#7C3AED] text-xs font-semibold"
                 />
                 <button
                   type="submit"
-                  className="p-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl transition-colors shadow-sm"
+                  className="p-2.5 bg-[#22C55E] hover:bg-[#16A34A] text-white rounded-xl transition-all shadow-sm"
                 >
-                  <Plus className="w-4 h-4" />
+                  <Plus className="w-4 h-4 text-white" />
                 </button>
               </form>
 
               <div className="space-y-3 pt-2">
                 {certifications.length === 0 ? (
-                  <span className="text-xs text-slate-400 italic">No certifications listed.</span>
+                  <span className="text-xs text-[#94A3B8] italic font-medium">No certifications listed.</span>
                 ) : (
                   certifications.map((cert) => (
                     <div 
                       key={cert} 
-                      className="flex items-center justify-between bg-slate-50 border border-slate-200/80 px-4 py-3 rounded-xl text-xs text-slate-700 font-semibold"
+                      className="flex items-center justify-between bg-[#F8FAFC] border border-[#E5E7EB] px-4 py-3 rounded-xl text-xs text-[#4B5563] font-semibold"
                     >
                       <span className="truncate max-w-[85%]">{cert}</span>
                       <button
                         type="button"
                         onClick={() => handleRemoveCert(cert)}
-                        className="text-slate-400 hover:text-rose-500 transition-colors p-1"
+                        className="text-[#94A3B8] hover:text-rose-600 transition-colors p-1"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -585,76 +587,76 @@ const Profile = () => {
               <button
                 type="button"
                 onClick={() => handleSaveProfile()}
-                className="w-full flex items-center justify-center gap-2.5 py-4 px-4 bg-gradient-to-r from-emerald-600 to-teal-650 hover:from-emerald-500 hover:to-teal-555 text-white font-bold rounded-xl text-sm transition-all shadow-md shadow-emerald-600/15"
+                className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-[#22C55E] hover:bg-[#16A34A] text-white font-bold rounded-xl text-xs transition-all shadow-md active:scale-[0.98]"
               >
                 Save All Profile Data
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-4 h-4 text-white" />
               </button>
             </div>
           </div>
         </form>
       ) : (
         /* Professional CV Preview Mode - Light theme redesign */
-        <div className="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-lg animate-in fade-in duration-300">
-          {/* Header Banner - Executive Light Green */}
-          <div className="bg-gradient-to-r from-emerald-50 via-teal-50/50 to-slate-50 p-10 border-b border-slate-200/80 relative">
+        <div className="bg-white border border-[#E5E7EB] rounded-2xl overflow-hidden shadow-sm animate-in fade-in duration-300">
+          {/* Header Banner */}
+          <div className="bg-[#F8FAFC] p-10 border-b border-[#E5E7EB] relative">
             <div className="absolute top-8 right-8 flex gap-2">
               {resumeUrl && (
                 <a
                   href={resumeUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 hover:border-emerald-500 text-slate-650 hover:text-slate-900 rounded-xl text-xs font-bold transition-all shadow-sm"
+                  className="flex items-center gap-2 px-4 py-2 bg-white border border-[#E5E7EB] hover:border-[#22C55E]/20 text-[#4B5563] hover:text-[#22C55E] rounded-lg text-xs font-bold transition-all shadow-sm"
                 >
-                  <FileText className="w-4 h-4 text-emerald-600" />
+                  <FileText className="w-3.5 h-3.5 text-[#22C55E]" />
                   View PDF Resume
                 </a>
               )}
             </div>
             
             <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
-              <div className="h-20 w-20 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-555 flex items-center justify-center text-3xl font-extrabold text-white shadow-xl shadow-emerald-500/10 border border-emerald-400/20">
+              <div className="h-16 w-16 rounded-xl bg-white border border-[#E5E7EB] flex items-center justify-center text-2xl font-bold text-[#7C3AED] shadow-sm">
                 {formData.name.split(' ').map(n => n[0]).join('').toUpperCase()}
               </div>
 
-              <div className="space-y-1.5">
-                <h2 className="text-2xl md:text-3xl font-extrabold text-slate-800">{formData.name}</h2>
-                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-slate-500 font-semibold">
-                  <span className="flex items-center gap-1.5 text-slate-650">
-                    <Mail className="w-4.5 h-4.5 text-emerald-600" /> {formData.email}
+              <div className="space-y-1">
+                <h2 className="text-xl md:text-2xl font-bold text-[#111827]">{formData.name}</h2>
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-[#4B5563] font-semibold">
+                  <span className="flex items-center gap-1.5 text-[#4B5563]">
+                    <Mail className="w-3.5 h-3.5 text-[#22C55E]" /> {formData.email}
                   </span>
-                  <span className="text-slate-300">•</span>
-                  <span className="font-mono text-slate-650">ID: {formData.rollNumber}</span>
+                  <span className="text-[#94A3B8]">•</span>
+                  <span className="font-mono text-[#4B5563]">ID: {formData.rollNumber}</span>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="p-10 grid grid-cols-1 md:grid-cols-3 gap-10"> {/* Expanded padding */}
+          <div className="p-10 grid grid-cols-1 md:grid-cols-3 gap-10">
             {/* Left preview sidebar */}
-            <div className="space-y-8 border-b md:border-b-0 md:border-r border-slate-200 pb-8 md:pb-0 md:pr-8">
+            <div className="space-y-8 border-b md:border-b-0 md:border-r border-[#E5E7EB] pb-8 md:pb-0 md:pr-8">
               {/* Academics card */}
               <div className="space-y-4">
-                <h3 className="text-xs font-extrabold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
-                  <GraduationCap className="w-4.5 h-4.5 text-emerald-600" /> Academics
+                <h3 className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-widest flex items-center gap-1.5">
+                  <GraduationCap className="w-4 h-4 text-[#22C55E]" /> Academics
                 </h3>
-                <div className="bg-slate-50 p-5 border border-slate-200 rounded-2xl space-y-3.5 font-semibold">
+                <div className="bg-[#F8FAFC] p-5 border border-[#E5E7EB] rounded-xl space-y-3.5 font-semibold text-[#4B5563]">
                   <div className="flex justify-between items-center text-xs">
-                    <span className="text-slate-450">Degree</span>
-                    <span className="text-slate-700">B.Tech Engineering</span>
+                    <span className="text-[#94A3B8]">Degree</span>
+                    <span className="text-[#4B5563]">B.Tech Engineering</span>
                   </div>
                   <div className="flex justify-between items-center text-xs">
-                    <span className="text-slate-450">Branch</span>
-                    <span className="text-slate-800 font-bold">{formData.branch}</span>
+                    <span className="text-[#94A3B8]">Branch</span>
+                    <span className="text-[#111827] font-bold">{formData.branch}</span>
                   </div>
                   <div className="flex justify-between items-center text-xs">
-                    <span className="text-slate-450">Year / Semester</span>
-                    <span className="text-slate-700">Year {formData.year} (Sem {formData.year * 2})</span>
+                    <span className="text-[#94A3B8]">Year / Semester</span>
+                    <span className="text-[#4B5563]">Year {formData.year} (Sem {formData.year * 2})</span>
                   </div>
-                  <div className="h-px bg-slate-200 my-1" />
+                  <div className="h-px bg-[#E5E7EB] my-1" />
                   <div className="flex justify-between items-center text-xs">
-                    <span className="text-slate-450">Aggregate CGPA</span>
-                    <span className="text-emerald-700 font-extrabold bg-emerald-50 border border-emerald-250/50 px-3 py-1 rounded-full text-xs">
+                    <span className="text-[#94A3B8]">Aggregate CGPA</span>
+                    <span className="text-[#22C55E] font-bold bg-[#22C55E]/10 border border-[#22C55E]/20 px-3 py-0.5 rounded-full text-xs">
                       {formData.cgpa} / 10.00
                     </span>
                   </div>
@@ -663,17 +665,17 @@ const Profile = () => {
 
               {/* Skills preview */}
               <div className="space-y-4">
-                <h3 className="text-xs font-extrabold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
-                  <Award className="w-4.5 h-4.5 text-emerald-600" /> Core Skills
+                <h3 className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-widest flex items-center gap-1.5">
+                  <Award className="w-4 h-4 text-[#22C55E]" /> Core Skills
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {skills.length === 0 ? (
-                    <span className="text-xs text-slate-400 italic">No skills added</span>
+                    <span className="text-xs text-[#94A3B8] italic font-medium">No skills added</span>
                   ) : (
                     skills.map((skill) => (
                       <span 
                         key={skill} 
-                        className="bg-white text-slate-700 border border-slate-200 px-3.5 py-1.5 rounded-xl text-xs font-semibold"
+                        className="bg-white text-[#4B5563] border border-[#E5E7EB] px-3 py-1.5 rounded-lg text-xs font-semibold shadow-sm"
                       >
                         {skill}
                       </span>
@@ -684,16 +686,16 @@ const Profile = () => {
 
               {/* Certifications preview */}
               <div className="space-y-4">
-                <h3 className="text-xs font-extrabold text-slate-400 uppercase tracking-widest flex items-center gap-1.5">
-                  <Award className="w-4.5 h-4.5 text-emerald-600" /> Certifications
+                <h3 className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-widest flex items-center gap-1.5">
+                  <Award className="w-4 h-4 text-[#22C55E]" /> Certifications
                 </h3>
                 <div className="space-y-3">
                   {certifications.length === 0 ? (
-                    <span className="text-xs text-slate-400 italic">No certifications listed</span>
+                    <span className="text-xs text-[#94A3B8] italic font-medium">No certifications listed</span>
                   ) : (
                     certifications.map((cert) => (
-                      <div key={cert} className="flex gap-2.5 items-start text-xs text-slate-700 bg-slate-50/50 p-3.5 rounded-xl border border-slate-200 font-semibold">
-                        <Check className="w-4.5 h-4.5 text-emerald-600 flex-shrink-0 mt-0.5" />
+                      <div key={cert} className="flex gap-2.5 items-start text-xs text-[#4B5563] bg-[#F8FAFC] p-3.5 rounded-xl border border-[#E5E7EB] font-semibold">
+                        <Check className="w-3.5 h-3.5 text-[#22C55E] flex-shrink-0 mt-0.5" />
                         <span>{cert}</span>
                       </div>
                     ))
@@ -704,38 +706,38 @@ const Profile = () => {
 
             {/* Right main timeline (Projects) */}
             <div className="md:col-span-2 space-y-8">
-              <h3 className="text-xs font-extrabold text-slate-400 uppercase tracking-widest flex items-center gap-2 pb-3 border-b border-slate-200">
-                <Briefcase className="w-4.5 h-4.5 text-emerald-600" /> Portfolio Projects
+              <h3 className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-widest flex items-center gap-2 pb-3 border-b border-[#E5E7EB]">
+                <Briefcase className="w-4 h-4 text-[#22C55E]" /> Portfolio Projects
               </h3>
               
               <div className="space-y-8">
                 {projects.length === 0 ? (
-                  <p className="text-slate-400 text-xs italic">No projects listed</p>
+                  <p className="text-[#94A3B8] text-xs italic font-medium">No projects listed</p>
                 ) : (
                   projects.map((proj) => (
-                    <div key={proj.id} className="space-y-3 relative pl-6 border-l border-slate-200">
-                      <div className="absolute left-[-4.5px] top-1.5 w-2 h-2 rounded-full bg-emerald-500" />
+                    <div key={proj.id} className="space-y-3 relative pl-6 border-l border-[#E5E7EB]">
+                      <div className="absolute left-[-4.5px] top-1.5 w-2 h-2 rounded-full bg-[#22C55E]" />
                       
                       <div className="flex items-center gap-2.5">
-                        <h4 className="text-base font-extrabold text-slate-800 leading-tight">{proj.title}</h4>
+                        <h4 className="text-base font-bold text-[#111827] leading-tight">{proj.title}</h4>
                         {proj.link && (
                           <a
                             href={proj.link}
                             target="_blank"
                             rel="noreferrer"
-                            className="inline-flex items-center text-[10px] text-emerald-600 hover:text-emerald-500 font-bold"
+                            className="inline-flex items-center text-[10px] text-[#22C55E] hover:text-[#16A34A] font-bold"
                           >
                             Code/Link <ExternalLink className="w-3 h-3 ml-0.5" />
                           </a>
                         )}
                       </div>
                       
-                      <p className="text-xs text-slate-500 leading-relaxed font-medium">{proj.description}</p>
+                      <p className="text-xs text-[#4B5563] leading-relaxed font-medium">{proj.description}</p>
                       
                       {proj.techStack && proj.techStack.length > 0 && (
                         <div className="flex flex-wrap gap-2 pt-2">
                           {proj.techStack.map((tech, i) => (
-                            <span key={i} className="text-[10px] bg-slate-50 text-slate-500 px-2.5 py-1 rounded border border-slate-200 font-semibold">
+                            <span key={i} className="text-[10px] bg-[#F8FAFC] text-[#4B5563] px-2.5 py-1 rounded border border-[#E5E7EB] font-semibold">
                               {tech}
                             </span>
                           ))}

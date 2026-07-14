@@ -63,17 +63,17 @@ const Notifications = () => {
     switch (type) {
       case 'success':
       case 'application_status':
-        return <CheckCircle2 className="w-5 h-5 text-emerald-600" />;
+        return <CheckCircle2 className="w-5 h-5 text-[#22C55E]" />;
       case 'job':
       case 'job_post':
-        return <Briefcase className="w-5 h-5 text-teal-600" />;
+        return <Briefcase className="w-5 h-5 text-[#22C55E]" />;
       case 'calendar':
       case 'status':
       case 'schedule_propose':
       case 'announcement':
-        return <Calendar className="w-5 h-5 text-indigo-600" />;
+        return <Calendar className="w-5 h-5 text-[#3B82F6]" />;
       default:
-        return <Info className="w-5 h-5 text-blue-600" />;
+        return <Info className="w-5 h-5 text-[#4B5563]" />;
     }
   };
 
@@ -81,17 +81,17 @@ const Notifications = () => {
     switch (type) {
       case 'success':
       case 'application_status':
-        return 'bg-emerald-50 border-emerald-100';
+        return 'bg-[#22C55E]/10 border-[#22C55E]/20';
       case 'job':
       case 'job_post':
-        return 'bg-teal-50 border-teal-100';
+        return 'bg-[#22C55E]/10 border-[#22C55E]/20';
       case 'calendar':
       case 'status':
       case 'schedule_propose':
       case 'announcement':
-        return 'bg-indigo-50 border-indigo-100';
+        return 'bg-blue-50 border-blue-200';
       default:
-        return 'bg-blue-50 border-blue-100';
+        return 'bg-[#F8FAFC] border-[#E5E7EB]';
     }
   };
 
@@ -132,8 +132,8 @@ const Notifications = () => {
     if (groupItems.length === 0) return null;
 
     return (
-      <div className="space-y-3.5">
-        <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest px-1">
+      <div className="space-y-3.5 text-[#4B5563]">
+        <h3 className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-widest px-1">
           {groupTitle}
         </h3>
         
@@ -141,25 +141,25 @@ const Notifications = () => {
           {groupItems.map((n) => (
             <div
               key={n.id}
-              className={`p-5 rounded-2xl border flex gap-4 items-start transition-all duration-300 relative group ${
+              className={`p-5 rounded-xl border flex gap-4 items-start transition-all duration-300 relative group ${
                 !n.read
-                  ? 'bg-emerald-50/15 border-emerald-200/80 shadow-sm shadow-emerald-600/5'
-                  : 'bg-white border-slate-200/60 opacity-80'
+                  ? 'bg-white border-[#22C55E]/20 shadow-sm ring-1 ring-[#22C55E]/5'
+                  : 'bg-[#F8FAFC] border-[#E5E7EB] opacity-80'
               }`}
             >
               {/* Type Icon */}
               <div className="flex-shrink-0 mt-0.5">
-                <div className={`p-2.5 rounded-xl border ${getNotifIconBg(n.type)}`}>
+                <div className={`p-2 rounded-lg border ${getNotifIconBg(n.type)} shadow-sm`}>
                   {getNotifIcon(n.type)}
                 </div>
               </div>
 
               {/* Message details */}
               <div className="flex-grow min-w-0 pr-12">
-                <p className={`text-xs text-slate-655 leading-relaxed ${!n.read ? 'font-bold text-slate-800' : 'font-medium'}`}>
+                <p className={`text-xs leading-relaxed ${!n.read ? 'font-bold text-[#111827]' : 'font-medium text-[#4B5563]'}`}>
                   {n.message}
                 </p>
-                <span className="text-[10px] text-slate-450 font-bold block mt-2">
+                <span className="text-[9px] text-[#94A3B8] font-bold block mt-2 font-mono">
                   {new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </span>
               </div>
@@ -169,18 +169,18 @@ const Notifications = () => {
                 {!n.read && (
                   <button
                     onClick={() => handleMarkRead(n.id)}
-                    className="p-2 bg-white hover:bg-emerald-50 border border-slate-200 hover:border-emerald-500 text-slate-450 hover:text-emerald-600 rounded-xl transition-all shadow-sm"
+                    className="p-1.5 bg-white hover:bg-[#F8FAFC] border border-[#E5E7EB] hover:border-[#22C55E]/30 text-[#4B5563] hover:text-[#22C55E] rounded-lg transition-all shadow-sm"
                     title="Mark as Read"
                   >
-                    <Check className="w-4 h-4" />
+                    <Check className="w-3.5 h-3.5" />
                   </button>
                 )}
                 <button
                   onClick={() => handleDelete(n.id)}
-                  className="p-2 bg-white hover:bg-rose-50 border border-slate-200 hover:border-rose-450 text-slate-450 hover:text-rose-600 rounded-xl transition-all shadow-sm"
+                  className="p-1.5 bg-white hover:bg-[#F8FAFC] border border-[#E5E7EB] hover:border-rose-500/30 text-[#4B5563] hover:text-rose-650 rounded-lg transition-all shadow-sm"
                   title="Delete Notification"
                 >
-                  <Trash2 className="w-4 h-4" />
+                  <Trash2 className="w-3.5 h-3.5" />
                 </button>
               </div>
             </div>
@@ -191,31 +191,31 @@ const Notifications = () => {
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto space-y-8 px-4 sm:px-6">
+    <div className="w-full max-w-5xl mx-auto space-y-8 animate-in fade-in duration-300 text-[#4B5563]">
       {/* Header Info Banner */}
-      <div className="bg-white border border-slate-200/80 p-6 md:p-8 rounded-3xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
+      <div className="bg-white border border-[#E5E7EB] p-6 md:p-8 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
         <div>
-          <h1 className="text-2xl md:text-3xl font-black text-slate-800 tracking-tight">Notification Center</h1>
-          <p className="text-xs text-slate-500 font-semibold mt-1">Review announcements, evaluation updates, and scheduler triggers.</p>
+          <h1 className="text-xl md:text-2xl font-bold text-[#111827] tracking-tight">Notification Center</h1>
+          <p className="text-xs text-[#4B5563] font-medium mt-1">Review announcements, evaluation updates, and scheduler triggers.</p>
         </div>
 
         {/* Global actions */}
-        <div className="flex gap-2">
+        <div className="flex gap-2 font-semibold">
           {unreadCount > 0 && (
             <button
               onClick={handleMarkAllRead}
-              className="flex items-center gap-1.5 px-4 py-2.5 bg-white border border-slate-200 hover:bg-emerald-50 hover:text-emerald-600 text-xs font-black text-slate-655 rounded-xl transition-all shadow-sm"
+              className="flex items-center gap-1.5 px-3.5 py-2 bg-white border border-[#E5E7EB] hover:bg-[#F8FAFC] text-xs font-semibold text-[#4B5563] rounded-lg transition-all shadow-sm"
             >
-              <MailOpen className="w-4 h-4 text-emerald-600" />
+              <MailOpen className="w-3.5 h-3.5 text-[#22C55E]" />
               Mark all read
             </button>
           )}
           {notifications.length > 0 && (
             <button
               onClick={handleClearAll}
-              className="flex items-center gap-1.5 px-4 py-2.5 bg-white border border-slate-205 hover:bg-rose-50 hover:border-rose-250 text-xs font-black text-rose-600 rounded-xl transition-all shadow-sm"
+              className="flex items-center gap-1.5 px-3.5 py-2 bg-white border border-[#E5E7EB] hover:bg-rose-50 hover:border-rose-300 text-xs font-semibold text-rose-605 rounded-lg transition-all shadow-sm"
             >
-              <Trash2 className="w-4 h-4" />
+              <Trash2 className="w-3.5 h-3.5 text-rose-600" />
               Clear all
             </button>
           )}
@@ -225,36 +225,38 @@ const Notifications = () => {
       {/* Main panel container */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8 items-start">
         {/* Navigation Sidebar: Filter Toggles */}
-        <div className="bg-white border border-slate-200/80 p-4 rounded-3xl space-y-2 shadow-sm">
+        <div className="bg-white border border-[#E5E7EB] p-3 rounded-xl space-y-1 shadow-sm">
           <button
             onClick={() => setFilter('all')}
-            className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-black uppercase tracking-wider transition-all duration-200 ${
+            className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200 ${
               filter === 'all'
-                ? 'bg-emerald-50 border border-emerald-250 text-emerald-700'
-                : 'text-slate-550 hover:text-slate-800 hover:bg-slate-50'
+                ? 'bg-[#22C55E] text-white font-bold shadow-sm'
+                : 'text-[#94A3B8] hover:text-[#4B5563] hover:bg-[#F8FAFC]'
             }`}
           >
             <div className="flex items-center gap-2">
-              <Bell className="w-4 h-4" /> All Alerts
+              <Bell className="w-3.5 h-3.5" /> All Alerts
             </div>
-            <span className="text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full border border-slate-200 font-bold">
+            <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold border transition-colors ${
+              filter === 'all' ? 'bg-[#22C55E]/20 text-[#22C55E] border-transparent' : 'bg-[#F8FAFC] text-[#4B5563] border-[#E5E7EB]'
+            }`}>
               {notifications.length}
             </span>
           </button>
 
           <button
             onClick={() => setFilter('unread')}
-            className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-black uppercase tracking-wider transition-all duration-200 ${
+            className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200 ${
               filter === 'unread'
-                ? 'bg-emerald-50 border border-emerald-250 text-emerald-700'
-                : 'text-slate-550 hover:text-slate-800 hover:bg-slate-50'
+                ? 'bg-[#22C55E] text-white font-bold shadow-sm'
+                : 'text-[#94A3B8] hover:text-[#4B5563] hover:bg-[#F8FAFC]'
             }`}
           >
             <div className="flex items-center gap-2">
-              <MailOpen className="w-4 h-4" /> Unread
+              <MailOpen className="w-3.5 h-3.5" /> Unread
             </div>
             {unreadCount > 0 && (
-              <span className="text-[10px] bg-emerald-600 text-white px-2 py-0.5 rounded-full font-bold">
+              <span className="text-[10px] bg-rose-500 text-white px-2 py-0.5 rounded-full font-bold">
                 {unreadCount}
               </span>
             )}
@@ -264,11 +266,11 @@ const Notifications = () => {
         {/* Content list */}
         <div className="md:col-span-3 space-y-8">
           {displayedNotifications.length === 0 ? (
-            <div className="bg-white border border-slate-200/80 rounded-3xl p-16 text-center space-y-4 shadow-sm">
-              <div className="w-12 h-12 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-center mx-auto text-slate-400">
-                <BellOff className="w-6 h-6" />
+            <div className="bg-white border border-[#E5E7EB] rounded-2xl p-16 text-center space-y-4 shadow-sm">
+              <div className="w-10 h-10 rounded-xl bg-[#F8FAFC] border border-[#E5E7EB] flex items-center justify-center mx-auto text-[#94A3B8] shadow-sm">
+                <BellOff className="w-5 h-5" />
               </div>
-              <p className="text-slate-500 font-bold text-sm">
+              <p className="text-[#4B5563] font-bold text-xs">
                 No {filter === 'unread' ? 'unread' : ''} notifications here.
               </p>
             </div>

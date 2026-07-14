@@ -48,17 +48,17 @@ const Navbar = () => {
       ];
 
   return (
-    <nav className="sticky top-0 z-40 bg-white/85 backdrop-blur-md border-b border-slate-200/80 shadow-sm">
+    <nav className="sticky top-0 z-40 bg-[#6D5BD0] backdrop-blur-md border-b border-[#7C6AE6] shadow-sm">
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-10">
-        <div className="flex items-center justify-between h-20"> {/* Increased navbar height for breathing room */}
+        <div className="flex items-center justify-between h-20">
           {/* Logo */}
           <div className="flex items-center">
             <Link to={user?.role === 'company' ? '/recruiter/dashboard' : user?.role === 'placementCell' ? '/placement/dashboard' : user?.role === 'admin' ? '/admin/dashboard' : '/'} className="flex items-center space-x-3">
-              <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-teal-500 to-teal-800 flex items-center justify-center shadow-md shadow-teal-500/10">
+              <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-[#22C55E] to-[#16A34A] flex items-center justify-center shadow-md">
                 <LayoutDashboard className="w-5 h-5 text-white" />
               </div>
-              <span className="font-extrabold text-xl tracking-tight text-slate-800">
-                Placement<span className="bg-gradient-to-r from-teal-500 to-teal-800 bg-clip-text text-transparent">Connect</span>
+              <span className="font-extrabold text-xl tracking-tight text-white">
+                Placement<span className="text-[#22C55E]">Connect</span>
               </span>
             </Link>
           </div>
@@ -75,8 +75,8 @@ const Navbar = () => {
                     to={link.path}
                     className={`flex items-center space-x-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
                       active
-                        ? 'bg-teal-50 text-teal-700 border border-teal-200/50 shadow-sm shadow-teal-500/5'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/60 border border-transparent'
+                        ? 'bg-[#7C6AE6] text-white border border-white/10 shadow-sm'
+                        : 'text-[#E9D5FF] hover:text-white hover:bg-[#7C6AE6]/60 border border-transparent'
                     }`}
                   >
                     <Icon className="w-4 h-4" />
@@ -92,19 +92,19 @@ const Navbar = () => {
             {user ? (
               <div className="flex items-center space-x-4">
                 <NotificationBell />
-                <div className="h-8 w-px bg-slate-200" />
+                <div className="h-8 w-px bg-[#7C6AE6]" />
                 <div className="flex items-center space-x-3">
-                  <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-teal-500 to-teal-800 flex items-center justify-center font-bold text-sm text-white shadow-md ring-2 ring-slate-100">
+                  <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-[#22C55E] to-[#16A34A] flex items-center justify-center font-bold text-sm text-white ring-2 ring-[#7C6AE6] shadow-md">
                     {user.name.split(' ').map(n => n[0]).join('').toUpperCase()}
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-sm font-bold text-slate-800 max-w-[130px] truncate leading-tight">{user.name}</span>
-                    <span className="text-[10px] text-slate-400 font-mono mt-0.5">{user.role === 'company' ? 'Recruiter' : user.role === 'placementCell' ? 'T&P Cell' : user.role === 'admin' ? 'Admin' : user.rollNumber}</span>
+                    <span className="text-sm font-bold text-white max-w-[130px] truncate leading-tight">{user.name}</span>
+                    <span className="text-[10px] text-[#D8B4FE] font-mono mt-0.5">{user.role === 'company' ? 'Recruiter' : user.role === 'placementCell' ? 'T&P Cell' : user.role === 'admin' ? 'Admin' : user.rollNumber}</span>
                   </div>
                 </div>
                 <button
                   onClick={handleLogout}
-                  className="p-2.5 text-slate-550 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all duration-250"
+                  className="p-2.5 text-[#E9D5FF] hover:text-rose-400 hover:bg-[#7C6AE6] rounded-xl transition-all duration-250"
                   title="Logout"
                 >
                   <LogOut className="w-5 h-5" />
@@ -114,13 +114,13 @@ const Navbar = () => {
               <div className="flex items-center space-x-3">
                 <Link
                   to="/login"
-                  className="text-sm font-semibold text-slate-600 hover:text-slate-900 px-4 py-2.5 transition-colors"
+                  className="text-sm font-semibold text-[#E9D5FF] hover:text-white px-4 py-2.5 transition-colors"
                 >
                   Sign In
                 </Link>
                 <Link
                   to="/signup"
-                  className="text-sm font-semibold bg-gradient-to-r from-teal-500 to-teal-800 hover:opacity-95 text-white px-5 py-2.5 rounded-xl transition-all duration-200 hover:shadow-lg hover:shadow-teal-500/20"
+                  className="text-sm font-semibold bg-[#22C55E] hover:bg-[#16A34A] text-white px-5 py-2.5 rounded-xl transition-all duration-200 shadow-sm"
                 >
                   Register
                 </Link>
@@ -133,7 +133,7 @@ const Navbar = () => {
             {user && <NotificationBell />}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="p-2.5 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-100 focus:outline-none transition-colors"
+              className="p-2.5 rounded-xl text-[#E9D5FF] hover:text-white hover:bg-[#7C6AE6] focus:outline-none transition-colors"
             >
               {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -143,7 +143,7 @@ const Navbar = () => {
 
       {/* Mobile Menu */}
       {isOpen && user && (
-        <div className="md:hidden bg-white border-b border-slate-200 shadow-xl animate-in slide-in-from-top-4 duration-200">
+        <div className="md:hidden bg-[#6D5BD0] border-b border-[#7C6AE6] shadow-xl animate-in slide-in-from-top-4 duration-200">
           <div className="px-3 pt-3 pb-4 space-y-1.5">
             {navLinks.map((link) => {
               const Icon = link.icon;
@@ -155,8 +155,8 @@ const Navbar = () => {
                   onClick={() => setIsOpen(false)}
                   className={`flex items-center space-x-3 px-4 py-3.5 rounded-xl text-base font-semibold transition-all ${
                     active
-                      ? 'bg-teal-50 text-teal-700 border border-teal-100'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                      ? 'bg-[#7C6AE6] text-white border border-white/10'
+                      : 'text-[#E9D5FF] hover:text-white hover:bg-[#7C6AE6]'
                   }`}
                 >
                   <Icon className="w-5 h-5" />
@@ -164,14 +164,14 @@ const Navbar = () => {
                 </Link>
               );
             })}
-            <div className="border-t border-slate-100 my-3 pt-3 px-4 flex items-center justify-between">
+            <div className="border-t border-[#7C6AE6] my-3 pt-3 px-4 flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-teal-500 to-teal-800 flex items-center justify-center font-bold text-white shadow">
+                <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-[#22C55E] to-[#16A34A] flex items-center justify-center font-bold text-white shadow">
                   {user.name.split(' ').map(n => n[0]).join('').toUpperCase()}
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-sm font-bold text-slate-800">{user.name}</span>
-                  <span className="text-xs text-slate-400 font-mono">{user.role === 'admin' ? 'Admin' : user.role === 'placementCell' ? 'T&P Cell' : user.role === 'company' ? 'Recruiter' : user.rollNumber}</span>
+                  <span className="text-sm font-bold text-white">{user.name}</span>
+                  <span className="text-xs text-[#D8B4FE] font-mono">{user.role === 'admin' ? 'Admin' : user.role === 'placementCell' ? 'T&P Cell' : user.role === 'company' ? 'Recruiter' : user.rollNumber}</span>
                 </div>
               </div>
               <button
@@ -179,7 +179,7 @@ const Navbar = () => {
                   setIsOpen(false);
                   handleLogout();
                 }}
-                className="flex items-center space-x-1.5 px-3 py-2 rounded-xl text-rose-500 hover:bg-rose-50 transition-all font-bold text-sm"
+                className="flex items-center space-x-1.5 px-3 py-2 rounded-xl text-rose-400 hover:bg-[#7C6AE6] transition-all font-bold text-sm"
               >
                 <LogOut className="w-4 h-4" />
                 <span>Logout</span>

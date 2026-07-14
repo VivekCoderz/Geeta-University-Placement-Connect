@@ -210,35 +210,54 @@ const AdminDashboard = () => {
 
   const branchesList = ['All', ...new Set(students.map(s => s.branch))];
 
+  const branchStats = Object.entries(
+    students.reduce((acc, student) => {
+      const br = student.branch || 'Unknown';
+      if (!acc[br]) {
+        acc[br] = { branch: br, placed: 0, total: 0 };
+      }
+      acc[br].total += 1;
+      if (student.isPlaced) {
+        acc[br].placed += 1;
+      }
+      return acc;
+    }, {})
+  ).map(([branch, data]) => ({
+    branch,
+    placed: data.placed,
+    total: data.total,
+    rate: data.total > 0 ? Math.round((data.placed / data.total) * 100) : 0
+  })).sort((a, b) => b.rate - a.rate);
+
   return (
-    <div className="space-y-10 animate-slide-up">
+    <div className="space-y-10 animate-slide-up text-[#4B5563]">
       {/* Alert Notices */}
       {successMsg && (
-        <div className="fixed bottom-6 right-6 z-50 bg-green-500 text-white px-6 py-4 rounded-2xl shadow-xl shadow-green-500/10 flex items-center space-x-3 border border-green-400 animate-bounce-short animate-in fade-in slide-in-from-bottom-5">
-          <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
+        <div className="fixed bottom-6 right-6 z-50 bg-white text-[#22C55E] px-6 py-4 rounded-2xl shadow-xl flex items-center space-x-3 border border-[#22C55E]/20 animate-in fade-in slide-in-from-bottom-5">
+          <CheckCircle2 className="w-5 h-5 flex-shrink-0 text-[#22C55E]" />
           <span className="text-sm font-bold">{successMsg}</span>
         </div>
       )}
 
       {errorMsg && (
-        <div className="fixed bottom-6 right-6 z-50 bg-rose-500 text-white px-6 py-4 rounded-2xl shadow-xl shadow-rose-500/20 flex items-center space-x-3 border border-rose-450 animate-bounce-short animate-in fade-in slide-in-from-bottom-5">
-          <AlertCircle className="w-5 h-5 flex-shrink-0" />
+        <div className="fixed bottom-6 right-6 z-50 bg-rose-50 text-rose-600 px-6 py-4 rounded-2xl shadow-xl flex items-center space-x-3 border border-rose-200 animate-in fade-in slide-in-from-bottom-5">
+          <AlertCircle className="w-5 h-5 flex-shrink-0 text-rose-600" />
           <span className="text-sm font-bold">{errorMsg}</span>
         </div>
       )}
 
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-slate-200">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-[#E5E7EB]">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-slate-800 flex items-center gap-3">
-            Admin <span className="bg-gradient-to-r from-teal-500 to-teal-800 bg-clip-text text-transparent">Control Panel</span>
+          <h1 className="text-2xl font-bold tracking-tight text-[#111827] flex items-center gap-3">
+            Admin <span className="text-[#7C3AED]">Control Panel</span>
           </h1>
-          <p className="text-slate-500 mt-2 font-medium">Manage students, company approvals, job drives, and system parameters.</p>
+          <p className="text-[#4B5563] mt-1.5 text-sm">Manage students, company approvals, job drives, and system parameters.</p>
         </div>
         <button
           onClick={loadAllData}
           disabled={isLoading}
-          className="flex items-center space-x-2 bg-white hover:bg-slate-50 text-slate-700 px-5 py-3 rounded-2xl border border-slate-200 shadow-sm transition-all text-sm font-semibold active:scale-[0.98] disabled:opacity-50"
+          className="flex items-center space-x-2 bg-white hover:bg-[#F8FAFC] text-[#4B5563] px-5 py-3 rounded-xl border border-[#E5E7EB] shadow-sm transition-all text-sm font-semibold active:scale-[0.98] disabled:opacity-50"
         >
           <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
           <span>Sync Data</span>
@@ -248,84 +267,80 @@ const AdminDashboard = () => {
       {/* Overview Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Placement Rate Card */}
-        <div className="glass-card p-6 rounded-3xl relative overflow-hidden group hover:border-teal-350 hover:shadow-md transition-all duration-300">
-          <div className="absolute top-0 right-0 w-24 h-24 rounded-full bg-teal-500/5 translate-x-4 -translate-y-4 group-hover:scale-125 transition-transform duration-300" />
+        <div className="bg-white border border-[#E5E7EB] shadow-sm p-6 rounded-2xl relative overflow-hidden group hover:border-[#22C55E]/30 transition-all duration-300">
           <div className="flex items-center justify-between">
-            <div className="h-12 w-12 rounded-2xl bg-teal-50 flex items-center justify-center text-teal-600">
-              <Award className="w-6 h-6" />
+            <div className="h-10 w-10 rounded-xl bg-[#22C55E]/10 border border-[#22C55E]/20 flex items-center justify-center text-[#22C55E]">
+              <Award className="w-5 h-5" />
             </div>
-            <span className="text-xs font-bold text-teal-700 bg-teal-50 px-2.5 py-1 rounded-full">Active</span>
+            <span className="text-[10px] font-bold text-[#22C55E] bg-[#22C55E]/10 px-2 py-0.5 rounded-full border border-[#22C55E]/20">Active</span>
           </div>
           <div className="mt-5">
-            <p className="text-[28px] font-extrabold text-slate-800 leading-none">{stats.placementRate}%</p>
-            <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mt-2.5">Placement Rate</p>
+            <p className="text-2xl font-bold text-[#111827] tracking-tight">{stats.placementRate}%</p>
+            <p className="text-[#94A3B8] text-xs font-semibold uppercase tracking-wider mt-1.5">Placement Rate</p>
           </div>
         </div>
 
         {/* Total Students Card */}
-        <div className="glass-card p-6 rounded-3xl relative overflow-hidden group hover:border-teal-350 hover:shadow-md transition-all duration-300">
-          <div className="absolute top-0 right-0 w-24 h-24 rounded-full bg-teal-500/5 translate-x-4 -translate-y-4 group-hover:scale-125 transition-transform duration-300" />
+        <div className="bg-white border border-[#E5E7EB] shadow-sm p-6 rounded-2xl relative overflow-hidden group hover:border-[#7C3AED]/30 transition-all duration-300">
           <div className="flex items-center justify-between">
-            <div className="h-12 w-12 rounded-2xl bg-teal-50 flex items-center justify-center text-teal-600">
-              <Users className="w-6 h-6" />
+            <div className="h-10 w-10 rounded-xl bg-[#7C3AED]/10 border border-[#7C3AED]/20 flex items-center justify-center text-[#7C3AED]">
+              <Users className="w-5 h-5" />
             </div>
-            <span className="text-[10px] font-mono text-slate-400">Total Profiled</span>
+            <span className="text-[10px] font-mono text-[#94A3B8]">Total Profiled</span>
           </div>
           <div className="mt-5">
-            <p className="text-[28px] font-extrabold text-slate-800 leading-none">
-              {stats.placedStudents} <span className="text-slate-400 text-sm font-semibold">/ {stats.totalStudents}</span>
+            <p className="text-2xl font-bold text-[#111827] tracking-tight">
+              {stats.placedStudents} <span className="text-[#94A3B8] text-xs font-semibold">/ {stats.totalStudents}</span>
             </p>
-            <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mt-2.5">Placed / Total Students</p>
+            <p className="text-[#94A3B8] text-xs font-semibold uppercase tracking-wider mt-1.5">Placed / Total Students</p>
           </div>
         </div>
 
         {/* Registered Companies */}
-        <div className="glass-card p-6 rounded-3xl relative overflow-hidden group hover:border-teal-350 hover:shadow-md transition-all duration-300">
-          <div className="absolute top-0 right-0 w-24 h-24 rounded-full bg-teal-500/5 translate-x-4 -translate-y-4 group-hover:scale-125 transition-transform duration-300" />
+        <div className="bg-white border border-[#E5E7EB] shadow-sm p-6 rounded-2xl relative overflow-hidden group hover:border-[#7C3AED]/30 transition-all duration-300">
           <div className="flex items-center justify-between">
-            <div className="h-12 w-12 rounded-2xl bg-teal-50 flex items-center justify-center text-teal-600">
-              <Building2 className="w-6 h-6" />
+            <div className="h-10 w-10 rounded-xl bg-[#7C3AED]/10 border border-[#7C3AED]/20 flex items-center justify-center text-[#7C3AED]">
+              <Building2 className="w-5 h-5" />
             </div>
             {stats.pendingCompanies > 0 ? (
-              <span className="text-xs font-bold text-rose-600 bg-rose-50 px-2.5 py-1 rounded-full animate-pulse">
+              <span className="text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-full animate-pulse border border-rose-200">
                 {stats.pendingCompanies} Pending
               </span>
             ) : (
-              <span className="text-xs font-bold text-slate-400 bg-slate-105 px-2.5 py-1 rounded-full">All Approved</span>
+              <span className="text-[10px] font-bold text-[#94A3B8] bg-[#F8FAFC] px-2 py-0.5 rounded-full border border-[#E5E7EB]">All Approved</span>
             )}
           </div>
           <div className="mt-5">
-            <p className="text-[28px] font-extrabold text-slate-800 leading-none">{stats.totalCompanies}</p>
-            <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mt-2.5">Recruiters / Companies</p>
+            <p className="text-2xl font-bold text-[#111827] tracking-tight">{stats.totalCompanies}</p>
+            <p className="text-[#94A3B8] text-xs font-semibold uppercase tracking-wider mt-1.5">Recruiters / Companies</p>
           </div>
         </div>
 
         {/* Active Drives */}
-        <div className="glass-card p-6 rounded-3xl relative overflow-hidden group hover:border-teal-350 hover:shadow-md transition-all duration-300">
-          <div className="absolute top-0 right-0 w-24 h-24 rounded-full bg-teal-500/5 translate-x-4 -translate-y-4 group-hover:scale-125 transition-transform duration-300" />
+        <div className="bg-white border border-[#E5E7EB] shadow-sm p-6 rounded-2xl relative overflow-hidden group hover:border-[#22C55E]/30 transition-all duration-300">
           <div className="flex items-center justify-between">
-            <div className="h-12 w-12 rounded-2xl bg-teal-50 flex items-center justify-center text-teal-600">
-              <Briefcase className="w-6 h-6" />
+            <div className="h-10 w-10 rounded-xl bg-[#22C55E]/10 border border-[#22C55E]/20 flex items-center justify-center text-[#22C55E]">
+              <Briefcase className="w-5 h-5" />
             </div>
-            <span className="text-xs font-bold text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-full">
+            <span className="text-[10px] font-bold text-[#22C55E] bg-[#22C55E]/10 px-2 py-0.5 rounded-full border border-[#22C55E]/20">
               {stats.totalOffers} Offers
             </span>
           </div>
           <div className="mt-5">
-            <p className="text-[28px] font-extrabold text-slate-800 leading-none">{stats.activeJobs}</p>
-            <p className="text-slate-400 text-xs font-bold uppercase tracking-wider mt-2.5">Active Job Drives</p>
+            <p className="text-2xl font-bold text-[#111827] tracking-tight">{stats.activeJobs}</p>
+            <p className="text-[#94A3B8] text-xs font-semibold uppercase tracking-wider mt-1.5">Active Job Drives</p>
           </div>
         </div>
       </div>
 
       {/* Tabs Navigation */}
-      <div className="flex border-b border-slate-200">
+      <div className="flex border-b border-[#E5E7EB] gap-1 mt-2">
         <button
           onClick={() => setActiveTab('overview')}
           className={`pb-4 px-6 text-sm font-bold border-b-2 transition-all ${
             activeTab === 'overview'
-              ? 'border-teal-600 text-teal-600'
-              : 'border-transparent text-slate-400 hover:text-slate-800'
+              ? 'border-[#7C3AED] text-[#7C3AED]'
+              : 'border-transparent text-[#94A3B8] hover:text-[#4B5563]'
           }`}
         >
           Summary Matrix
@@ -334,21 +349,21 @@ const AdminDashboard = () => {
           onClick={() => setActiveTab('companies')}
           className={`pb-4 px-6 text-sm font-bold border-b-2 transition-all flex items-center gap-2 ${
             activeTab === 'companies'
-              ? 'border-teal-600 text-teal-600'
-              : 'border-transparent text-slate-400 hover:text-slate-800'
+              ? 'border-[#7C3AED] text-[#7C3AED]'
+              : 'border-transparent text-[#94A3B8] hover:text-[#4B5563]'
           }`}
         >
-          Company Registrations
+          Company Partners
           {stats.pendingCompanies > 0 && (
-            <span className="h-2 w-2 rounded-full bg-rose-500 animate-ping" />
+            <span className="h-1.5 w-1.5 rounded-full bg-rose-500 animate-ping" />
           )}
         </button>
         <button
           onClick={() => setActiveTab('students')}
           className={`pb-4 px-6 text-sm font-bold border-b-2 transition-all ${
             activeTab === 'students'
-              ? 'border-teal-600 text-teal-600'
-              : 'border-transparent text-slate-400 hover:text-slate-800'
+              ? 'border-[#7C3AED] text-[#7C3AED]'
+              : 'border-transparent text-[#94A3B8] hover:text-[#4B5563]'
           }`}
         >
           Student Database
@@ -357,8 +372,8 @@ const AdminDashboard = () => {
           onClick={() => setActiveTab('drives')}
           className={`pb-4 px-6 text-sm font-bold border-b-2 transition-all ${
             activeTab === 'drives'
-              ? 'border-teal-600 text-teal-600'
-              : 'border-transparent text-slate-400 hover:text-slate-800'
+              ? 'border-[#22C55E] text-[#22C55E]'
+              : 'border-transparent text-[#94A3B8] hover:text-[#4B5563]'
           }`}
         >
           Placement Drives
@@ -367,73 +382,57 @@ const AdminDashboard = () => {
 
       {/* Loading Overlay */}
       {isLoading && (
-        <div className="flex flex-col items-center justify-center py-20 bg-white rounded-3xl border border-slate-200/80 shadow-sm space-y-4">
-          <div className="h-10 w-10 border-4 border-teal-600 border-t-transparent rounded-full animate-spin" />
-          <p className="text-slate-505 text-sm font-semibold">Synchronizing with system database...</p>
+        <div className="flex flex-col items-center justify-center py-20 bg-white rounded-2xl border border-[#E5E7EB] shadow-sm space-y-4">
+          <div className="h-10 w-10 border-4 border-[#7C3AED] border-t-transparent rounded-full animate-spin" />
+          <p className="text-[#4B5563] text-sm font-semibold">Updating administration portal...</p>
         </div>
       )}
 
-      {/* Tabs Content */}
+      {/* TABS CONTENT */}
       {!isLoading && (
-        <div>
-          {/* TAB 1: OVERVIEW SUMMARY */}
+        <div className="space-y-8">
+          {/* TAB 1: SUMMARY MATRIX */}
           {activeTab === 'overview' && (
-            <div className="space-y-8 animate-in fade-in duration-300">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Pending approvals summary panel */}
-                <div className="glass-panel p-6 rounded-3xl space-y-6">
-                  <h3 className="font-extrabold text-lg text-slate-800 flex items-center gap-2">
-                    <ShieldAlert className="w-5 h-5 text-rose-500" />
-                    Pending Approvals Request
-                  </h3>
+            <div className="space-y-6 animate-in fade-in duration-300">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Branch placements */}
+                <div className="bg-white border border-[#E5E7EB] p-6 rounded-2xl md:col-span-2 shadow-sm">
+                  <h3 className="text-[#111827] font-bold text-base mb-4">Branch Placement Analytics</h3>
                   <div className="space-y-4">
-                    {companies.filter(c => !c.approved).slice(0, 3).map(comp => (
-                      <div key={comp._id} className="p-4 bg-slate-50 rounded-2xl border border-slate-200/85 flex items-center justify-between gap-4">
-                        <div className="min-w-0">
-                          <p className="font-bold text-slate-800 truncate">{comp.name}</p>
-                          <p className="text-slate-400 text-xs font-medium truncate mt-0.5">{comp.recruiterEmail}</p>
+                    {branchStats.map(stat => (
+                      <div key={stat.branch} className="space-y-1.5">
+                        <div className="flex items-center justify-between text-xs font-bold text-[#4B5563]">
+                          <span className="bg-[#F8FAFC] text-[#111827] px-2 py-0.5 rounded-lg border border-[#E5E7EB]">{stat.branch}</span>
+                          <span>{stat.placed} Placed / {stat.total} Students ({stat.rate}%)</span>
                         </div>
-                        <div className="flex gap-2 flex-shrink-0">
-                          <button
-                            onClick={() => handleApproveCompany(comp._id)}
-                            disabled={actionLoading === comp._id}
-                            className="bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition-all"
-                          >
-                            Approve
-                          </button>
+                        <div className="w-full bg-[#F8FAFC] h-2.5 rounded-full overflow-hidden border border-[#E5E7EB]/50">
+                          <div
+                            className="bg-[#22C55E] h-full rounded-full transition-all duration-500"
+                            style={{ width: `${stat.rate}%` }}
+                          />
                         </div>
                       </div>
                     ))}
-                    {companies.filter(c => !c.approved).length === 0 && (
-                      <div className="text-center py-8 text-slate-400 text-sm font-semibold italic">
-                        No pending company registration approvals.
-                      </div>
-                    )}
                   </div>
                 </div>
 
-                {/* System settings parameters panel */}
-                <div className="glass-panel p-6 rounded-3xl space-y-6">
-                  <h3 className="font-extrabold text-lg text-slate-800 flex items-center gap-2">
-                    <Building2 className="w-5 h-5 text-teal-600" />
-                    Placement Connect Overview
-                  </h3>
-                  <div className="space-y-4 text-sm font-semibold text-slate-600">
-                    <div className="flex justify-between py-2.5 border-b border-slate-100">
-                      <span>Total Students Enrolled</span>
-                      <span className="text-slate-800 font-bold">{stats.totalStudents}</span>
+                {/* Recruiter summary */}
+                <div className="bg-white border border-[#E5E7EB] p-6 rounded-2xl space-y-4 shadow-sm">
+                  <h3 className="text-[#111827] font-bold text-base">Quick Actions Panel</h3>
+                  <div className="space-y-3 pt-2">
+                    <div className="p-4 bg-[#F8FAFC] border border-[#22C55E]/10 rounded-xl flex items-center space-x-3">
+                      <Building2 className="w-5 h-5 text-[#22C55E] flex-shrink-0" />
+                      <div>
+                        <p className="text-[#111827] font-bold text-sm">Approvals pending</p>
+                        <p className="text-[#4B5563] text-xs mt-0.5">{stats.pendingCompanies} recruiter profiles to review</p>
+                      </div>
                     </div>
-                    <div className="flex justify-between py-2.5 border-b border-slate-100">
-                      <span>Successful Placements</span>
-                      <span className="text-slate-800 font-bold text-teal-600">{stats.placedStudents}</span>
-                    </div>
-                    <div className="flex justify-between py-2.5 border-b border-slate-100">
-                      <span>Registered Recruiter Partners</span>
-                      <span className="text-slate-800 font-bold">{stats.totalCompanies}</span>
-                    </div>
-                    <div className="flex justify-between py-2.5">
-                      <span>Total Selections / Offers</span>
-                      <span className="text-indigo-605 font-bold">{stats.totalOffers} Offers</span>
+                    <div className="p-4 bg-[#F8FAFC] border border-[#7C3AED]/10 rounded-xl flex items-center space-x-3">
+                      <Users className="w-5 h-5 text-[#7C3AED] flex-shrink-0" />
+                      <div>
+                        <p className="text-[#111827] font-bold text-sm">Placed students</p>
+                        <p className="text-[#4B5563] text-xs mt-0.5">{stats.placedStudents} students have accepted offers</p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -441,91 +440,91 @@ const AdminDashboard = () => {
             </div>
           )}
 
-          {/* TAB 2: COMPANIES APPROVALS */}
+          {/* TAB 2: COMPANY REGISTRATIONS */}
           {activeTab === 'companies' && (
             <div className="space-y-6 animate-in fade-in duration-300">
               {/* Search and Filters */}
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="relative flex-grow max-w-md">
-                  <span className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                  <span className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#94A3B8]">
                     <Search className="h-5 w-5" />
                   </span>
                   <input
                     type="text"
-                    placeholder="Search company or recruiter email..."
+                    placeholder="Search company name or industry..."
                     value={companySearch}
                     onChange={(e) => setCompanySearch(e.target.value)}
-                    className="block w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 focus:bg-white rounded-2xl text-sm font-semibold text-slate-800 focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 focus:outline-none transition-all"
+                    className="block w-full pl-11 pr-4 py-3 bg-white border border-[#E5E7EB] focus:bg-[#F8FAFC] rounded-xl text-sm font-medium text-[#111827] focus:ring-4 focus:ring-[#7C3AED]/10 focus:border-[#7C3AED] focus:outline-none transition-all"
                   />
                 </div>
-                <div className="flex items-center space-x-3">
-                  <Filter className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                <div className="flex items-center space-x-3 text-semibold">
+                  <Filter className="w-4 h-4 text-[#94A3B8] flex-shrink-0" />
                   <select
                     value={companyFilter}
                     onChange={(e) => setCompanyFilter(e.target.value)}
-                    className="bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-700 focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 focus:outline-none"
+                    className="bg-white border border-[#E5E7EB] rounded-xl px-4 py-2.5 text-sm font-semibold text-[#4B5563] focus:ring-4 focus:ring-[#7C3AED]/10 focus:border-[#7C3AED] focus:outline-none"
                   >
-                    <option value="all">All Registrations</option>
-                    <option value="pending">Pending Approvals</option>
-                    <option value="approved">Approved / Active</option>
+                    <option value="all" className="bg-white text-[#4B5563]">All Registrations</option>
+                    <option value="pending" className="bg-white text-[#4B5563]">Pending Approvals</option>
+                    <option value="approved" className="bg-white text-[#4B5563]">Approved / Active</option>
                   </select>
                 </div>
               </div>
 
               {/* Companies Table */}
-              <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+              <div className="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left border-collapse">
-                    <thead>
-                      <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs font-bold uppercase tracking-wider">
-                        <th className="px-6 py-4.5">Company Partner</th>
-                        <th className="px-6 py-4.5">Industry Type</th>
-                        <th className="px-6 py-4.5">Recruiter Details</th>
-                        <th className="px-6 py-4.5">Account Status</th>
-                        <th className="px-6 py-4.5 text-right">Actions</th>
+                     <thead>
+                      <tr className="bg-[#F8FAFC] border-b border-[#E5E7EB] text-[#94A3B8] text-xs font-bold uppercase tracking-wider">
+                        <th className="px-6 py-4">Company Partner</th>
+                        <th className="px-6 py-4">Industry Type</th>
+                        <th className="px-6 py-4">Recruiter Details</th>
+                        <th className="px-6 py-4">Account Status</th>
+                        <th className="px-6 py-4 text-right">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100 text-sm font-semibold text-slate-700">
+                    <tbody className="divide-y divide-[#E5E7EB] text-sm font-semibold text-[#4B5563]">
                       {filteredCompanies.map(comp => {
                         const isUserActive = comp.recruiterId?.isActive !== false;
                         return (
-                          <tr key={comp._id} className="hover:bg-slate-50/50 transition-colors">
-                            <td className="px-6 py-4.5">
-                              <p className="text-slate-800 font-bold">{comp.name}</p>
+                          <tr key={comp._id} className="hover:bg-[#F8FAFC]/60 transition-colors">
+                            <td className="px-6 py-4">
+                              <p className="text-[#111827] font-bold">{comp.name}</p>
                             </td>
-                            <td className="px-6 py-4.5 text-slate-550">
+                            <td className="px-6 py-4 text-[#4B5563] font-medium">
                               {comp.industry || 'N/A'}
                             </td>
-                            <td className="px-6 py-4.5">
-                              <p className="text-slate-800">{comp.recruiterId?.name || 'Pending Profile'}</p>
-                              <p className="text-slate-400 text-xs font-mono mt-0.5">{comp.recruiterEmail}</p>
+                            <td className="px-6 py-4 font-medium">
+                              <p className="text-[#111827]">{comp.recruiterId?.name || 'Pending Profile'}</p>
+                              <p className="text-[#94A3B8] text-xs font-mono mt-0.5">{comp.recruiterEmail}</p>
                             </td>
-                            <td className="px-6 py-4.5">
-                              <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${
+                            <td className="px-6 py-4">
+                              <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${
                                 comp.approved
-                                  ? 'bg-emerald-55 border border-emerald-200 text-emerald-700'
-                                  : 'bg-rose-50 border border-rose-100 text-rose-700'
+                                  ? 'bg-[#22C55E]/10 border border-[#22C55E]/20 text-[#22C55E]'
+                                  : 'bg-rose-50 border border-rose-200 text-rose-600'
                               }`}>
                                 {comp.approved ? (
                                   <>
-                                    <CheckCircle2 className="w-3.5 h-3.5" />
+                                    <CheckCircle2 className="w-3.5 h-3.5 text-[#22C55E]" />
                                     Approved
                                   </>
                                 ) : (
                                   <>
-                                    <XCircle className="w-3.5 h-3.5" />
+                                    <XCircle className="w-3.5 h-3.5 text-rose-600" />
                                     Pending
                                   </>
                                 )}
                               </span>
                             </td>
-                            <td className="px-6 py-4.5 text-right">
+                            <td className="px-6 py-4 text-right">
                               <div className="flex items-center justify-end space-x-2">
                                 {!comp.approved ? (
                                   <button
                                     onClick={() => handleApproveCompany(comp._id)}
                                     disabled={actionLoading === comp._id}
-                                    className="bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all shadow-sm active:scale-[0.98] disabled:opacity-50"
+                                    className="bg-[#22C55E] hover:bg-[#16A34A] text-white text-xs font-bold px-3.5 py-2 rounded-xl transition-all shadow-sm active:scale-[0.98] disabled:opacity-50"
                                   >
                                     Approve
                                   </button>
@@ -533,7 +532,7 @@ const AdminDashboard = () => {
                                   <button
                                     onClick={() => handleRejectCompany(comp._id)}
                                     disabled={actionLoading === comp._id}
-                                    className="bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-bold px-4 py-2.5 rounded-xl transition-all active:scale-[0.98] disabled:opacity-50"
+                                    className="bg-rose-50 hover:bg-rose-100 text-rose-655 text-xs font-semibold px-3.5 py-2 rounded-xl transition-all border border-rose-250 active:scale-[0.98] disabled:opacity-50"
                                   >
                                     Deactivate
                                   </button>
@@ -544,10 +543,10 @@ const AdminDashboard = () => {
                                     onClick={() => handleToggleUserStatus(comp.recruiterId._id)}
                                     disabled={actionLoading === comp.recruiterId._id}
                                     title={isUserActive ? "Suspend login" : "Activate login"}
-                                    className={`p-2.5 rounded-xl border transition-all ${
+                                    className={`p-2 rounded-xl border transition-all ${
                                       isUserActive
-                                        ? 'bg-slate-50 hover:bg-rose-50 border-slate-200 hover:border-rose-200 text-slate-500 hover:text-rose-500'
-                                        : 'bg-rose-50 hover:bg-teal-50 border-rose-100 hover:border-teal-200 text-rose-500 hover:text-teal-600'
+                                        ? 'bg-[#F8FAFC] hover:bg-rose-50 border border-[#E5E7EB] text-[#94A3B8] hover:text-rose-600'
+                                        : 'bg-rose-50 hover:bg-emerald-50 border border-rose-200 text-rose-600 hover:text-[#22C55E]'
                                     }`}
                                   >
                                     <Power className="w-4 h-4" />
@@ -560,7 +559,7 @@ const AdminDashboard = () => {
                       })}
                       {filteredCompanies.length === 0 && (
                         <tr>
-                          <td colSpan="5" className="text-center py-12 text-slate-400 font-semibold italic">
+                          <td colSpan="5" className="text-center py-12 text-[#94A3B8] font-semibold italic">
                             No companies found matching search criteria.
                           </td>
                         </tr>
@@ -578,7 +577,7 @@ const AdminDashboard = () => {
               {/* Search and Filters */}
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div className="relative md:col-span-2">
-                  <span className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                  <span className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#94A3B8]">
                     <Search className="h-5 w-5" />
                   </span>
                   <input
@@ -586,87 +585,87 @@ const AdminDashboard = () => {
                     placeholder="Search student name, roll number, or email..."
                     value={studentSearch}
                     onChange={(e) => setStudentSearch(e.target.value)}
-                    className="block w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 focus:bg-white rounded-2xl text-sm font-semibold text-slate-800 focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 focus:outline-none transition-all"
+                    className="block w-full pl-11 pr-4 py-3 bg-white border border-[#E5E7EB] focus:bg-[#F8FAFC] rounded-xl text-sm font-medium text-[#111827] focus:ring-4 focus:ring-[#7C3AED]/10 focus:border-[#7C3AED] focus:outline-none transition-all"
                   />
                 </div>
                 <div className="flex items-center space-x-3">
-                  <Filter className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                  <Filter className="w-4 h-4 text-[#94A3B8] flex-shrink-0" />
                   <select
                     value={studentBranch}
                     onChange={(e) => setStudentBranch(e.target.value)}
-                    className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-700 focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 focus:outline-none"
+                    className="w-full bg-white border border-[#E5E7EB] rounded-xl px-4 py-2.5 text-sm font-semibold text-[#4B5563] focus:ring-4 focus:ring-[#7C3AED]/10 focus:border-[#7C3AED] focus:outline-none"
                   >
                     {branchesList.map(branch => (
-                      <option key={branch} value={branch}>Branch: {branch}</option>
+                      <option key={branch} value={branch} className="bg-white text-[#4B5563]">Branch: {branch}</option>
                     ))}
                   </select>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <Filter className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                  <Filter className="w-4 h-4 text-[#94A3B8] flex-shrink-0" />
                   <select
                     value={studentStatus}
                     onChange={(e) => setStudentStatus(e.target.value)}
-                    className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-700 focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 focus:outline-none"
+                    className="w-full bg-white border border-[#E5E7EB] rounded-xl px-4 py-2.5 text-sm font-semibold text-[#4B5563] focus:ring-4 focus:ring-[#7C3AED]/10 focus:border-[#7C3AED] focus:outline-none"
                   >
-                    <option value="all">All Placement Status</option>
-                    <option value="placed">Placed Only</option>
-                    <option value="unplaced">Unplaced Only</option>
-                    <option value="suspended">Suspended Accounts</option>
+                    <option value="all" className="bg-white text-[#4B5563]">All Placement Status</option>
+                    <option value="placed" className="bg-white text-[#4B5563]">Placed Only</option>
+                    <option value="unplaced" className="bg-white text-[#4B5563]">Unplaced Only</option>
+                    <option value="suspended" className="bg-white text-[#4B5563]">Suspended Accounts</option>
                   </select>
                 </div>
               </div>
 
               {/* Students Table */}
-              <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+              <div className="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs font-bold uppercase tracking-wider">
-                        <th className="px-6 py-4.5">Roll Number</th>
-                        <th className="px-6 py-4.5">Student Name</th>
-                        <th className="px-6 py-4.5">Academic details</th>
-                        <th className="px-6 py-4.5">Placement status</th>
-                        <th className="px-6 py-4.5">Account Status</th>
-                        <th className="px-6 py-4.5 text-right">Actions</th>
+                      <tr className="bg-[#F8FAFC] border-b border-[#E5E7EB] text-[#94A3B8] text-xs font-bold uppercase tracking-wider">
+                        <th className="px-6 py-4">Roll Number</th>
+                        <th className="px-6 py-4">Student Name</th>
+                        <th className="px-6 py-4">Academic details</th>
+                        <th className="px-6 py-4">Placement status</th>
+                        <th className="px-6 py-4">Account Status</th>
+                        <th className="px-6 py-4 text-right">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100 text-sm font-semibold text-slate-700">
+                    <tbody className="divide-y divide-[#E5E7EB] text-sm font-semibold text-[#4B5563]">
                       {filteredStudents.map(student => {
                         const isUserActive = student.userId?.isActive !== false;
                         return (
-                          <tr key={student._id} className="hover:bg-slate-50/50 transition-colors">
-                            <td className="px-6 py-4.5 text-slate-500 font-mono text-xs font-bold">
+                          <tr key={student._id} className="hover:bg-[#F8FAFC]/60 transition-colors">
+                            <td className="px-6 py-4 text-[#4B5563] font-mono text-xs font-bold">
                               {student.rollNumber}
                             </td>
-                            <td className="px-6 py-4.5">
-                              <p className="text-slate-800 font-bold">{student.name}</p>
-                              <p className="text-slate-400 text-xs font-mono mt-0.5">{student.email}</p>
+                            <td className="px-6 py-4">
+                              <p className="text-[#111827] font-bold">{student.name}</p>
+                              <p className="text-[#94A3B8] text-xs font-mono mt-0.5">{student.email}</p>
                             </td>
-                            <td className="px-6 py-4.5">
+                            <td className="px-6 py-4 font-medium">
                               <div className="flex items-center space-x-3">
-                                <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded-lg text-xs font-bold">
+                                <span className="bg-[#F8FAFC] text-[#4B5563] px-2 py-0.5 rounded-lg text-xs font-bold border border-[#E5E7EB]">
                                   {student.branch}
                                 </span>
-                                <span className="text-slate-800 font-bold">
+                                <span className="text-[#111827]">
                                   CGPA: {student.cgpa}
                                 </span>
                               </div>
                             </td>
-                            <td className="px-6 py-4.5">
-                              <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${
+                            <td className="px-6 py-4">
+                              <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${
                                 student.isPlaced
-                                  ? 'bg-emerald-50 text-emerald-700'
-                                  : 'bg-amber-50 text-amber-700'
+                                  ? 'bg-[#22C55E]/10 border border-[#22C55E]/20 text-[#22C55E]'
+                                  : 'bg-amber-50 border border-amber-200 text-amber-600'
                               }`}>
                                 <GraduationCap className="w-3.5 h-3.5" />
                                 {student.isPlaced ? 'Placed' : 'Unplaced'}
                               </span>
                             </td>
-                            <td className="px-6 py-4.5">
-                              <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${
+                            <td className="px-6 py-4">
+                              <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${
                                 isUserActive
-                                  ? 'bg-emerald-50 text-emerald-700'
-                                  : 'bg-rose-50 text-rose-700'
+                                  ? 'bg-[#22C55E]/10 border border-[#22C55E]/20 text-[#22C55E]'
+                                  : 'bg-rose-50 border border-rose-200 text-rose-600'
                               }`}>
                                 {isUserActive ? (
                                   <>
@@ -681,32 +680,32 @@ const AdminDashboard = () => {
                                 )}
                               </span>
                             </td>
-                            <td className="px-6 py-4.5 text-right">
+                            <td className="px-6 py-4 text-right">
                               <div className="flex items-center justify-end space-x-2">
                                 {student.userId ? (
                                   <button
                                     onClick={() => handleToggleUserStatus(student.userId._id)}
                                     disabled={actionLoading === student.userId._id}
-                                    className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold border transition-all ${
+                                    className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border transition-all ${
                                       isUserActive
-                                        ? 'bg-rose-50 hover:bg-rose-100 border-rose-100 hover:border-rose-200 text-rose-600'
-                                        : 'bg-teal-50 hover:bg-teal-100 border-teal-100 hover:border-teal-200 text-teal-700'
+                                        ? 'bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-600'
+                                        : 'bg-[#22C55E]/10 hover:bg-[#22C55E]/20 border border-[#22C55E]/20 text-[#22C55E]'
                                     }`}
                                   >
                                     {isUserActive ? (
                                       <>
-                                        <UserX className="w-3.5 h-3.5" />
+                                        <UserX className="w-3.5 h-3.5 text-rose-600" />
                                         Suspend
                                       </>
                                     ) : (
                                       <>
-                                        <UserCheck className="w-3.5 h-3.5" />
+                                        <UserCheck className="w-3.5 h-3.5 text-[#22C55E]" />
                                         Activate
                                       </>
                                     )}
                                   </button>
                                 ) : (
-                                  <span className="text-slate-400 text-xs italic font-medium">No Auth Account</span>
+                                  <span className="text-[#94A3B8] text-xs italic font-medium">No Auth Account</span>
                                 )}
                               </div>
                             </td>
@@ -715,7 +714,7 @@ const AdminDashboard = () => {
                       })}
                       {filteredStudents.length === 0 && (
                         <tr>
-                          <td colSpan="6" className="text-center py-12 text-slate-400 font-semibold italic">
+                          <td colSpan="6" className="text-center py-12 text-[#94A3B8] font-semibold italic">
                             No students found matching filters.
                           </td>
                         </tr>
@@ -733,7 +732,7 @@ const AdminDashboard = () => {
               {/* Search and Filters */}
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="relative flex-grow max-w-md">
-                  <span className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                  <span className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#94A3B8]">
                     <Search className="h-5 w-5" />
                   </span>
                   <input
@@ -741,91 +740,91 @@ const AdminDashboard = () => {
                     placeholder="Search drive title or company name..."
                     value={driveSearch}
                     onChange={(e) => setDriveSearch(e.target.value)}
-                    className="block w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-200 focus:bg-white rounded-2xl text-sm font-semibold text-slate-800 focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 focus:outline-none transition-all"
+                    className="block w-full pl-11 pr-4 py-3 bg-white border border-[#E5E7EB] focus:bg-[#F8FAFC] rounded-xl text-sm font-medium text-[#111827] focus:ring-4 focus:ring-[#7C3AED]/10 focus:border-[#7C3AED] focus:outline-none transition-all"
                   />
                 </div>
                 <div className="flex items-center space-x-3">
-                  <Filter className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                  <Filter className="w-4 h-4 text-[#94A3B8] flex-shrink-0" />
                   <select
                     value={driveStatus}
                     onChange={(e) => setDriveStatus(e.target.value)}
-                    className="bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-700 focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 focus:outline-none"
+                    className="bg-white border border-[#E5E7EB] rounded-xl px-4 py-2.5 text-sm font-semibold text-[#4B5563] focus:ring-4 focus:ring-[#7C3AED]/10 focus:border-[#7C3AED] focus:outline-none"
                   >
-                    <option value="all">All Drives Status</option>
-                    <option value="active">Active Drives Only</option>
-                    <option value="closed">Closed Drives Only</option>
+                    <option value="all" className="bg-white text-[#4B5563]">All Drives Status</option>
+                    <option value="active" className="bg-white text-[#4B5563]">Active Drives Only</option>
+                    <option value="closed" className="bg-white text-[#4B5563]">Closed Drives Only</option>
                   </select>
                 </div>
               </div>
 
               {/* Drives Table */}
-              <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+              <div className="bg-white rounded-2xl border border-[#E5E7EB] shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 text-xs font-bold uppercase tracking-wider">
-                        <th className="px-6 py-4.5">Job Title</th>
-                        <th className="px-6 py-4.5">Company</th>
-                        <th className="px-6 py-4.5">Package (CTC)</th>
-                        <th className="px-6 py-4.5">Eligibility</th>
-                        <th className="px-6 py-4.5">Deadline</th>
-                        <th className="px-6 py-4.5">Drive Status</th>
-                        <th className="px-6 py-4.5 text-right">Actions</th>
+                      <tr className="bg-[#F8FAFC] border-b border-[#E5E7EB] text-[#94A3B8] text-xs font-bold uppercase tracking-wider">
+                        <th className="px-6 py-4">Job Title</th>
+                        <th className="px-6 py-4">Company</th>
+                        <th className="px-6 py-4">Package (CTC)</th>
+                        <th className="px-6 py-4">Eligibility</th>
+                        <th className="px-6 py-4">Deadline</th>
+                        <th className="px-6 py-4">Drive Status</th>
+                        <th className="px-6 py-4 text-right">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100 text-sm font-semibold text-slate-700">
+                    <tbody className="divide-y divide-[#E5E7EB] text-sm font-semibold text-[#4B5563]">
                       {filteredDrives.map(drive => (
-                        <tr key={drive._id} className="hover:bg-slate-50/50 transition-colors">
-                          <td className="px-6 py-4.5">
-                            <p className="text-slate-800 font-bold">{drive.title}</p>
+                        <tr key={drive._id} className="hover:bg-[#F8FAFC]/60 transition-colors">
+                          <td className="px-6 py-4">
+                            <p className="text-[#111827] font-bold">{drive.title}</p>
                           </td>
-                          <td className="px-6 py-4.5 text-slate-650">
+                          <td className="px-6 py-4 text-[#4B5563] font-medium">
                             {drive.companyId?.name || 'Deleted Company'}
                           </td>
-                          <td className="px-6 py-4.5 font-bold text-slate-850">
+                          <td className="px-6 py-4 font-bold text-[#22C55E]">
                             {drive.package} LPA
                           </td>
-                          <td className="px-6 py-4.5">
-                            <div className="flex flex-col space-y-1 text-xs">
-                              <span>Min CGPA: <strong className="text-slate-800">{drive.eligibility?.cgpa}</strong></span>
-                              <span>Branches: <strong className="text-slate-800">{drive.eligibility?.branches?.join(', ') || 'All'}</strong></span>
+                          <td className="px-6 py-4 font-medium">
+                            <div className="flex flex-col space-y-1 text-xs text-[#4B5563]">
+                              <span>Min CGPA: <strong className="text-[#111827]">{drive.eligibility?.cgpa}</strong></span>
+                              <span>Branches: <strong className="text-[#111827]">{drive.eligibility?.branches?.join(', ') || 'All'}</strong></span>
                             </div>
                           </td>
-                          <td className="px-6 py-4.5 text-slate-550 text-xs">
+                          <td className="px-6 py-4 text-[#94A3B8] text-xs font-medium font-mono">
                             {new Date(drive.deadline).toLocaleDateString(undefined, {
                               year: 'numeric',
                               month: 'short',
                               day: 'numeric'
                             })}
                           </td>
-                          <td className="px-6 py-4.5">
-                            <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${
+                          <td className="px-6 py-4">
+                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${
                               drive.status === 'active'
-                                ? 'bg-emerald-50 text-emerald-700'
-                                : 'bg-slate-100 text-slate-600'
+                                ? 'bg-[#22C55E]/10 border border-[#22C55E]/20 text-[#22C55E]'
+                                : 'bg-[#F8FAFC] border border-[#E5E7EB] text-[#94A3B8]'
                             }`}>
                               {drive.status === 'active' ? 'Active' : 'Closed'}
                             </span>
                           </td>
-                          <td className="px-6 py-4.5 text-right">
+                          <td className="px-6 py-4 text-right">
                             <div className="flex justify-end">
                               <button
                                 onClick={() => handleToggleJobStatus(drive._id)}
                                 disabled={actionLoading === drive._id}
-                                className={`flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-bold transition-all border ${
+                                className={`flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-semibold transition-all border ${
                                   drive.status === 'active'
-                                    ? 'bg-amber-50 hover:bg-amber-100 border-amber-100 text-amber-700'
-                                    : 'bg-teal-50 hover:bg-teal-100 border-teal-100 text-teal-700'
+                                    ? 'bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-600'
+                                    : 'bg-[#22C55E]/10 hover:bg-[#22C55E]/20 border border-[#22C55E]/20 text-[#22C55E]'
                                 }`}
                               >
                                 {drive.status === 'active' ? (
                                   <>
-                                    <XCircle className="w-3.5 h-3.5" />
+                                    <XCircle className="w-3.5 h-3.5 text-rose-600" />
                                     Close Drive
                                   </>
                                 ) : (
                                   <>
-                                    <CheckCircle2 className="w-3.5 h-3.5" />
+                                    <CheckCircle2 className="w-3.5 h-3.5 text-[#22C55E]" />
                                     Reopen Drive
                                   </>
                                 )}
@@ -836,7 +835,7 @@ const AdminDashboard = () => {
                       ))}
                       {filteredDrives.length === 0 && (
                         <tr>
-                          <td colSpan="7" className="text-center py-12 text-slate-400 font-semibold italic">
+                          <td colSpan="7" className="text-center py-12 text-[#94A3B8] font-semibold italic">
                             No placement drives found matching search criteria.
                           </td>
                         </tr>

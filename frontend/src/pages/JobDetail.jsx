@@ -112,81 +112,81 @@ const JobDetail = () => {
   const { eligible, cgpaEligible, branchEligible } = checkEligibility();
 
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-8"> {/* Expanded spacing */}
+    <div className="w-full max-w-4xl mx-auto space-y-8 animate-in fade-in duration-300 text-[#4B5563]">
       {/* Back Button */}
       <div>
         <Link 
           to="/" 
-          className="inline-flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-slate-800 transition-colors"
+          className="inline-flex items-center gap-2 text-xs font-semibold text-[#94A3B8] hover:text-[#4B5563] transition-colors"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="w-3.5 h-3.5" />
           Back to Listings
         </Link>
       </div>
 
       {applySuccess && (
-        <div className="bg-emerald-50 border border-emerald-255 text-emerald-700 p-5 rounded-2xl flex items-center gap-3.5 text-sm animate-in fade-in duration-300">
-          <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
+        <div className="bg-[#22C55E]/10 border border-[#22C55E]/20 text-[#22C55E] p-5 rounded-xl flex items-center gap-3 text-xs animate-in fade-in duration-300">
+          <CheckCircle2 className="w-5 h-5 text-[#22C55E] flex-shrink-0" />
           <p className="font-semibold">Application Submitted Successfully! Recruiter notification triggered. You can track this in 'My Applications'.</p>
         </div>
       )}
 
-      {/* Main Drive Info Panel - light theme updates */}
-      <div className="bg-white border border-slate-205 rounded-3xl overflow-hidden shadow-sm">
+      {/* Main Drive Info Panel */}
+      <div className="bg-white border border-[#E5E7EB] rounded-2xl overflow-hidden shadow-sm">
         {/* Banner area */}
-        <div className="bg-gradient-to-r from-emerald-50 via-slate-50 to-white p-8 md:p-10 border-b border-slate-200">
+        <div className="bg-[#F8FAFC] p-8 md:p-10 border-b border-[#E5E7EB]">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-            <div className="flex items-center gap-4.5">
-              <div className="h-14 w-14 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-555 flex items-center justify-center font-extrabold text-white text-xl shadow-xl shadow-emerald-500/10 border border-emerald-400/20 flex-shrink-0">
+            <div className="flex items-center gap-4">
+              <div className="h-12 w-12 rounded-xl bg-white border border-[#E5E7EB] flex items-center justify-center font-bold text-[#7C3AED] text-sm flex-shrink-0 shadow-sm">
                 {job.companyName.substring(0, 2).toUpperCase()}
               </div>
-              <div className="space-y-1.5">
-                <span className="text-xs bg-emerald-50 text-emerald-700 border border-emerald-200 px-3 py-1 rounded-full font-bold">
+              <div className="space-y-1">
+                <span className="text-[10px] bg-[#22C55E]/10 text-[#22C55E] border border-[#22C55E]/20 px-3 py-1 rounded-full font-bold">
                   {job.companyName} Drive 2026
                 </span>
-                <h1 className="text-xl md:text-2xl font-extrabold text-slate-800 tracking-tight mt-1">{job.title}</h1>
+                <h1 className="text-xl font-bold text-[#111827] tracking-tight mt-1">{job.title}</h1>
               </div>
             </div>
 
             {/* Quick Metrics */}
-            <div className="flex gap-4">
-              <div className="bg-white p-4 rounded-xl border border-slate-200 text-center min-w-[100px] shadow-sm">
-                <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Package</p>
-                <p className="text-sm font-extrabold text-slate-800 mt-1">{job.package} LPA</p>
+            <div className="flex gap-4 font-semibold">
+              <div className="bg-white p-4 rounded-xl border border-[#E5E7EB] text-center min-w-[100px] shadow-sm">
+                <p className="text-[10px] text-[#94A3B8] uppercase font-bold tracking-wider">Package</p>
+                <p className="text-sm font-bold text-[#111827] mt-1">{job.package} LPA</p>
               </div>
-              <div className="bg-white p-4 rounded-xl border border-slate-200 text-center min-w-[100px] shadow-sm">
-                <p className="text-[10px] text-slate-400 uppercase font-bold tracking-wider">Cut-off</p>
-                <p className="text-sm font-extrabold text-emerald-600 mt-1">{job.eligibility.minCgpa} CGPA</p>
+              <div className="bg-white p-4 rounded-xl border border-[#E5E7EB] text-center min-w-[100px] shadow-sm">
+                <p className="text-[10px] text-[#94A3B8] uppercase font-bold tracking-wider">Cut-off</p>
+                <p className="text-sm font-bold text-[#22C55E] mt-1">{job.eligibility.minCgpa} CGPA</p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Detailed Layout - Expanded padding to p-10 and gap to gap-10 */}
+        {/* Detailed Layout */}
         <div className="p-8 md:p-10 grid grid-cols-1 lg:grid-cols-3 gap-10">
           {/* Left / Center content */}
           <div className="lg:col-span-2 space-y-8">
             <div className="space-y-3.5">
-              <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider">About the Role</h3>
-              <p className="text-xs text-slate-550 leading-relaxed font-semibold">{job.details || job.description || 'No additional details provided.'}</p>
+              <h3 className="text-xs font-bold text-[#111827] uppercase tracking-wider">About the Role</h3>
+              <p className="text-xs text-[#4B5563] leading-relaxed font-semibold">{job.details || job.description || 'No additional details provided.'}</p>
             </div>
 
             <div className="space-y-3.5">
-              <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider">Job Description Overview</h3>
-              <p className="text-xs text-slate-550 leading-relaxed font-semibold">{job.description}</p>
+              <h3 className="text-xs font-bold text-[#111827] uppercase tracking-wider">Job Description Overview</h3>
+              <p className="text-xs text-[#4B5563] leading-relaxed font-semibold">{job.description}</p>
             </div>
 
-            {/* Selection Rounds */}
+            {/* Selection Stages */}
             <div className="space-y-5">
-              <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider">Interview & Evaluation Stages</h3>
+              <h3 className="text-xs font-bold text-[#111827] uppercase tracking-wider">Interview & Evaluation Stages</h3>
               <div className="space-y-3">
                 {(job.rounds || ['Aptitude & Coding Test', 'Group Discussion (GD)', 'Technical Interview', 'HR Evaluation']).map((round, index) => (
-                  <div key={index} className="flex items-center gap-4 bg-slate-50 border border-slate-200/60 p-4 rounded-2xl">
-                    <span className="h-7 w-7 rounded-lg bg-white border border-slate-200 flex items-center justify-center font-mono text-xs font-bold text-emerald-600">
+                  <div key={index} className="flex items-center gap-4 bg-[#F8FAFC] border border-[#E5E7EB] p-4 rounded-xl">
+                    <span className="h-6 w-6 rounded-lg bg-white border border-[#E5E7EB] flex items-center justify-center font-mono text-xs font-bold text-[#22C55E] shadow-sm">
                       {index + 1}
                     </span>
-                    <span className="text-xs font-bold text-slate-700">{round}</span>
-                    <ChevronRight className="w-4 h-4 text-slate-400 ml-auto" />
+                    <span className="text-xs font-bold text-[#4B5563]">{round}</span>
+                    <ChevronRight className="w-4 h-4 text-[#94A3B8] ml-auto" />
                   </div>
                 ))}
               </div>
@@ -194,34 +194,34 @@ const JobDetail = () => {
           </div>
 
           {/* Right sidebar: Eligibility check, Apply action */}
-          <div className="space-y-8 border-t lg:border-t-0 lg:border-l border-slate-200 pt-8 lg:pt-0 lg:pl-10">
+          <div className="space-y-8 border-t lg:border-t-0 lg:border-l border-[#E5E7EB] pt-8 lg:pt-0 lg:pl-10">
             {/* Eligibility widget */}
             <div className="space-y-4">
-              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest">Eligibility Check</h3>
+              <h3 className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-widest">Eligibility Check</h3>
               
-              <div className={`p-5 rounded-2xl border space-y-4 bg-white shadow-sm ${
-                eligible ? 'border-emerald-200 bg-emerald-50/10' : 'border-rose-100 bg-rose-50/10'
+              <div className={`p-5 rounded-xl border space-y-4 shadow-sm ${
+                eligible ? 'border-[#22C55E]/20 bg-[#22C55E]/5' : 'border-rose-200 bg-rose-50'
               }`}>
                 {eligible ? (
-                  <div className="flex items-center gap-2 text-emerald-600 text-xs font-extrabold">
-                    <ShieldCheck className="w-4.5 h-4.5" /> Eligible to Apply
+                  <div className="flex items-center gap-2 text-[#22C55E] text-xs font-bold">
+                    <ShieldCheck className="w-4 h-4" /> Eligible to Apply
                   </div>
                 ) : (
-                  <div className="flex items-center gap-2 text-rose-500 text-xs font-extrabold">
-                    <ShieldAlert className="w-4.5 h-4.5" /> Not Eligible
+                  <div className="flex items-center gap-2 text-rose-600 text-xs font-bold">
+                    <ShieldAlert className="w-4 h-4" /> Not Eligible
                   </div>
                 )}
 
                 <div className="space-y-3 text-xs font-semibold">
                   <div className="flex justify-between items-center">
-                    <span className="text-slate-450">CGPA Requirement</span>
-                    <span className={`font-bold ${cgpaEligible ? 'text-emerald-600' : 'text-rose-500'}`}>
+                    <span className="text-[#94A3B8]">CGPA Requirement</span>
+                    <span className={`font-bold ${cgpaEligible ? 'text-[#22C55E]' : 'text-rose-600'}`}>
                       {job.eligibility.minCgpa} (You: {user.cgpa})
                     </span>
                   </div>
                   <div className="flex justify-between items-start">
-                    <span className="text-slate-450">Eligible Branches</span>
-                    <span className={`font-bold text-right max-w-[140px] truncate ${branchEligible ? 'text-emerald-650' : 'text-rose-500'}`} title={job.eligibility.eligibleBranches.join(', ')}>
+                    <span className="text-[#94A3B8] font-semibold">Eligible Branches</span>
+                    <span className={`font-bold text-right max-w-[140px] truncate ${branchEligible ? 'text-[#22C55E]' : 'text-rose-600'}`} title={job.eligibility.eligibleBranches.join(', ')}>
                       {job.eligibility.eligibleBranches.join(', ')} (You: {user.branch})
                     </span>
                   </div>
@@ -230,28 +230,28 @@ const JobDetail = () => {
             </div>
 
             {/* Deadline box */}
-            <div className="bg-slate-50 p-5 border border-slate-200 rounded-2xl space-y-2 flex items-center gap-3">
-              <Calendar className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+            <div className="bg-[#F8FAFC] border border-[#E5E7EB] p-5 rounded-xl space-y-2 flex items-center gap-3">
+              <Calendar className="w-5 h-5 text-[#22C55E] flex-shrink-0" />
               <div>
-                <p className="text-[10px] text-slate-450 uppercase font-bold tracking-wider leading-none">Apply Before</p>
-                <p className="text-xs font-bold text-slate-700 mt-1.5">
+                <p className="text-[9px] text-[#94A3B8] uppercase font-bold tracking-wider leading-none">Apply Before</p>
+                <p className="text-xs font-bold text-[#111827] mt-1.5">
                   {new Date(job.deadline).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                 </p>
               </div>
             </div>
 
             {/* Action Button */}
-            <div className="pt-2">
+            <div className="pt-2 font-semibold">
               {application ? (
                 <div className="space-y-4">
-                  <div className="p-5 bg-emerald-50 border border-emerald-200 rounded-2xl text-center">
-                    <CheckCircle2 className="w-7 h-7 text-emerald-600 mx-auto animate-bounce" />
-                    <p className="text-xs font-bold text-slate-800 mt-2">You Have Applied</p>
-                    <p className="text-[10px] text-slate-500 mt-1 font-semibold">Status: <span className="text-emerald-600 font-extrabold">{application.status}</span></p>
+                  <div className="p-5 bg-[#22C55E]/10 border border-[#22C55E]/20 rounded-xl text-center">
+                    <CheckCircle2 className="w-6 h-6 text-[#22C55E] mx-auto" />
+                    <p className="text-xs font-bold text-[#111827] mt-2">You Have Applied</p>
+                    <p className="text-[10px] text-[#4B5563] mt-1">Status: <span className="text-[#22C55E] font-bold">{application.status}</span></p>
                   </div>
                   <button
                     onClick={() => navigate('/applications')}
-                    className="w-full py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold border border-slate-200 transition-colors shadow-sm"
+                    className="w-full py-2.5 bg-white hover:bg-[#F8FAFC] text-[#4B5563] rounded-xl text-xs font-bold border border-[#E5E7EB] transition-all shadow-sm active:scale-[0.98]"
                   >
                     Track Progress
                   </button>
@@ -260,7 +260,7 @@ const JobDetail = () => {
                 <button
                   onClick={handleApply}
                   disabled={isApplying}
-                  className="w-full flex items-center justify-center gap-2 py-4 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs transition-all shadow-md shadow-emerald-600/10 disabled:opacity-55 disabled:cursor-not-allowed hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98]"
+                  className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-[#22C55E] hover:bg-[#16A34A] text-white font-bold rounded-xl text-xs transition-all shadow-md disabled:opacity-55 disabled:cursor-not-allowed active:scale-[0.98]"
                 >
                   {isApplying ? (
                     <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -271,7 +271,7 @@ const JobDetail = () => {
               ) : (
                 <button
                   disabled
-                  className="w-full py-4 px-4 bg-slate-100 border border-slate-200 text-slate-400 font-bold rounded-xl text-xs cursor-not-allowed"
+                  className="w-full py-3 px-4 bg-[#F8FAFC] border border-[#E5E7EB] text-[#94A3B8] font-bold rounded-xl text-xs cursor-not-allowed"
                 >
                   Ineligible for this Drive
                 </button>

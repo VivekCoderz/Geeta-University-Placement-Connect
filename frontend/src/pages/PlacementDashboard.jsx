@@ -219,88 +219,88 @@ const PlacementDashboard = () => {
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto space-y-8 font-sans px-4 sm:px-6 py-6">
+    <div className="w-full max-w-7xl mx-auto space-y-8 font-sans px-4 sm:px-6 py-6 text-[#4B5563]">
       
       {/* Welcome Header */}
-      <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-950 text-white rounded-[2rem] p-8 md:p-10 border border-slate-800 shadow-2xl flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-500/10 rounded-full blur-[150px] pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-teal-500/10 rounded-full blur-[100px] pointer-events-none" />
+      <div className="bg-[#5B4FCF] text-white rounded-2xl p-8 border border-[#7C6AE6] shadow-xl flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#22C55E]/10 rounded-full blur-[150px] pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-white/5 rounded-full blur-[100px] pointer-events-none" />
 
         <div className="relative z-10 space-y-4 flex-1">
           <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-            <div className="h-16 w-16 rounded-2xl bg-gradient-to-tr from-emerald-50 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/20 ring-1 ring-white/20">
-              <GraduationCap className="w-8 h-8 text-slate-950" />
+            <div className="h-12 w-12 rounded-xl bg-[#7C6AE6] border border-white/10 flex items-center justify-center shadow-md">
+              <GraduationCap className="w-6 h-6 text-[#22C55E]" />
             </div>
             <div>
-              <span className="text-[10px] font-black text-emerald-450 uppercase tracking-widest bg-emerald-950/60 border border-emerald-800/40 px-3 py-1 rounded-full">T&P Officer Console</span>
-              <h1 className="text-3xl font-black tracking-tight text-white mt-2">{user?.name || 'T&P Officer'}</h1>
-              <p className="text-slate-400 font-bold text-sm mt-1">{user?.email || 'placementcell@university.edu'}</p>
+              <span className="text-[10px] font-bold text-white bg-[#7C6AE6] border border-white/20 px-3 py-1 rounded-full">T&P Officer Console</span>
+              <h1 className="text-2xl font-bold tracking-tight text-white mt-2">{user?.name || 'T&P Officer'}</h1>
+              <p className="text-purple-100 font-medium text-xs mt-1">{user?.email || 'placementcell@university.edu'}</p>
             </div>
           </div>
         </div>
 
         {/* Quick Stats Grid */}
         <div className="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-4 w-full lg:w-auto">
-          <div className="bg-slate-950/50 backdrop-blur-xl p-4 px-6 rounded-2xl border border-slate-800/80 text-center">
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Active Drives</p>
-            <p className="text-2xl font-black text-emerald-400 mt-1">{totalDrivesCount}</p>
+          <div className="bg-[#7C6AE6]/60 p-4 px-5 rounded-xl border border-white/20 text-center">
+            <p className="text-[10px] font-bold text-purple-100 uppercase tracking-widest">Active Drives</p>
+            <p className="text-xl font-bold text-white mt-1">{totalDrivesCount}</p>
           </div>
-          <div className="bg-slate-950/50 backdrop-blur-xl p-4 px-6 rounded-2xl border border-slate-800/80 text-center">
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Applications</p>
-            <p className="text-2xl font-black text-emerald-400 mt-1">{totalApplicationsCount}</p>
+          <div className="bg-[#7C6AE6]/60 p-4 px-5 rounded-xl border border-white/20 text-center">
+            <p className="text-[10px] font-bold text-purple-100 uppercase tracking-widest">Applications</p>
+            <p className="text-xl font-bold text-white mt-1">{totalApplicationsCount}</p>
           </div>
-          <div className="bg-slate-950/50 backdrop-blur-xl p-4 px-6 rounded-2xl border border-slate-800/80 text-center">
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Shortlisted</p>
-            <p className="text-2xl font-black text-cyan-400 mt-1">{shortlistedCount}</p>
+          <div className="bg-[#7C6AE6]/60 p-4 px-5 rounded-xl border border-white/20 text-center">
+            <p className="text-[10px] font-bold text-purple-100 uppercase tracking-widest">Shortlisted</p>
+            <p className="text-xl font-bold text-purple-50 mt-1">{shortlistedCount}</p>
           </div>
-          <div className="bg-slate-950/50 backdrop-blur-xl p-4 px-6 rounded-2xl border border-slate-800/80 text-center">
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Placed</p>
-            <p className="text-2xl font-black text-teal-400 mt-1">{selectedCount}</p>
+          <div className="bg-[#7C6AE6]/60 p-4 px-5 rounded-xl border border-white/20 text-center">
+            <p className="text-[10px] font-bold text-purple-100 uppercase tracking-widest">Placed</p>
+            <p className="text-xl font-bold text-[#22C55E] mt-1">{selectedCount}</p>
           </div>
         </div>
       </div>
 
       {/* Main Tabs */}
-      <div className="flex flex-wrap bg-slate-100 p-1.5 rounded-2xl border border-slate-200/60 max-w-3xl gap-1">
+      <div className="flex flex-wrap bg-white border border-[#E5E7EB] p-1 rounded-xl max-w-3xl gap-1 shadow-sm">
         <button
           onClick={() => setActiveTab('overview')}
-          className={`flex-1 min-w-[120px] flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-200 ${
-            activeTab === 'overview' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'
+          className={`flex-1 min-w-[120px] flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200 ${
+            activeTab === 'overview' ? 'bg-[#22C55E] text-white shadow-sm' : 'text-[#94A3B8] hover:text-[#4B5563] hover:bg-[#F8FAFC]'
           }`}
         >
-          <BarChart3 className="w-4 h-4" /> Overview
+          <BarChart3 className="w-3.5 h-3.5" /> Overview
         </button>
         <button
           onClick={() => setActiveTab('monitor')}
-          className={`flex-1 min-w-[120px] flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-200 ${
-            activeTab === 'monitor' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'
+          className={`flex-1 min-w-[120px] flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200 ${
+            activeTab === 'monitor' ? 'bg-[#22C55E] text-white shadow-sm' : 'text-[#94A3B8] hover:text-[#4B5563] hover:bg-[#F8FAFC]'
           }`}
         >
-          <Briefcase className="w-4 h-4" /> Monitor Drives
+          <Briefcase className="w-3.5 h-3.5" /> Monitor Drives
         </button>
         <button
           onClick={() => setActiveTab('analyser')}
-          className={`flex-1 min-w-[120px] flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-200 ${
-            activeTab === 'analyser' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'
+          className={`flex-1 min-w-[120px] flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200 ${
+            activeTab === 'analyser' ? 'bg-[#22C55E] text-white shadow-sm' : 'text-[#94A3B8] hover:text-[#4B5563] hover:bg-[#F8FAFC]'
           }`}
         >
-          <Search className="w-4 h-4" /> Analyser
+          <Search className="w-3.5 h-3.5" /> Analyser
         </button>
         <button
           onClick={() => setActiveTab('notify')}
-          className={`flex-1 min-w-[120px] flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-200 ${
-            activeTab === 'notify' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'
+          className={`flex-1 min-w-[120px] flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200 ${
+            activeTab === 'notify' ? 'bg-[#22C55E] text-white shadow-sm' : 'text-[#94A3B8] hover:text-[#4B5563] hover:bg-[#F8FAFC]'
           }`}
         >
-          <Send className="w-4 h-4" /> Send Update
+          <Send className="w-3.5 h-3.5" /> Send Update
         </button>
         <button
           onClick={() => setActiveTab('csv')}
-          className={`flex-1 min-w-[120px] flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-200 ${
-            activeTab === 'csv' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-600 hover:text-slate-900'
+          className={`flex-1 min-w-[120px] flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-200 ${
+            activeTab === 'csv' ? 'bg-[#22C55E] text-white shadow-sm' : 'text-[#94A3B8] hover:text-[#4B5563] hover:bg-[#F8FAFC]'
           }`}
         >
-          <Upload className="w-4 h-4" /> Shortlist CSV
+          <Upload className="w-3.5 h-3.5" /> Shortlist CSV
         </button>
       </div>
 
@@ -308,24 +308,24 @@ const PlacementDashboard = () => {
 
       {/* 1. OVERVIEW & ANALYTICS */}
       {activeTab === 'overview' && (
-        <div className="space-y-8">
+        <div className="space-y-8 animate-in fade-in duration-300">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Main Stats Graph representation */}
-            <div className="md:col-span-2 bg-white rounded-3xl border border-slate-200 p-6 md:p-8 space-y-6 shadow-sm">
-              <h3 className="text-lg font-black text-slate-800 tracking-tight flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-emerald-600" /> Branch-wise Placement Analytics
+            <div className="md:col-span-2 bg-white rounded-2xl border border-[#E5E7EB] p-6 md:p-8 space-y-6 shadow-sm">
+              <h3 className="text-base font-bold text-[#111827] tracking-tight flex items-center gap-2">
+                <TrendingUp className="w-4 h-4 text-[#22C55E]" /> Branch-wise Placement Analytics
               </h3>
 
               <div className="space-y-5">
                 {branchStats.map(stat => (
                   <div key={stat.branch} className="space-y-2">
                     <div className="flex justify-between items-center text-xs font-bold">
-                      <span className="text-slate-800 font-black">{stat.branch} branch</span>
-                      <span className="text-slate-500">{stat.selected} Placed / {stat.applied} Applied ({stat.rate}%)</span>
+                      <span className="text-[#111827] font-bold">{stat.branch} branch</span>
+                      <span className="text-[#4B5563]">{stat.selected} Placed / {stat.applied} Applied ({stat.rate}%)</span>
                     </div>
-                    <div className="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
+                    <div className="w-full bg-[#F8FAFC] h-2.5 rounded-full overflow-hidden border border-[#E5E7EB]/50">
                       <div 
-                        className="bg-gradient-to-r from-emerald-500 to-teal-400 h-full rounded-full transition-all duration-500" 
+                        className="bg-[#22C55E] h-full rounded-full transition-all duration-500" 
                         style={{ width: `${Math.min(stat.rate, 100)}%` }}
                       />
                     </div>
@@ -335,64 +335,64 @@ const PlacementDashboard = () => {
             </div>
 
             {/* Placement Summary */}
-            <div className="bg-white rounded-3xl border border-slate-200 p-6 md:p-8 space-y-6 shadow-sm">
-              <h3 className="text-lg font-black text-slate-800 tracking-tight">Placement Summary</h3>
+            <div className="bg-white rounded-2xl border border-[#E5E7EB] p-6 md:p-8 space-y-6 shadow-sm">
+              <h3 className="text-base font-bold text-[#111827] tracking-tight">Placement Summary</h3>
               
-              <div className="space-y-4 text-xs font-bold">
-                <div className="flex justify-between py-2 border-b border-slate-100">
-                  <span className="text-slate-450">Overall Placement Rate</span>
-                  <span className="text-emerald-650 font-black">{placementRate}%</span>
+              <div className="space-y-4 text-xs font-semibold">
+                <div className="flex justify-between py-2 border-b border-[#E5E7EB]">
+                  <span className="text-[#94A3B8]">Overall Placement Rate</span>
+                  <span className="text-[#22C55E] font-bold">{placementRate}%</span>
                 </div>
-                <div className="flex justify-between py-2 border-b border-slate-100">
-                  <span className="text-slate-450">Selected Candidates</span>
-                  <span className="text-slate-800 font-black">{selectedCount}</span>
+                <div className="flex justify-between py-2 border-b border-[#E5E7EB]">
+                  <span className="text-[#94A3B8]">Selected Candidates</span>
+                  <span className="text-[#111827] font-bold">{selectedCount}</span>
                 </div>
-                <div className="flex justify-between py-2 border-b border-slate-100">
-                  <span className="text-slate-450">Evaluation Shortlists</span>
-                  <span className="text-slate-800 font-black">{shortlistedCount}</span>
+                <div className="flex justify-between py-2 border-b border-[#E5E7EB]">
+                  <span className="text-[#94A3B8]">Evaluation Shortlists</span>
+                  <span className="text-[#111827] font-bold">{shortlistedCount}</span>
                 </div>
-                <div className="flex justify-between py-2 border-b border-slate-100">
-                  <span className="text-slate-450">Direct Applications</span>
-                  <span className="text-slate-800 font-black">{totalApplicationsCount - shortlistedCount}</span>
+                <div className="flex justify-between py-2 border-b border-[#E5E7EB]">
+                  <span className="text-[#94A3B8]">Direct Applications</span>
+                  <span className="text-[#111827] font-bold">{totalApplicationsCount - shortlistedCount}</span>
                 </div>
               </div>
 
-              <div className="bg-emerald-50/50 border border-emerald-250 p-5 rounded-2xl text-center space-y-1.5">
-                <CheckCircle2 className="w-7 h-7 text-emerald-600 mx-auto" />
-                <p className="text-xs font-black text-emerald-800 uppercase tracking-widest">Portal Active</p>
-                <p className="text-[10px] text-slate-500 font-semibold leading-relaxed">Notifications and shortlists are automatically synced with student dashboards and recruiter portals.</p>
+              <div className="bg-[#22C55E]/10 border border-[#22C55E]/20 p-5 rounded-xl text-center space-y-1.5">
+                <CheckCircle2 className="w-6 h-6 text-[#22C55E] mx-auto" />
+                <p className="text-xs font-bold text-[#22C55E] uppercase tracking-widest">Portal Active</p>
+                <p className="text-[10px] text-[#4B5563] font-medium leading-relaxed">Notifications and shortlists are automatically synced with student dashboards and recruiter portals.</p>
               </div>
             </div>
           </div>
 
           {/* Recruiter proposed schedule list - matches the exact requested flow */}
-          <div className="bg-white rounded-3xl border border-slate-200 p-6 md:p-8 space-y-6 shadow-sm">
-            <h3 className="text-lg font-black text-slate-800 tracking-tight flex items-center gap-2">
-              <BellRing className="w-5 h-5 text-emerald-600" /> Recruiter Round Schedule Proposals
+          <div className="bg-white rounded-2xl border border-[#E5E7EB] p-6 md:p-8 space-y-6 shadow-sm">
+            <h3 className="text-base font-bold text-[#111827] tracking-tight flex items-center gap-2">
+              <BellRing className="w-4 h-4 text-[#7C3AED]" /> Recruiter Round Schedule Proposals
             </h3>
-            <p className="text-xs text-slate-450 font-semibold">Incoming proposals from company recruiters specifying round counts, target intake, and timings. Review and notify students.</p>
+            <p className="text-xs text-[#4B5563] font-medium">Incoming proposals from company recruiters specifying round counts, target intake, and timings. Review and notify students.</p>
 
             {proposals.length === 0 ? (
-              <div className="text-center py-10 bg-slate-50 rounded-2xl border border-dashed border-slate-250">
-                <Clock className="w-8 h-8 text-slate-350 mx-auto mb-2" />
-                <p className="text-xs font-bold text-slate-500">No round schedule proposals received from recruiters yet.</p>
+              <div className="text-center py-10 bg-[#F8FAFC] rounded-xl border border-dashed border-[#E5E7EB]">
+                <Clock className="w-8 h-8 text-[#94A3B8] mx-auto mb-2" />
+                <p className="text-xs font-medium text-[#94A3B8]">No round schedule proposals received from recruiters yet.</p>
               </div>
             ) : (
               <div className="space-y-4">
                 {proposals.map((proposal) => (
-                  <div key={proposal._id} className="p-5 bg-slate-50 rounded-2xl border border-slate-200/80 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 transition-all hover:bg-white hover:border-slate-350 hover:shadow-sm">
+                  <div key={proposal._id} className="p-5 bg-[#F8FAFC] rounded-xl border border-[#E5E7EB] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 transition-all hover:bg-[#F1F5F9]">
                     <div className="space-y-2 flex-1">
                       <div className="flex items-center gap-2">
-                        <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
-                        <span className="text-[10px] font-black text-amber-600 uppercase tracking-wider bg-amber-50 px-2 py-0.5 rounded border border-amber-200">Pending Evaluation Setup</span>
+                        <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />
+                        <span className="text-[10px] font-bold text-amber-600 uppercase tracking-wider bg-amber-50 px-2.5 py-0.5 rounded border border-amber-250">Pending Evaluation Setup</span>
                       </div>
-                      <p className="text-xs font-semibold text-slate-700 whitespace-pre-wrap leading-relaxed">{proposal.message}</p>
-                      <p className="text-[9px] text-slate-400 font-bold">Received: {new Date(proposal.createdAt).toLocaleString()}</p>
+                      <p className="text-xs font-semibold text-[#4B5563] whitespace-pre-wrap leading-relaxed">{proposal.message}</p>
+                      <p className="text-[9px] text-[#94A3B8] font-bold">Received: {new Date(proposal.createdAt).toLocaleString()}</p>
                     </div>
 
                     <button
                       onClick={() => handleApproveProposal(proposal)}
-                      className="px-4 py-2 bg-emerald-650 hover:bg-emerald-600 text-white text-xs font-black rounded-xl shadow-sm hover:shadow transition-all whitespace-nowrap self-end sm:self-center"
+                      className="px-4 py-2 bg-[#22C55E] hover:bg-[#16A34A] text-white text-xs font-bold rounded-xl shadow-sm transition-all whitespace-nowrap self-end sm:self-center active:scale-[0.98]"
                     >
                       Approve & Dispatch Update
                     </button>
@@ -406,22 +406,22 @@ const PlacementDashboard = () => {
 
       {/* 2. DRIVES MONITOR */}
       {activeTab === 'monitor' && (
-        <div className="bg-white rounded-3xl border border-slate-200 p-6 md:p-8 space-y-6 shadow-sm">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-slate-200">
+        <div className="bg-white rounded-2xl border border-[#E5E7EB] p-6 md:p-8 space-y-6 shadow-sm animate-in fade-in duration-300">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-[#E5E7EB]">
             <div>
-              <h3 className="text-lg font-black text-slate-800 tracking-tight">Monitor Campus Placement Drives</h3>
-              <p className="text-xs text-slate-455 font-semibold mt-1">Real-time drive status, eligibility statistics, and applications received.</p>
+              <h3 className="text-base font-bold text-[#111827] tracking-tight">Monitor Campus Placement Drives</h3>
+              <p className="text-xs text-[#4B5563] font-medium mt-1">Real-time drive status, eligibility statistics, and applications received.</p>
             </div>
             
             <div className="relative w-full sm:w-64">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#94A3B8]">
                 <Search className="w-4 h-4" />
               </div>
               <input
                 type="text"
                 value={monitorSearch}
                 onChange={(e) => setMonitorSearch(e.target.value)}
-                className="pl-9 block w-full py-2 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-bold"
+                className="pl-9 block w-full py-2 px-3 bg-white border border-[#E5E7EB] rounded-xl text-xs placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-[#7C3AED]/10 focus:border-[#7C3AED] font-medium text-[#111827]"
                 placeholder="Search drive or company..."
               />
             </div>
@@ -439,38 +439,38 @@ const PlacementDashboard = () => {
                 const driveShortlisted = driveApps.filter(a => a.status === 'Shortlisted').length;
                 
                 return (
-                  <div key={drive._id} className="p-6 rounded-[1.8rem] border border-slate-200 bg-slate-50/30 hover:bg-white hover:border-slate-300 hover:shadow-lg transition-all duration-300 space-y-4">
+                  <div key={drive._id} className="p-6 rounded-xl border border-[#E5E7EB] bg-[#F8FAFC] hover:bg-[#F1F5F9] transition-all duration-300 space-y-4">
                     <div className="flex justify-between items-start gap-2">
                       <div className="flex items-center gap-3">
-                        <div className="h-11 w-11 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center font-bold text-emerald-700 text-sm">
+                        <div className="h-10 w-10 rounded-xl bg-white border border-[#E5E7EB] flex items-center justify-center font-bold text-[#7C3AED] text-xs shadow-sm">
                           {drive.companyId?.name ? drive.companyId.name.substring(0,2).toUpperCase() : 'CO'}
                         </div>
                         <div>
-                          <h4 className="font-extrabold text-slate-800 text-sm tracking-tight">{drive.title}</h4>
-                          <p className="text-[10px] text-slate-500 font-bold mt-0.5">{drive.companyId?.name || 'Company Profile'}</p>
+                          <h4 className="font-bold text-[#111827] text-sm tracking-tight">{drive.title}</h4>
+                          <p className="text-[10px] text-[#94A3B8] font-semibold mt-0.5">{drive.companyId?.name || 'Company Profile'}</p>
                         </div>
                       </div>
-                      <span className="text-[10px] bg-emerald-50 border border-emerald-200 text-emerald-750 font-black px-2.5 py-1 rounded-full uppercase">
+                      <span className="text-[10px] bg-[#22C55E]/10 border border-[#22C55E]/20 text-[#22C55E] font-bold px-2.5 py-1 rounded-full uppercase">
                         {drive.package} LPA
                       </span>
                     </div>
 
-                    <div className="grid grid-cols-3 gap-3 bg-white p-3.5 rounded-xl border border-slate-200/60 text-center">
+                    <div className="grid grid-cols-3 gap-3 bg-white p-3 rounded-xl border border-[#E5E7EB] text-center font-semibold shadow-sm">
                       <div>
-                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Applicants</p>
-                        <p className="text-sm font-black text-slate-700 mt-1">{driveApps.length}</p>
+                        <p className="text-[9px] font-bold text-[#94A3B8] uppercase tracking-widest">Applicants</p>
+                        <p className="text-sm font-bold text-[#111827] mt-1">{driveApps.length}</p>
                       </div>
                       <div>
-                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Shortlisted</p>
-                        <p className="text-sm font-black text-cyan-600 mt-1">{driveShortlisted}</p>
+                        <p className="text-[9px] font-bold text-[#94A3B8] uppercase tracking-widest">Shortlisted</p>
+                        <p className="text-sm font-bold text-[#7C3AED] mt-1">{driveShortlisted}</p>
                       </div>
                       <div>
-                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Selected</p>
-                        <p className="text-sm font-black text-emerald-600 mt-1">{driveSelected}</p>
+                        <p className="text-[9px] font-bold text-[#94A3B8] uppercase tracking-widest">Selected</p>
+                        <p className="text-sm font-bold text-[#22C55E] mt-1">{driveSelected}</p>
                       </div>
                     </div>
 
-                    <div className="flex justify-between items-center text-[10px] text-slate-500 font-bold pt-2 border-t border-slate-200/50">
+                    <div className="flex justify-between items-center text-[10px] text-[#94A3B8] font-semibold pt-2.5 border-t border-[#E5E7EB]">
                       <span>Cut-off: &gt;={drive.eligibility?.cgpa} CGPA</span>
                       <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> Deadline: {new Date(drive.deadline).toLocaleDateString()}</span>
                     </div>
@@ -483,51 +483,51 @@ const PlacementDashboard = () => {
 
       {/* 3. STUDENT ANALYSER */}
       {activeTab === 'analyser' && (
-        <div className="bg-white rounded-3xl border border-slate-200 p-6 md:p-8 space-y-6 shadow-sm">
-          <div className="border-b border-slate-200 pb-5 space-y-4">
+        <div className="bg-white rounded-2xl border border-[#E5E7EB] p-6 md:p-8 space-y-6 shadow-sm animate-in fade-in duration-300">
+          <div className="border-b border-[#E5E7EB] pb-5 space-y-4">
             <div>
-              <h3 className="text-lg font-black text-slate-800 tracking-tight">Student Talent Analyser</h3>
-              <p className="text-xs text-slate-455 font-semibold mt-1">Filter, examine, and track selection metrics for campus registered students.</p>
+              <h3 className="text-base font-bold text-[#111827] tracking-tight">Student Talent Analyser</h3>
+              <p className="text-xs text-[#4B5563] font-medium mt-1">Filter, examine, and track selection metrics for campus registered students.</p>
             </div>
 
             {/* Filters Bar */}
             <div className="flex flex-wrap gap-4 items-center">
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-black text-slate-400 tracking-wider">Branch:</span>
+                <span className="text-[10px] font-bold text-[#94A3B8] tracking-wider">Branch:</span>
                 <select
                   value={analyserBranch}
                   onChange={(e) => setAnalyserBranch(e.target.value)}
-                  className="py-1.5 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none"
+                  className="py-1.5 px-3 bg-white border border-[#E5E7EB] rounded-xl text-xs font-semibold text-[#4B5563] focus:outline-none"
                 >
-                  <option value="All">All Branches</option>
-                  {branchesList.map(b => <option key={b} value={b}>{b}</option>)}
+                  <option value="All" className="bg-white text-[#4B5563]">All Branches</option>
+                  {branchesList.map(b => <option key={b} value={b} className="bg-white text-[#4B5563]">{b}</option>)}
                 </select>
               </div>
 
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-black text-slate-400 tracking-wider">Min CGPA:</span>
+                <span className="text-[10px] font-bold text-[#94A3B8] tracking-wider">Min CGPA:</span>
                 <select
                   value={analyserCgpa}
                   onChange={(e) => setAnalyserCgpa(e.target.value)}
-                  className="py-1.5 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none"
+                  className="py-1.5 px-3 bg-white border border-[#E5E7EB] rounded-xl text-xs font-semibold text-[#4B5563] focus:outline-none"
                 >
-                  <option value="0">All CGPA</option>
-                  <option value="6.0">&gt;= 6.0 CGPA</option>
-                  <option value="7.0">&gt;= 7.0 CGPA</option>
-                  <option value="8.0">&gt;= 8.0 CGPA</option>
-                  <option value="9.0">&gt;= 9.0 CGPA</option>
+                  <option value="0" className="bg-white text-[#4B5563]">All CGPA</option>
+                  <option value="6.0" className="bg-white text-[#4B5563]">&gt;= 6.0 CGPA</option>
+                  <option value="7.0" className="bg-white text-[#4B5563]">&gt;= 7.0 CGPA</option>
+                  <option value="8.0" className="bg-white text-[#4B5563]">&gt;= 8.0 CGPA</option>
+                  <option value="9.0" className="bg-white text-[#4B5563]">&gt;= 9.0 CGPA</option>
                 </select>
               </div>
 
               <div className="relative flex-grow sm:flex-grow-0 sm:w-64 ml-auto">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#94A3B8]">
                   <Search className="w-4 h-4" />
                 </div>
                 <input
                   type="text"
                   value={analyserSearch}
                   onChange={(e) => setAnalyserSearch(e.target.value)}
-                  className="pl-9 block w-full py-1.5 px-3 bg-slate-50 border border-slate-200 rounded-xl text-xs placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 font-bold"
+                  className="pl-9 block w-full py-1.5 px-3 bg-white border border-[#E5E7EB] rounded-xl text-xs placeholder-slate-400 focus:outline-none focus:ring-4 focus:ring-[#7C3AED]/10 focus:border-[#7C3AED] font-medium text-[#111827]"
                   placeholder="Search student name..."
                 />
               </div>
@@ -540,33 +540,33 @@ const PlacementDashboard = () => {
               .filter(s => parseFloat(s.cgpa) >= parseFloat(analyserCgpa))
               .filter(s => s.name?.toLowerCase().includes(analyserSearch.toLowerCase()))
               .map(student => (
-                <div key={student._id} className="p-5 bg-slate-50/50 rounded-2xl border border-slate-200 space-y-4 hover:shadow-md transition-all">
+                <div key={student._id} className="p-5 bg-[#F8FAFC] rounded-xl border border-[#E5E7EB] space-y-4 hover:bg-[#F1F5F9] transition-all duration-300">
                   <div className="flex justify-between items-start gap-2">
                     <div>
-                      <h4 className="font-extrabold text-slate-800 text-sm leading-tight">{student.name}</h4>
-                      <p className="text-[10px] text-slate-455 font-mono mt-0.5">{student.rollNumber}</p>
+                      <h4 className="font-bold text-[#111827] text-sm leading-tight">{student.name}</h4>
+                      <p className="text-[10px] text-[#94A3B8] font-mono mt-0.5">{student.rollNumber}</p>
                     </div>
-                    <span className="text-[10px] font-black px-2 py-0.5 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-md">
+                    <span className="text-[10px] font-bold px-2 py-0.5 bg-[#22C55E]/10 border border-[#22C55E]/20 text-[#22C55E] rounded-md">
                       CGPA: {student.cgpa}
                     </span>
                   </div>
 
-                  <div className="space-y-1.5 text-[11px] font-bold text-slate-550 border-t border-slate-200/50 pt-3">
-                    <p>Branch: {student.branch}</p>
-                    <p>Study Year: {student.year} Year</p>
-                    <p>Email: {student.email}</p>
-                    <p>Applied Drives: {student.appliedJobsCount} drives</p>
+                  <div className="space-y-1.5 text-[11px] font-semibold text-[#4B5563] border-t border-[#E5E7EB] pt-3">
+                    <p>Branch: <strong className="text-[#111827]">{student.branch}</strong></p>
+                    <p>Study Year: <strong className="text-[#111827]">{student.year} Year</strong></p>
+                    <p>Email: <strong className="text-[#111827] font-mono">{student.email}</strong></p>
+                    <p>Applied Drives: <strong className="text-[#111827]">{student.appliedJobsCount} drives</strong></p>
                   </div>
 
                   {student.skills && student.skills.length > 0 && (
                     <div className="flex flex-wrap gap-1 pt-1.5">
                       {student.skills.slice(0,3).map((s, idx) => (
-                        <span key={idx} className="bg-white border border-slate-200 text-slate-600 text-[9px] px-2 py-0.5 rounded font-bold">
+                        <span key={idx} className="bg-white border border-[#E5E7EB] text-[#4B5563] text-[9px] px-2 py-0.5 rounded font-semibold">
                           {s}
                         </span>
                       ))}
                       {student.skills.length > 3 && (
-                        <span className="text-[9px] text-slate-400 font-bold self-center">+{student.skills.length - 3} more</span>
+                        <span className="text-[9px] text-[#94A3B8] font-semibold self-center ml-1">+{student.skills.length - 3} more</span>
                       )}
                     </div>
                   )}
@@ -576,40 +576,40 @@ const PlacementDashboard = () => {
         </div>
       )}
 
-      {/* 4. SEND UPDATE / SCHEDULE ROUND */}
+      {/* 4. SEND UPDATE / BROADCAST NOTIFICATION */}
       {activeTab === 'notify' && (
-        <div className="bg-white rounded-3xl border border-slate-200 p-8 max-w-2xl mx-auto space-y-6 shadow-sm">
-          <div className="border-b border-slate-200 pb-5">
-            <h2 className="text-xl font-black text-slate-850 tracking-tight">Broadcast Placement Cell Updates</h2>
-            <p className="text-xs text-slate-455 font-semibold mt-1">Send round schedules, guidelines, or announcements directly to student profiles and emails.</p>
+        <div className="bg-white rounded-2xl border border-[#E5E7EB] p-8 max-w-2xl mx-auto space-y-6 shadow-sm animate-in fade-in duration-300">
+          <div className="border-b border-[#E5E7EB] pb-5">
+            <h2 className="text-lg font-bold text-[#111827] tracking-tight">Broadcast Placement Cell Updates</h2>
+            <p className="text-xs text-[#4B5563] font-medium mt-1">Send round schedules, guidelines, or announcements directly to student profiles and emails.</p>
           </div>
 
           {notifSuccess && (
-            <div className="bg-emerald-50 border border-emerald-100 text-emerald-700 p-4 rounded-xl flex items-center gap-3">
-              <CheckCircle2 className="w-5 h-5 text-emerald-500 flex-shrink-0" />
-              <p className="text-xs font-bold leading-normal">{notifSuccess}</p>
+            <div className="bg-[#22C55E]/10 border border-[#22C55E]/20 text-[#22C55E] p-4 rounded-xl flex items-center gap-3">
+              <CheckCircle2 className="w-5 h-5 text-[#22C55E] flex-shrink-0" />
+              <p className="text-xs font-semibold leading-normal">{notifSuccess}</p>
             </div>
           )}
 
           {notifError && (
-            <div className="bg-rose-50 border border-rose-100 text-rose-655 p-4 rounded-xl flex items-start gap-3">
+            <div className="bg-rose-50 border border-rose-200 text-rose-600 p-4 rounded-xl flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-rose-500 mt-0.5 flex-shrink-0" />
-              <p className="text-xs font-bold leading-normal">{notifError}</p>
+              <p className="text-xs font-semibold leading-normal">{notifError}</p>
             </div>
           )}
 
-          <form className="space-y-6 text-slate-800" onSubmit={handleSendNotification}>
+          <form className="space-y-6 text-[#4B5563] font-semibold" onSubmit={handleSendNotification}>
             {/* Target Job Selector */}
             <div className="space-y-2">
-              <label className="text-xs font-extrabold text-slate-655 uppercase tracking-wider">Target Placement Drive (Optional)</label>
+              <label className="text-xs font-bold text-[#94A3B8] uppercase tracking-wider">Target Placement Drive (Optional)</label>
               <select
                 value={notifForm.jobId}
                 onChange={(e) => setNotifForm(prev => ({ ...prev, jobId: e.target.value }))}
-                className="block w-full py-3.5 px-4 bg-slate-50 border border-slate-250 focus:bg-white rounded-xl text-sm font-semibold text-slate-800 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500"
+                className="block w-full py-3 px-4 bg-[#F8FAFC] border border-[#E5E7EB] rounded-xl text-sm font-medium text-[#111827] focus:outline-none"
               >
-                <option value="">-- General Campus Broadcast (Send to All Students) --</option>
+                <option value="" className="bg-white text-[#4B5563]">-- General Campus Broadcast (Send to All Students) --</option>
                 {drives.map(drive => (
-                  <option key={drive._id} value={drive._id}>
+                  <option key={drive._id} value={drive._id} className="bg-white text-[#4B5563]">
                     {drive.companyId?.name || 'Company'} - {drive.title}
                   </option>
                 ))}
@@ -618,29 +618,29 @@ const PlacementDashboard = () => {
 
             {/* Drive specific round scheduler */}
             {notifForm.jobId && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 p-5 bg-slate-50/50 border border-slate-200 rounded-2xl animate-fade-in">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 p-5 bg-[#F8FAFC] border border-[#E5E7EB] rounded-xl">
                 {/* Round Name */}
                 <div className="space-y-2">
-                  <label className="text-xs font-extrabold text-slate-655 uppercase tracking-wider">Round Name *</label>
+                  <label className="text-xs font-bold text-[#4B5563] uppercase tracking-wider">Round Name *</label>
                   <input
                     type="text"
                     required={!!notifForm.jobId}
                     value={notifForm.roundName}
                     onChange={(e) => setNotifForm(prev => ({ ...prev, roundName: e.target.value }))}
-                    className="block w-full py-3 px-4 bg-white border border-slate-250 rounded-xl text-sm font-semibold text-slate-800 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500"
+                    className="block w-full py-2.5 px-4 bg-white border border-[#E5E7EB] focus:bg-[#F8FAFC] rounded-xl text-sm font-medium text-[#111827] focus:outline-none"
                     placeholder="e.g. Aptitude Round, Technical Interview"
                   />
                 </div>
 
                 {/* Round Date */}
                 <div className="space-y-2">
-                  <label className="text-xs font-extrabold text-slate-655 uppercase tracking-wider">Scheduled Date/Time *</label>
+                  <label className="text-xs font-bold text-[#4B5563] uppercase tracking-wider">Scheduled Date/Time *</label>
                   <input
                     type="datetime-local"
                     required={!!notifForm.jobId}
                     value={notifForm.roundDate}
                     onChange={(e) => setNotifForm(prev => ({ ...prev, roundDate: e.target.value }))}
-                    className="block w-full py-3 px-4 bg-white border border-slate-250 rounded-xl text-sm font-semibold text-slate-800 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500"
+                    className="block w-full py-2.5 px-4 bg-white border border-[#E5E7EB] focus:bg-[#F8FAFC] rounded-xl text-sm font-medium text-[#111827] focus:outline-none"
                   />
                 </div>
               </div>
@@ -648,13 +648,13 @@ const PlacementDashboard = () => {
 
             {/* Message */}
             <div className="space-y-2">
-              <label className="text-xs font-extrabold text-slate-655 uppercase tracking-wider">Announcement / Instructions *</label>
+              <label className="text-xs font-bold text-[#94A3B8] uppercase tracking-wider">Announcement / Instructions *</label>
               <textarea
                 required
-                rows="5"
+                rows="4"
                 value={notifForm.message}
                 onChange={(e) => setNotifForm(prev => ({ ...prev, message: e.target.value }))}
-                className="block w-full py-3.5 px-4 bg-slate-50/50 border border-slate-250 focus:bg-white rounded-xl text-sm font-semibold text-slate-800 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500"
+                className="block w-full py-3.5 px-4 bg-[#F8FAFC] border border-[#E5E7EB] rounded-xl text-sm font-medium text-[#111827] focus:outline-none"
                 placeholder="Type update guidelines, test links, venue or dates..."
               />
             </div>
@@ -663,13 +663,13 @@ const PlacementDashboard = () => {
               <button
                 type="submit"
                 disabled={isSendingNotif}
-                className="group relative w-full flex justify-center py-3.5 px-4 border border-transparent text-sm font-extrabold rounded-xl text-white bg-emerald-600 hover:bg-emerald-500 focus:outline-none focus:ring-4 focus:ring-emerald-500/25 disabled:opacity-50 transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98]"
+                className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-bold rounded-xl text-white bg-[#22C55E] hover:bg-[#16A34A] focus:outline-none focus:ring-4 focus:ring-[#22C55E]/20 disabled:opacity-50 transition-all duration-200 shadow-md active:scale-[0.98]"
               >
                 {isSendingNotif ? (
                   <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 ) : (
                   <span className="flex items-center gap-2">
-                    <Send className="w-4 h-4" /> Send Update
+                    <Send className="w-4 h-4 text-white" /> Send Update
                   </span>
                 )}
               </button>
@@ -680,39 +680,39 @@ const PlacementDashboard = () => {
 
       {/* 5. UPLOAD SHORTLIST CSV */}
       {activeTab === 'csv' && (
-        <div className="bg-white rounded-3xl border border-slate-200 p-8 max-w-2xl mx-auto space-y-6 shadow-sm">
-          <div className="border-b border-slate-200 pb-5">
-            <h2 className="text-xl font-black text-slate-850 tracking-tight">Upload Round-wise Shortlist CSV</h2>
-            <p className="text-xs text-slate-455 font-semibold mt-1">Upload student roll numbers or emails. System matches student records, updates round results, and emails notifications automatically.</p>
+        <div className="bg-white rounded-2xl border border-[#E5E7EB] p-8 max-w-2xl mx-auto space-y-6 shadow-sm animate-in fade-in duration-300">
+          <div className="border-b border-[#E5E7EB] pb-5">
+            <h2 className="text-lg font-bold text-[#111827] tracking-tight">Upload Round-wise Shortlist CSV</h2>
+            <p className="text-xs text-[#4B5563] font-medium mt-1">Upload student roll numbers or emails. System matches student records, updates round results, and emails notifications automatically.</p>
           </div>
 
           {csvSuccess && (
-            <div className="bg-emerald-50 border border-emerald-100 text-emerald-700 p-4 rounded-xl flex items-center gap-3">
-              <CheckCircle2 className="w-5 h-5 text-emerald-500 flex-shrink-0" />
-              <p className="text-xs font-bold leading-normal">{csvSuccess}</p>
+            <div className="bg-[#22C55E]/10 border border-[#22C55E]/20 text-[#22C55E] p-4 rounded-xl flex items-center gap-3">
+              <CheckCircle2 className="w-5 h-5 text-[#22C55E] flex-shrink-0" />
+              <p className="text-xs font-semibold leading-normal">{csvSuccess}</p>
             </div>
           )}
 
           {csvError && (
-            <div className="bg-rose-50 border border-rose-100 text-rose-655 p-4 rounded-xl flex items-start gap-3">
+            <div className="bg-rose-50 border border-rose-200 text-rose-600 p-4 rounded-xl flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-rose-500 mt-0.5 flex-shrink-0" />
-              <p className="text-xs font-bold leading-normal">{csvError}</p>
+              <p className="text-xs font-semibold leading-normal">{csvError}</p>
             </div>
           )}
 
-          <form className="space-y-6 text-slate-800" onSubmit={handleUploadCsv}>
+          <form className="space-y-6 text-[#4B5563] font-semibold" onSubmit={handleUploadCsv}>
             {/* Target Job Selector */}
             <div className="space-y-2">
-              <label className="text-xs font-extrabold text-slate-655 uppercase tracking-wider">Placement Drive *</label>
+              <label className="text-xs font-bold text-[#94A3B8] uppercase tracking-wider">Placement Drive *</label>
               <select
                 required
                 value={csvForm.jobId}
                 onChange={(e) => setCsvForm(prev => ({ ...prev, jobId: e.target.value }))}
-                className="block w-full py-3.5 px-4 bg-slate-50 border border-slate-250 focus:bg-white rounded-xl text-sm font-semibold text-slate-800 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500"
+                className="block w-full py-3 px-4 bg-[#F8FAFC] border border-[#E5E7EB] rounded-xl text-sm font-medium text-[#111827] focus:outline-none"
               >
-                <option value="">-- Select Drive --</option>
+                <option value="" className="bg-white text-[#4B5563]">-- Select Drive --</option>
                 {drives.map(drive => (
-                  <option key={drive._id} value={drive._id}>
+                  <option key={drive._id} value={drive._id} className="bg-white text-[#4B5563]">
                     {drive.companyId?.name || 'Company'} - {drive.title}
                   </option>
                 ))}
@@ -721,22 +721,22 @@ const PlacementDashboard = () => {
 
             {/* Round Name */}
             <div className="space-y-2">
-              <label className="text-xs font-extrabold text-slate-655 uppercase tracking-wider">Round Name *</label>
+              <label className="text-xs font-bold text-[#94A3B8] uppercase tracking-wider">Round Name *</label>
               <input
                 type="text"
                 required
                 value={csvForm.roundName}
                 onChange={(e) => setCsvForm(prev => ({ ...prev, roundName: e.target.value }))}
-                className="block w-full py-3.5 px-4 bg-slate-50 border border-slate-250 focus:bg-white rounded-xl text-sm font-semibold text-slate-800 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500"
+                className="block w-full py-2.5 px-4 bg-white border border-[#E5E7EB] rounded-xl text-sm font-medium text-[#111827] focus:outline-none"
                 placeholder="e.g. Aptitude Test, GD Round, Interview Round"
               />
             </div>
 
             {/* File Upload Area */}
             <div className="space-y-2">
-              <label className="text-xs font-extrabold text-slate-655 uppercase tracking-wider">Upload Shortlist CSV *</label>
+              <label className="text-xs font-bold text-[#94A3B8] uppercase tracking-wider">Upload Shortlist CSV *</label>
               
-              <div className="border-2 border-dashed border-slate-250 hover:border-emerald-500/50 rounded-2xl p-6 text-center cursor-pointer bg-slate-50/50 hover:bg-white transition-all relative">
+              <div className="border-2 border-dashed border-[#E5E7EB] hover:border-[#22C55E]/40 rounded-xl p-6 text-center cursor-pointer bg-[#F8FAFC] hover:bg-[#F1F5F9] transition-all relative">
                 <input
                   type="file"
                   required
@@ -746,14 +746,14 @@ const PlacementDashboard = () => {
                 />
                 
                 <div className="space-y-2.5">
-                  <div className="h-10 w-10 rounded-xl bg-white shadow-sm border border-slate-200 flex items-center justify-center mx-auto text-slate-550">
+                  <div className="h-10 w-10 rounded-xl bg-white border border-[#E5E7EB] flex items-center justify-center mx-auto text-[#22C55E] shadow-sm">
                     <Upload className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-slate-700">
+                    <p className="text-xs font-bold text-[#4B5563]">
                       {csvFile ? csvFile.name : 'Click to upload or drag & drop CSV'}
                     </p>
-                    <p className="text-[10px] text-slate-400 font-semibold mt-1">
+                    <p className="text-[10px] text-[#94A3B8] font-semibold mt-1">
                       File must contain roll numbers or emails (one per line)
                     </p>
                   </div>
@@ -765,13 +765,13 @@ const PlacementDashboard = () => {
               <button
                 type="submit"
                 disabled={isUploadingCsv}
-                className="group relative w-full flex justify-center py-3.5 px-4 border border-transparent text-sm font-extrabold rounded-xl text-white bg-emerald-600 hover:bg-emerald-500 focus:outline-none focus:ring-4 focus:ring-emerald-500/25 disabled:opacity-50 transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98]"
+                className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-bold rounded-xl text-white bg-[#22C55E] hover:bg-[#16A34A] focus:outline-none focus:ring-4 focus:ring-[#22C55E]/20 disabled:opacity-50 transition-all duration-200 shadow-md active:scale-[0.98]"
               >
                 {isUploadingCsv ? (
                   <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 ) : (
                   <span className="flex items-center gap-2">
-                    <Upload className="w-4 h-4" /> Process & Shortlist Students
+                    <Upload className="w-4 h-4 text-white" /> Process & Shortlist Students
                   </span>
                 )}
               </button>
