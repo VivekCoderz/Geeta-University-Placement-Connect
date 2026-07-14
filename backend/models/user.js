@@ -66,6 +66,7 @@ const userSchema = new mongoose.Schema(
   }
 );
 
+
 // Indexes
 userSchema.index({ role: 1 });
 
