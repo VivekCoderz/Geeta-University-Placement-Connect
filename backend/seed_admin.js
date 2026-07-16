@@ -23,7 +23,7 @@ const run = async () => {
     console.log("Admin account already exists");
   }
 
-  // Check if placement cell already exists
+  // Check if placement cell already existsf
   const existingCell = await User.findOne({ email: "placementcell@placementconnect.com" });
   if (!existingCell) {
     const cell = new User({

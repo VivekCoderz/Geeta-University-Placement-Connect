@@ -295,6 +295,14 @@ const AdminDashboard = () => {
         }));
         setApplications(loadedApps);
 
+        // Update companies state to populate real hired counts from applications
+        setCompanies(prevCompanies => 
+          prevCompanies.map(c => ({
+            ...c,
+            hiredCount: loadedApps.filter(app => app.company === c.name && app.status === 'Selected').length
+          }))
+        );
+
         // Derive Shortlists (applications with status === 'Shortlisted')
         const activeShortlists = appRes.data.applications.filter(a => a.status === 'Shortlisted').map((a) => ({
           id: a._id,
@@ -1286,38 +1294,44 @@ const AdminDashboard = () => {
                     <span className="text-[10px] text-[#6D5EF7] font-bold hover:underline cursor-pointer" onClick={() => setActiveTab('analytics')}>Analytics</span>
                   </div>
                   <div className="space-y-4">
-                    <div>
-                      <div className="flex items-center justify-between text-[11px] mb-1.5">
-                        <span className="font-bold text-slate-800">Mechanical Engineering</span>
-                        <span className="font-black text-rose-500">52% placed</span>
-                      </div>
-                      <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                        <div className="bg-rose-400 h-full rounded-full" style={{ width: '52%' }} />
-                      </div>
-                      <span className="text-[9px] text-slate-450 block mt-1">Target Placement: 80% • 48 students pending</span>
-                    </div>
+                    {branchPlacements.slice(0, 4).map(bp => {
+                      const pending = bp.total - bp.placed;
+                      let colorClass = "text-rose-500";
+                      let bgClass = "bg-rose-400";
+                      if (bp.pct >= 75) {
+                        colorClass = "text-emerald-650";
+                        bgClass = "bg-[#22C55E]";
+                      } else if (bp.pct >= 50) {
+                        colorClass = "text-amber-500";
+                        bgClass = "bg-amber-400";
+                      }
+                      
+                      const branchFullNames = {
+                        'CSE': 'Computer Science (CSE)',
+                        'ECE': 'Electronics (ECE)',
+                        'ME': 'Mechanical Engineering',
+                        'CE': 'Civil Engineering',
+                        'EE': 'Electrical Engineering',
+                        'MBA': 'Business Administration (MBA)'
+                      };
+                      const displayName = branchFullNames[bp.branch] || bp.branch;
+                      const targetPct = bp.branch === 'CSE' ? 95 : (bp.branch === 'MBA' ? 85 : 75);
 
-                    <div>
-                      <div className="flex items-center justify-between text-[11px] mb-1.5">
-                        <span className="font-bold text-slate-800">Civil Engineering</span>
-                        <span className="font-black text-amber-500">35% placed</span>
-                      </div>
-                      <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                        <div className="bg-amber-400 h-full rounded-full" style={{ width: '35%' }} />
-                      </div>
-                      <span className="text-[9px] text-slate-450 block mt-1">Target Placement: 75% • 58 students pending</span>
-                    </div>
-
-                    <div>
-                      <div className="flex items-center justify-between text-[11px] mb-1.5">
-                        <span className="font-bold text-slate-800">Computer Science (CSE)</span>
-                        <span className="font-black text-emerald-600">91% placed</span>
-                      </div>
-                      <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                        <div className="bg-[#22C55E] h-full rounded-full" style={{ width: '91%' }} />
-                      </div>
-                      <span className="text-[9px] text-slate-450 block mt-1">Target Placement: 95% • 38 students pending</span>
-                    </div>
+                      return (
+                        <div key={bp.branch}>
+                          <div className="flex items-center justify-between text-[11px] mb-1.5">
+                            <span className="font-bold text-slate-800">{displayName}</span>
+                            <span className={`font-black ${colorClass}`}>{bp.pct}% placed</span>
+                          </div>
+                          <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                            <div className={`${bgClass} h-full rounded-full`} style={{ width: `${bp.pct}%` }} />
+                          </div>
+                          <span className="text-[9px] text-slate-400 block mt-1">
+                            Target Placement: {targetPct}% • {pending} students pending
+                          </span>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
 
@@ -1330,36 +1344,51 @@ const AdminDashboard = () => {
                 <div className="lg:col-span-2 bg-white border border-slate-200/80 rounded-[18px] p-6 shadow-sm space-y-4">
                   <h3 className="text-xs font-black text-slate-800 uppercase tracking-wider pb-2 border-b border-slate-50">Recent System Activities</h3>
                   <div className="space-y-4">
-                    <div className="flex gap-4 items-start">
-                      <div className="w-8 h-8 rounded-full bg-[#6D5EF7]/10 flex items-center justify-center shrink-0 mt-0.5">
-                        <CheckCircle2 className="w-4 h-4 text-[#6D5EF7]" />
+                    {notificationsList.length > 0 ? (
+                      notificationsList.slice(0, 3).map(notif => {
+                        let iconBg = "bg-[#6D5EF7]/10";
+                        let iconColor = "text-[#6D5EF7]";
+                        let IconComponent = CheckCircle2;
+
+                        if (notif.type === 'recruiter') {
+                          iconBg = "bg-emerald-500/10";
+                          iconColor = "text-[#22C55E]";
+                          IconComponent = Building2;
+                        } else if (notif.type === 'resume') {
+                          iconBg = "bg-amber-500/10";
+                          iconColor = "text-[#F59E0B]";
+                          IconComponent = FileCheck2;
+                        } else if (notif.type === 'application') {
+                          iconBg = "bg-fuchsia-500/10";
+                          iconColor = "text-fuchsia-500";
+                          IconComponent = Award;
+                        }
+
+                        // Parse title from type or use default
+                        let title = "System Notification";
+                        if (notif.type === 'recruiter') title = "Recruiter Activity";
+                        else if (notif.type === 'resume') title = "Resume Verification";
+                        else if (notif.type === 'application') title = "Application Update";
+                        else if (notif.type === 'announcement') title = "Announcement Published";
+
+                        return (
+                          <div key={notif.id} className="flex gap-4 items-start">
+                            <div className={`w-8 h-8 rounded-full ${iconBg} flex items-center justify-center shrink-0 mt-0.5`}>
+                              <IconComponent className={`w-4 h-4 ${iconColor}`} />
+                            </div>
+                            <div className="flex-1">
+                              <p className="text-xs font-bold text-slate-700">{title}</p>
+                              <p className="text-[11px] text-slate-500 mt-0.5">{notif.text}</p>
+                              <span className="text-[9px] text-slate-400 font-mono block mt-1">{notif.time}</span>
+                            </div>
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <div className="text-center py-6 text-slate-400 text-xs font-semibold">
+                        No recent system activities logged.
                       </div>
-                      <div className="flex-1">
-                        <p className="text-xs font-bold text-slate-700">Student Shortlist Published</p>
-                        <p className="text-[11px] text-slate-500 mt-0.5">Approved 18 students from CSE for final technical rounds for Google.</p>
-                        <span className="text-[9px] text-slate-400 font-mono block mt-1">Today at 10:12 AM</span>
-                      </div>
-                    </div>
-                    <div className="flex gap-4 items-start">
-                      <div className="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0 mt-0.5">
-                        <Building2 className="w-4 h-4 text-[#22C55E]" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-xs font-bold text-slate-700">Recruiter Verified</p>
-                        <p className="text-[11px] text-slate-500 mt-0.5">Karishma Kapur (Deloitte HR) credentials verified and account activated.</p>
-                        <span className="text-[9px] text-slate-400 font-mono block mt-1">Yesterday at 04:30 PM</span>
-                      </div>
-                    </div>
-                    <div className="flex gap-4 items-start">
-                      <div className="w-8 h-8 rounded-full bg-amber-500/10 flex items-center justify-center shrink-0 mt-0.5">
-                        <FileCheck2 className="w-4 h-4 text-[#F59E0B]" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-xs font-bold text-slate-700">AI Resume Diagnostics Run</p>
-                        <p className="text-[11px] text-slate-500 mt-0.5">Completed automated parsing for 42 newly registered profiles.</p>
-                        <span className="text-[9px] text-slate-400 font-mono block mt-1">July 14 at 09:12 AM</span>
-                      </div>
-                    </div>
+                    )}
                   </div>
                 </div>
 
