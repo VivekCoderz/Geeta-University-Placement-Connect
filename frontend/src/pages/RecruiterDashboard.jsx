@@ -19,6 +19,7 @@ const RecruiterDashboard = () => {
   const [isLoadingApplicants, setIsLoadingApplicants] = useState(false);
   const [submittingJob, setSubmittingJob] = useState(false);
   const [actionSuccess, setActionSuccess] = useState('');
+  const [actionLoadingId, setActionLoadingId] = useState(null);
   
   // Job Post Form State
   const [jobForm, setJobForm] = useState({
@@ -82,33 +83,41 @@ const RecruiterDashboard = () => {
     fetchMyDrives();
   }, []);
 
-  const handleFetchApplicants = async (job) => {
+  const handleFetchApplicants = async (job, silent = false) => {
     setSelectedJob(job);
-    setIsLoadingApplicants(true);
-    setApplicants([]);
+    if (!silent) {
+      setIsLoadingApplicants(true);
+      setApplicants([]);
+    }
     try {
       const response = await api.get(`/api/company/applications/${job._id}`);
       setApplicants(response.data.applications || []);
     } catch (err) {
       console.error('Failed to load applicants:', err);
     } finally {
-      setIsLoadingApplicants(false);
+      if (!silent) {
+        setIsLoadingApplicants(false);
+      }
     }
   };
 
   const handleUpdateStatus = async (appId, status) => {
     setActionSuccess('');
+    setActionLoadingId(`${appId}-${status}`);
     try {
       const response = await api.put(`/api/applications/${appId}/status`, { status });
       if (response.status === 200) {
+        setApplicants(prev => prev.map(app => app._id === appId ? { ...app, status } : app));
         setActionSuccess(`Application status successfully updated to ${status}!`);
         if (selectedJob) {
-          handleFetchApplicants(selectedJob);
+          handleFetchApplicants(selectedJob, true);
         }
         setTimeout(() => setActionSuccess(''), 4000);
       }
     } catch (err) {
       alert(err.response?.data?.message || err.message || 'Status update failed');
+    } finally {
+      setActionLoadingId(null);
     }
   };
 
@@ -494,21 +503,45 @@ const RecruiterDashboard = () => {
                             <div className="flex items-center gap-2 font-semibold">
                               <button
                                 onClick={() => handleUpdateStatus(app._id, 'Shortlisted')}
-                                className="px-3 py-1.5 text-xs bg-blue-50 border border-blue-200 text-blue-600 hover:bg-blue-100 rounded-lg transition-all duration-200 active:scale-95 shadow-sm"
+                                disabled={actionLoadingId !== null}
+                                className="px-3 py-1.5 text-xs bg-blue-50 border border-blue-200 text-blue-600 hover:bg-blue-100 rounded-lg transition-all duration-200 active:scale-95 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
                               >
-                                Shortlist
+                                {actionLoadingId === `${app._id}-Shortlisted` ? (
+                                  <>
+                                    <span className="w-3 h-3 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
+                                    Saving...
+                                  </>
+                                ) : (
+                                  'Shortlist'
+                                )}
                               </button>
                               <button
                                 onClick={() => handleUpdateStatus(app._id, 'Selected')}
-                                className="px-3 py-1.5 text-xs bg-[#22C55E] hover:bg-[#16A34A] text-white font-bold rounded-lg transition-all duration-200 active:scale-95 shadow-sm"
+                                disabled={actionLoadingId !== null}
+                                className="px-3 py-1.5 text-xs bg-[#22C55E] hover:bg-[#16A34A] text-white font-bold rounded-lg transition-all duration-200 active:scale-95 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
                               >
-                                Select
+                                {actionLoadingId === `${app._id}-Selected` ? (
+                                  <>
+                                    <span className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                    Saving...
+                                  </>
+                                ) : (
+                                  'Select'
+                                )}
                               </button>
                               <button
                                 onClick={() => handleUpdateStatus(app._id, 'Rejected')}
-                                className="px-3 py-1.5 text-xs bg-rose-50 border border-rose-200 text-rose-600 hover:bg-rose-100 rounded-lg transition-all duration-200 active:scale-95 shadow-sm"
+                                disabled={actionLoadingId !== null}
+                                className="px-3 py-1.5 text-xs bg-rose-50 border border-rose-200 text-rose-600 hover:bg-rose-100 rounded-lg transition-all duration-200 active:scale-95 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
                               >
-                                Reject
+                                {actionLoadingId === `${app._id}-Rejected` ? (
+                                  <>
+                                    <span className="w-3 h-3 border-2 border-rose-600 border-t-transparent rounded-full animate-spin" />
+                                    Saving...
+                                  </>
+                                ) : (
+                                  'Reject'
+                                )}
                               </button>
                             </div>
                           </div>

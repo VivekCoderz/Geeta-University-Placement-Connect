@@ -6,10 +6,43 @@ const cors = require("cors");
 
 const app = express();
 
-// CORS configuration - allow credentials and match typical frontend ports
+// CORS configuration - dynamic origin validation supporting preview/hosted urls
+const checkOrigin = (origin, callback) => {
+  // Allow requests with no origin (like mobile apps, curl, postman)
+  if (!origin) return callback(null, true);
+
+  const originsList = [
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "https://placement-connect-gules.vercel.app"
+  ];
+  if (process.env.FRONTEND_URL) {
+    const envOrigins = process.env.FRONTEND_URL.split(",").map(url => url.trim());
+    originsList.push(...envOrigins);
+  }
+
+  // Check if origin is direct match
+  if (originsList.includes(origin)) {
+    return callback(null, true);
+  }
+
+  // Check if origin is localhost on any port dynamically
+  if (/^http:\/\/localhost(:\d+)?$/.test(origin) || /^http:\/\/127\.0\.0\.1(:\d+)?$/.test(origin)) {
+    return callback(null, true);
+  }
+
+  // Check if origin matches vercel preview/staging deploys or custom staging hosts
+  if (origin.includes("placement-connect") || origin.includes("geeta-university")) {
+    return callback(null, true);
+  }
+
+  callback(new Error(`CORS policy blocked request from origin: ${origin}`));
+};
+
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://localhost:5173", "http://127.0.0.1:5173","https://placement-connect-gules.vercel.app"],
+    origin: checkOrigin,
     credentials: true,
   })
 );
@@ -56,7 +89,7 @@ const Message = require("./models/message");
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:3000", "http://localhost:5173", "http://127.0.0.1:5173"],
+    origin: checkOrigin,
     credentials: true,
   }
 });
