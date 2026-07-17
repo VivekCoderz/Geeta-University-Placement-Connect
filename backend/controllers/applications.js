@@ -116,8 +116,8 @@ module.exports.updateStatus = ErrorWrapper(async (req, res, next) => {
     });
     await notif.save();
 
-    // Send calendar invite email
-    await sendEmail({
+    // Send calendar invite email (non-blocking)
+    sendEmail({
       to: student.email,
       subject: `Interview Scheduled: ${roundName} Round for ${job.title} at ${company.name}`,
       html: `
@@ -136,7 +136,7 @@ module.exports.updateStatus = ErrorWrapper(async (req, res, next) => {
           contentType: "text/calendar",
         },
       ],
-    });
+    }).catch(err => console.error("Email delivery failed:", err));
   } else if (status) {
     // If status changed (Selected/Rejected/Shortlisted)
     let message = "";
@@ -188,11 +188,12 @@ module.exports.updateStatus = ErrorWrapper(async (req, res, next) => {
       });
       await notif.save();
 
-      await sendEmail({
+      // Send status change email (non-blocking)
+      sendEmail({
         to: student.email,
         subject: emailSubject,
         html: emailHtml,
-      });
+      }).catch(err => console.error("Email delivery failed:", err));
     }
   }
 

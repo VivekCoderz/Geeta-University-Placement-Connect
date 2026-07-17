@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronRight, Sparkles, CheckCircle2, XCircle } from 'lucide-react';
+import { ChevronRight, Sparkles, CheckCircle2, XCircle, ListChecks, Calendar } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import Stepper from '../components/Stepper';
 import api from '../utils/api';
@@ -129,6 +129,54 @@ const Applications = () => {
                 <div className="p-6 md:p-8 bg-white">
                   <Stepper currentStatus={app.status} rounds={job.rounds} appRounds={app.rounds} />
                 </div>
+
+                {/* Round-by-Round Evaluation Journey History */}
+                {app.rounds && app.rounds.length > 0 && (
+                  <div className="px-6 pb-6 bg-white border-t border-[#F1F5F9]">
+                    <h4 className="text-xs font-bold text-[#111827] mb-3 uppercase tracking-wider flex items-center gap-1.5 pt-4">
+                      <ListChecks className="w-4 h-4 text-[#22C55E]" /> Round-by-Round Evaluation Status
+                    </h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {app.rounds.map((round, rIdx) => {
+                        const isPassed = round.result === 'Passed';
+                        const isFailed = round.result === 'Failed';
+                        return (
+                          <div 
+                            key={rIdx} 
+                            className={`p-4 rounded-xl border transition-all duration-200 hover:shadow-sm ${
+                              isPassed ? 'bg-emerald-50/40 border-emerald-200' :
+                              isFailed ? 'bg-rose-50/40 border-rose-200' :
+                              'bg-slate-50/40 border-slate-200'
+                            }`}
+                          >
+                            <div className="flex justify-between items-start gap-2">
+                              <h5 className="text-xs font-bold text-[#111827] truncate">{round.name}</h5>
+                              <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${
+                                isPassed ? 'bg-emerald-100 text-emerald-700' :
+                                isFailed ? 'bg-rose-100 text-rose-750' :
+                                'bg-blue-100 text-blue-700 animate-pulse'
+                              }`}>
+                                {round.result || 'Pending'}
+                              </span>
+                            </div>
+                            
+                            {round.scheduledAt && (
+                              <p className="text-[10px] text-[#4B5563] font-medium mt-2 flex items-center gap-1">
+                                <Calendar className="w-3.5 h-3.5 text-[#94A3B8]" />
+                                <span>Scheduled: {new Date(round.scheduledAt).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}</span>
+                              </p>
+                            )}
+                            {round.notes && (
+                              <div className="mt-2 text-[10px] text-[#4B5563] bg-white border border-[#E5E7EB] rounded p-2 italic leading-relaxed">
+                                <strong>Feedback/Venue:</strong> {round.notes}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
 
                 {/* Simulator Drawer Panel */}
                 {isDrawerOpen && (

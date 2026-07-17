@@ -91,8 +91,8 @@ module.exports.uploadShortlist = ErrorWrapper(async (req, res, next) => {
       });
       await notif.save();
 
-      // Send email
-      await sendEmail({
+      // Send email (non-blocking)
+      sendEmail({
         to: student.email,
         subject: `Shortlisted: ${roundName} Round for ${job.title} at ${company.name}`,
         html: `
@@ -103,7 +103,7 @@ module.exports.uploadShortlist = ErrorWrapper(async (req, res, next) => {
           <p>Regards,</p>
           <p>Training & Placement Cell, Geeta University</p>
         `,
-      });
+      }).catch(err => console.error("Email send error:", err));
 
       processedStudents.push(student.name);
     }
@@ -208,28 +208,24 @@ module.exports.notifyStudents = ErrorWrapper(async (req, res, next) => {
       });
       await notif.save();
 
-      // Send Email
-      try {
-        await sendEmail({
-          to: app.studentId.email,
-          subject: `Placement Cell Update: ${job.companyId?.name || "Drive"} | ${job.title}`,
-          html: `
-            <h3>Placement Cell Update</h3>
-            <p>Dear ${app.studentId.name},</p>
-            <p>An update has been posted for the <strong>${job.title}</strong> drive at <strong>${job.companyId?.name || "Company"}</strong>:</p>
-            <blockquote style="background:#f1f5f9; padding: 15px; border-left: 4px solid #10b981; margin: 15px 0;">
-              ${message}
-            </blockquote>
-            ${roundName ? `<p><strong>Round Name:</strong> ${roundName}</p>` : ''}
-            ${roundDate ? `<p><strong>Scheduled Time:</strong> ${new Date(roundDate).toLocaleString()}</p>` : ''}
-            <br/>
-            <p>Regards,</p>
-            <p>Training & Placement Cell, Geeta University</p>
-          `
-        });
-      } catch (emailErr) {
-        console.error("Failed to send email notification:", emailErr);
-      }
+      // Send Email (non-blocking)
+      sendEmail({
+        to: app.studentId.email,
+        subject: `Placement Cell Update: ${job.companyId?.name || "Drive"} | ${job.title}`,
+        html: `
+          <h3>Placement Cell Update</h3>
+          <p>Dear ${app.studentId.name},</p>
+          <p>An update has been posted for the <strong>${job.title}</strong> drive at <strong>${job.companyId?.name || "Company"}</strong>:</p>
+          <blockquote style="background:#f1f5f9; padding: 15px; border-left: 4px solid #10b981; margin: 15px 0;">
+            ${message}
+          </blockquote>
+          ${roundName ? `<p><strong>Round Name:</strong> ${roundName}</p>` : ''}
+          ${roundDate ? `<p><strong>Scheduled Time:</strong> ${new Date(roundDate).toLocaleString()}</p>` : ''}
+          <br/>
+          <p>Regards,</p>
+          <p>Training & Placement Cell, Geeta University</p>
+        `
+      }).catch(emailErr => console.error("Failed to send email notification:", emailErr));
       recipientCount++;
     }
   } else {
@@ -243,25 +239,22 @@ module.exports.notifyStudents = ErrorWrapper(async (req, res, next) => {
       });
       await notif.save();
 
-      try {
-        await sendEmail({
-          to: student.email,
-          subject: `Campus Placement Notification from T&P Cell`,
-          html: `
-            <h3>Training & Placement Cell Announcement</h3>
-            <p>Dear ${student.name},</p>
-            <blockquote style="background:#f1f5f9; padding: 15px; border-left: 4px solid #10b981; margin: 15px 0;">
-              ${message}
-            </blockquote>
-            <p>Please log in to your dashboard to stay updated on latest recruitment schedules.</p>
-            <br/>
-            <p>Regards,</p>
-            <p>Training & Placement Cell, Geeta University</p>
-          `
-        });
-      } catch (emailErr) {
-        console.error("Failed to send email notification:", emailErr);
-      }
+      // Send Email (non-blocking)
+      sendEmail({
+        to: student.email,
+        subject: `Campus Placement Notification from T&P Cell`,
+        html: `
+          <h3>Training & Placement Cell Announcement</h3>
+          <p>Dear ${student.name},</p>
+          <blockquote style="background:#f1f5f9; padding: 15px; border-left: 4px solid #10b981; margin: 15px 0;">
+            ${message}
+          </blockquote>
+          <p>Please log in to your dashboard to stay updated on latest recruitment schedules.</p>
+          <br/>
+          <p>Regards,</p>
+          <p>Training & Placement Cell, Geeta University</p>
+        `
+      }).catch(emailErr => console.error("Failed to send email notification:", emailErr));
       recipientCount++;
     }
   }
@@ -364,8 +357,8 @@ module.exports.scheduleShortlist = ErrorWrapper(async (req, res, next) => {
         studentEmail: student.email,
       });
 
-      // Send email
-      await sendEmail({
+      // Send email (non-blocking)
+      sendEmail({
         to: student.email,
         subject: `Schedule Update: ${roundName} Round for ${job.title} at ${company.name}`,
         html: `
@@ -388,7 +381,7 @@ module.exports.scheduleShortlist = ErrorWrapper(async (req, res, next) => {
             contentType: "text/calendar",
           },
         ],
-      });
+      }).catch(err => console.error("Email send error:", err));
 
       processedCount++;
     }
