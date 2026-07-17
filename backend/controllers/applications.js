@@ -74,10 +74,18 @@ module.exports.updateStatus = ErrorWrapper(async (req, res, next) => {
     }
 
     if (roundIdx > -1) {
-      if (roundResult) app.rounds[roundIdx].result = roundResult;
+      if (roundResult) {
+        app.rounds[roundIdx].result = roundResult;
+        if (roundResult === "Failed") {
+          app.status = "Rejected";
+        }
+      }
       if (scheduledAt) app.rounds[roundIdx].scheduledAt = new Date(scheduledAt);
       if (notes) app.rounds[roundIdx].notes = notes;
     } else {
+      if (roundResult === "Failed") {
+        app.status = "Rejected";
+      }
       app.rounds.push(roundData);
     }
   }

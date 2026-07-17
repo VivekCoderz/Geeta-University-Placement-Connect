@@ -882,10 +882,18 @@ const PlacementDashboard = () => {
                               message: detailsVal
                             });
                             if (res.status === 200) {
+                              try {
+                                const { playSuccessFanfare } = await import('../utils/audio');
+                                playSuccessFanfare();
+                              } catch (audioErr) {}
                               alert("Evaluation round successfully scheduled and student notifications dispatched!");
                               fetchDashboardData(); // Refresh list
                             }
                           } catch (err) {
+                            try {
+                              const { playFailureBuzz } = await import('../utils/audio');
+                              playFailureBuzz();
+                            } catch (audioErr) {}
                             alert(err.response?.data?.message || err.message || "Failed to schedule shortlist round");
                           }
                         }} className="space-y-4">

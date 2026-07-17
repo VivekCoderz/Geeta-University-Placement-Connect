@@ -125,6 +125,10 @@ const Profile = () => {
       setResumeName(file.name);
       setResumeUrl(data.resumeUrl);
 
+      // Play upload success sound
+      const { playSuccessFanfare } = await import('../utils/audio');
+      playSuccessFanfare();
+
       // fetch fresh combined me data
       const meResponse = await api.get('/api/auth/me');
       const meRes = meResponse.data;
@@ -136,6 +140,11 @@ const Profile = () => {
       localStorage.setItem('user', JSON.stringify(combinedUser));
       dispatch(setUser(combinedUser));
     } catch (err) {
+      // Play failure buzz sound
+      try {
+        const { playFailureBuzz } = await import('../utils/audio');
+        playFailureBuzz();
+      } catch (audioErr) {}
       alert(err.response?.data?.message || err.message || 'Resume upload failed');
     } finally {
       setIsUploading(false);

@@ -118,6 +118,17 @@ const RecruiterDashboard = () => {
       if (response.status === 200) {
         setApplicants(prev => prev.map(app => app._id === appId ? { ...app, status } : app));
         setActionSuccess(`Application status successfully updated to ${status}!`);
+        
+        // Play selection or rejection audio alerts
+        try {
+          const { playSuccessFanfare, playFailureBuzz } = await import('../utils/audio');
+          if (status === 'Selected' || status === 'Shortlisted') {
+            playSuccessFanfare();
+          } else if (status === 'Rejected') {
+            playFailureBuzz();
+          }
+        } catch (audioErr) {}
+
         if (selectedJob) {
           handleFetchApplicants(selectedJob, true);
         }
@@ -598,6 +609,86 @@ const RecruiterDashboard = () => {
                                 )}
                               </button>
                             </div>
+                            
+                            {/* Round-specific evaluation updates */}
+                            {(app.status === 'Shortlisted' || app.status === 'Rejected') && (
+                              <div className="w-full mt-4 pt-3.5 border-t border-dashed border-[#E5E7EB] flex flex-col sm:flex-row items-center justify-between gap-3 bg-white p-3 rounded-xl border border-[#E5E7EB] shadow-sm animate-in fade-in duration-200">
+                                <div className="flex items-center gap-2">
+                                  <span className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-wider">Round Evaluation:</span>
+                                  <select
+                                    id={`round-select-${app._id}`}
+                                    className="bg-[#F8FAFC] border border-[#E5E7EB] rounded-lg text-xs font-semibold py-1 px-2 text-[#111827] focus:outline-none"
+                                    defaultValue={app.rounds && app.rounds.length > 0 ? app.rounds[app.rounds.length - 1].name : ""}
+                                  >
+                                    {(selectedJob.rounds && selectedJob.rounds.length > 0 ? selectedJob.rounds.map(r => r.name) : [
+                                      'Aptitude Test', 'Group Discussion (GD)', 'Technical Interview', 'HR Round'
+                                    ]).map((rName, idx) => (
+                                      <option key={idx} value={rName}>{rName}</option>
+                                    ))}
+                                  </select>
+                                </div>
+                                <div className="flex items-center gap-1.5 font-bold">
+                                  <button
+                                    onClick={async () => {
+                                      const selRound = document.getElementById(`round-select-${app._id}`).value;
+                                      if (!selRound) return alert("Please select a round.");
+                                      
+                                      setActionLoadingId(`${app._id}-round-pass`);
+                                      try {
+                                        const res = await api.put(`/api/applications/${app._id}/status`, {
+                                          roundName: selRound,
+                                          roundResult: 'Passed',
+                                          status: 'Shortlisted'
+                                        });
+                                        if (res.status === 200) {
+                                          const { playSuccessFanfare } = await import('../utils/audio');
+                                          playSuccessFanfare();
+                                          setActionSuccess(`Marked ${student.name} as Passed for ${selRound}!`);
+                                          handleFetchApplicants(selectedJob, true);
+                                        }
+                                      } catch (err) {
+                                        alert(err.response?.data?.message || err.message || "Failed to update round status");
+                                      } finally {
+                                        setActionLoadingId(null);
+                                      }
+                                    }}
+                                    disabled={actionLoadingId !== null}
+                                    className="px-2.5 py-1.5 text-[10px] bg-emerald-50 border border-emerald-200 text-emerald-600 hover:bg-emerald-100 rounded-lg transition-all flex items-center gap-1 active:scale-95 disabled:opacity-50"
+                                  >
+                                    Mark Passed
+                                  </button>
+                                  <button
+                                    onClick={async () => {
+                                      const selRound = document.getElementById(`round-select-${app._id}`).value;
+                                      if (!selRound) return alert("Please select a round.");
+                                      
+                                      setActionLoadingId(`${app._id}-round-fail`);
+                                      try {
+                                        const res = await api.put(`/api/applications/${app._id}/status`, {
+                                          roundName: selRound,
+                                          roundResult: 'Failed',
+                                          status: 'Rejected'
+                                        });
+                                        if (res.status === 200) {
+                                          const { playFailureBuzz } = await import('../utils/audio');
+                                          playFailureBuzz();
+                                          setActionSuccess(`Marked ${student.name} as Failed for ${selRound}. Overall status set to Rejected.`);
+                                          handleFetchApplicants(selectedJob, true);
+                                        }
+                                      } catch (err) {
+                                        alert(err.response?.data?.message || err.message || "Failed to update round status");
+                                      } finally {
+                                        setActionLoadingId(null);
+                                      }
+                                    }}
+                                    disabled={actionLoadingId !== null}
+                                    className="px-2.5 py-1.5 text-[10px] bg-rose-50 border border-rose-200 text-rose-650 hover:bg-rose-100 rounded-lg transition-all flex items-center gap-1 active:scale-95 disabled:opacity-50"
+                                  >
+                                    Mark Failed
+                                  </button>
+                                </div>
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>

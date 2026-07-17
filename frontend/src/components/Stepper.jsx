@@ -11,6 +11,7 @@ const Stepper = ({ currentStatus, rounds, appRounds }) => {
   ];
 
   let currentIndex = 0;
+  let stageFailureIndex = -1;
 
   if (rounds && Array.isArray(rounds) && rounds.length > 0) {
     steps = [
@@ -33,10 +34,25 @@ const Stepper = ({ currentStatus, rounds, appRounds }) => {
       { label: 'Decision', key: 'Decision', desc: 'Final Selection Status', icon: CheckCircle2 }
     ];
 
+    // Check if any specific round has failed
+    const failedRound = appRounds ? appRounds.find(r => r.result === 'Failed') : null;
+    if (failedRound) {
+      const matchIdx = rounds.findIndex(r => r.name.toLowerCase() === failedRound.name.toLowerCase());
+      if (matchIdx > -1) {
+        stageFailureIndex = matchIdx + 1; // offset by 1
+      }
+    }
+
     if (currentStatus === 'Applied') {
       currentIndex = 0;
-    } else if (currentStatus === 'Selected' || currentStatus === 'Rejected') {
+    } else if (currentStatus === 'Selected') {
       currentIndex = steps.length - 1;
+    } else if (currentStatus === 'Rejected') {
+      if (stageFailureIndex > -1) {
+        currentIndex = stageFailureIndex;
+      } else {
+        currentIndex = steps.length - 1;
+      }
     } else if (currentStatus === 'Shortlisted') {
       currentIndex = 1; // Default to first round
       if (appRounds && Array.isArray(appRounds) && appRounds.length > 0) {
@@ -58,22 +74,36 @@ const Stepper = ({ currentStatus, rounds, appRounds }) => {
       'Selected': 4,
       'Rejected': 4
     };
-    currentIndex = statusIndices[currentStatus] ?? 0;
+
+    // Check if any round failed in fallback steps
+    const failedRound = appRounds ? appRounds.find(r => r.result === 'Failed') : null;
+    if (failedRound) {
+      const nameLower = failedRound.name.toLowerCase();
+      if (nameLower.includes('aptitude')) stageFailureIndex = 1;
+      else if (nameLower.includes('gd') || nameLower.includes('group')) stageFailureIndex = 2;
+      else if (nameLower.includes('hr') || nameLower.includes('personal')) stageFailureIndex = 3;
+    }
+
+    if (currentStatus === 'Rejected' && stageFailureIndex > -1) {
+      currentIndex = stageFailureIndex;
+    } else {
+      currentIndex = statusIndices[currentStatus] ?? 0;
+    }
   }
 
   const isRejected = currentStatus === 'Rejected';
   const isSelected = currentStatus === 'Selected';
 
   return (
-    <div className="w-full py-8"> {/* Increased padding for spacing */}
+    <div className="w-full py-8">
       {/* Desktop Horizontal View */}
       <div className="hidden md:flex items-center w-full">
         {steps.map((step, index) => {
           const StepIcon = step.icon;
           
           let isCompleted = index < currentIndex || (index === steps.length - 1 && isSelected);
-          let isActive = index === currentIndex && !isCompleted;
-          let isFailed = index === steps.length - 1 && isRejected;
+          let isActive = index === currentIndex && !isCompleted && !isRejected;
+          let isFailed = (index === steps.length - 1 && isRejected && stageFailureIndex === -1) || (index === stageFailureIndex);
 
           const showLine = index < steps.length - 1;
           const lineCompleted = index < currentIndex;
@@ -83,7 +113,7 @@ const Stepper = ({ currentStatus, rounds, appRounds }) => {
               <div className="flex flex-col items-center flex-1 relative px-2">
                 {/* Step Circle */}
                 <div
-                  className={`w-14 h-14 rounded-full border-2 flex items-center justify-center transition-all duration-300 z-10 ${
+                  className={`w-14 h-14 rounded-full border-2 flex items-center justify-center transition-all duration-350 z-10 ${
                     isCompleted
                       ? 'bg-[#22C55E]/10 border-[#22C55E] text-[#22C55E] shadow-[0_0_15px_-2px_rgba(34,197,94,0.2)]'
                       : isFailed
@@ -102,7 +132,7 @@ const Stepper = ({ currentStatus, rounds, appRounds }) => {
                   )}
                 </div>
 
-                {/* Labels - increased top margin and spacing */}
+                {/* Labels */}
                 <div className="mt-4 text-center px-2">
                   <p
                     className={`text-sm font-bold transition-colors duration-300 ${
@@ -111,11 +141,11 @@ const Stepper = ({ currentStatus, rounds, appRounds }) => {
                         : isCompleted
                         ? 'text-[#22C55E]'
                         : isFailed
-                        ? 'text-rose-650'
+                        ? 'text-rose-600'
                         : 'text-[#4B5563]'
                     }`}
                   >
-                    {index === steps.length - 1 ? (isSelected ? 'Selected' : isRejected ? 'Rejected' : 'Decision') : step.label}
+                    {index === steps.length - 1 ? (isSelected ? 'Selected' : isRejected ? 'Rejected' : 'Decision') : (index === stageFailureIndex ? `Rejected at ${step.label}` : step.label)}
                   </p>
                   <p className="text-[10px] text-[#94A3B8] mt-1.5 leading-tight max-w-[120px] mx-auto font-medium">
                     {step.desc}
@@ -143,8 +173,8 @@ const Stepper = ({ currentStatus, rounds, appRounds }) => {
         {steps.map((step, index) => {
           const StepIcon = step.icon;
           let isCompleted = index < currentIndex || (index === steps.length - 1 && isSelected);
-          let isActive = index === currentIndex && !isCompleted;
-          let isFailed = index === steps.length - 1 && isRejected;
+          let isActive = index === currentIndex && !isCompleted && !isRejected;
+          let isFailed = (index === steps.length - 1 && isRejected && stageFailureIndex === -1) || (index === stageFailureIndex);
 
           return (
             <div key={step.key} className="relative flex items-start gap-5">
@@ -169,7 +199,7 @@ const Stepper = ({ currentStatus, rounds, appRounds }) => {
                 )}
               </div>
 
-              {/* Detail list item - increased padding for cards */}
+              {/* Detail list item */}
               <div className="flex-1 bg-[#F8FAFC] border border-[#E5E7EB] rounded-2xl p-5 shadow-sm">
                 <div className="flex items-center gap-2.5">
                   <StepIcon
@@ -194,7 +224,7 @@ const Stepper = ({ currentStatus, rounds, appRounds }) => {
                         : 'text-[#4B5563]'
                     }`}
                   >
-                    {index === steps.length - 1 ? (isSelected ? 'Selected' : isRejected ? 'Rejected' : 'Decision') : step.label}
+                    {index === steps.length - 1 ? (isSelected ? 'Selected' : isRejected ? 'Rejected' : 'Decision') : (index === stageFailureIndex ? `Rejected at ${step.label}` : step.label)}
                   </h4>
                 </div>
                 <p className="text-xs text-[#4B5563] mt-1.5 leading-relaxed">{step.desc}</p>
@@ -211,7 +241,7 @@ const Stepper = ({ currentStatus, rounds, appRounds }) => {
                 )}
                 {isFailed && (
                   <span className="inline-flex items-center gap-1 mt-3 text-[10px] bg-rose-50 text-rose-600 border border-rose-200 px-2.5 py-0.5 rounded-full font-bold">
-                    Rejected
+                    {index === stageFailureIndex ? `Eliminated here` : 'Rejected'}
                   </span>
                 )}
               </div>

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Bell, Check, Info, Briefcase, Calendar } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import api from '../utils/api';
+import { playNotificationChime, playClickSound } from '../utils/audio';
 
 const NotificationBell = () => {
   const user = useSelector((state) => state.auth.user);
@@ -10,7 +11,7 @@ const NotificationBell = () => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  const fetchNotifications = async () => {
+  const fetchNotifications = async (isInitial = false) => {
     if (user) {
       try {
         const response = await api.get('/api/notifications');
@@ -19,7 +20,18 @@ const NotificationBell = () => {
           ...n,
           id: n._id
         }));
-        setNotifications(mapped);
+        
+        setNotifications(prev => {
+          if (!isInitial && mapped.length > prev.length) {
+            const hasNewUnread = mapped.some(
+              n => !n.read && !prev.some(existing => existing.id === n.id)
+            );
+            if (hasNewUnread) {
+              playNotificationChime();
+            }
+          }
+          return mapped;
+        });
       } catch (err) {
         console.error("Failed to fetch notifications:", err);
       }
@@ -27,9 +39,9 @@ const NotificationBell = () => {
   };
 
   useEffect(() => {
-    fetchNotifications();
+    fetchNotifications(true);
 
-    const interval = setInterval(fetchNotifications, 5000);
+    const interval = setInterval(() => fetchNotifications(false), 5000);
 
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -48,9 +60,10 @@ const NotificationBell = () => {
 
   const handleMarkAllRead = async (e) => {
     e.stopPropagation();
+    playClickSound();
     try {
       await api.put('/api/notifications/read-all');
-      fetchNotifications();
+      fetchNotifications(true);
     } catch (err) {
       console.error(err);
     }
@@ -59,9 +72,10 @@ const NotificationBell = () => {
   const handleMarkOneRead = async (e, id) => {
     e.stopPropagation();
     e.preventDefault();
+    playClickSound();
     try {
       await api.put(`/api/notifications/${id}/read`);
-      fetchNotifications();
+      fetchNotifications(true);
     } catch (err) {
       console.error(err);
     }
@@ -88,8 +102,8 @@ const NotificationBell = () => {
   return (
     <div className="relative" ref={dropdownRef}>
       <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2.5 text-[#E9D5FF] hover:text-white rounded-full hover:bg-[#7C6AE6] transition-all duration-200 focus:outline-none"
+        onClick={() => { playClickSound(); setIsOpen(!isOpen); }}
+        className="relative p-2.5 text-[#E9D5FF] hover:text-white rounded-full hover:bg-[#7C6AE6]/30 transition-all duration-200 focus:outline-none"
         aria-label="View notifications"
       >
         <Bell className="w-6 h-6" />
