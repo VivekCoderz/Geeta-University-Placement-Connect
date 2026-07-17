@@ -32,12 +32,18 @@ module.exports.postRegister = ErrorWrapper(async (req, res, next) => {
   if (role === "student") {
     const { branch, year, rollNumber, cgpa, phone } = req.body;
     if (!branch || !year || !rollNumber || cgpa === undefined) {
-      throw new ErrorHandler(400, "Branch, year, roll number, and CGPA are required for students");
+      throw new ErrorHandler(
+        400,
+        "Branch, year, roll number, and CGPA are required for students",
+      );
     }
 
     const existingRoll = await Student.findOne({ rollNumber });
     if (existingRoll) {
-      throw new ErrorHandler(400, "A student with this roll number already exists");
+      throw new ErrorHandler(
+        400,
+        "A student with this roll number already exists",
+      );
     }
 
     // Create User
@@ -74,18 +80,28 @@ module.exports.postRegister = ErrorWrapper(async (req, res, next) => {
 
   // Handle company registration specifics
   if (role === "company") {
-    const { companyName, industry, website, hrContactName, hrContactPhone, address } = req.body;
+    const {
+      companyName,
+      industry,
+      website,
+      hrContactName,
+      hrContactPhone,
+      address,
+    } = req.body;
     if (!companyName) {
-      throw new ErrorHandler(400, "Company name is required for company recruiters");
+      throw new ErrorHandler(
+        400,
+        "Company name is required for company recruiters",
+      );
     }
 
     // Create User (Company) - initial isApproved is false, needs admin approval!
-    const newUser = new User({ 
-      name, 
-      email, 
-      password, 
-      role, 
-      isApproved: false 
+    const newUser = new User({
+      name,
+      email,
+      password,
+      role,
+      isApproved: false,
     });
     savedUser = await newUser.save();
 
@@ -99,7 +115,7 @@ module.exports.postRegister = ErrorWrapper(async (req, res, next) => {
       hrContactName,
       hrContactPhone,
       address,
-      approved: false
+      approved: false,
     });
     const savedCompany = await newCompany.save();
 
@@ -110,7 +126,8 @@ module.exports.postRegister = ErrorWrapper(async (req, res, next) => {
 
     return res.status(201).json({
       success: true,
-      message: "Company recruiter registered successfully. Pending admin approval.",
+      message:
+        "Company recruiter registered successfully. Pending admin approval.",
       data: {
         userId: savedUser._id,
         companyId: savedCompany._id,
@@ -247,7 +264,10 @@ module.exports.postLogin = ErrorWrapper(async (req, res, next) => {
   // Check company approval status
   if (userExists.role === "company") {
     if (!userExists.isApproved) {
-      throw new ErrorHandler(403, "Access Denied: Company account is pending admin approval");
+      throw new ErrorHandler(
+        403,
+        "Access Denied: Company account is pending admin approval",
+      );
     }
   }
 
@@ -261,6 +281,9 @@ module.exports.postLogin = ErrorWrapper(async (req, res, next) => {
   // Set Cookie
   res.cookie("token", token, {
     httpOnly: true,
+    secure: true,
+    sameSite: "None",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
   });
   return res.status(200).json({
     success: true,
@@ -281,10 +304,10 @@ module.exports.postLogin = ErrorWrapper(async (req, res, next) => {
 // Logout handler
 module.exports.postLogout = ErrorWrapper(async (req, res, next) => {
   res.clearCookie("token");
-  return res.status(200).json({ 
+  return res.status(200).json({
     success: true,
     message: "Logged out successfully",
-    data: {}
+    data: {},
   });
 });
 
@@ -300,7 +323,9 @@ module.exports.me = ErrorWrapper(async (req, res, next) => {
   if (user.role === "student") {
     details = await Student.findOne({ userId: user._id });
   } else if (user.role === "company") {
-    details = await Company.findOne({ recruiterId: user._id }).populate("jobPostings");
+    details = await Company.findOne({ recruiterId: user._id }).populate(
+      "jobPostings",
+    );
   }
 
   return res.status(200).json({
@@ -349,14 +374,17 @@ module.exports.forgotPassword = ErrorWrapper(async (req, res, next) => {
     return res.status(200).json({
       success: true,
       message: "Email sent with password reset link",
-      data: {}
+      data: {},
     });
   } catch (err) {
     user.resetPasswordToken = undefined;
     user.resetPasswordExpire = undefined;
     await user.save({ validateBeforeSave: false });
 
-    throw new ErrorHandler(500, "Email could not be sent. Please try again later.");
+    throw new ErrorHandler(
+      500,
+      "Email could not be sent. Please try again later.",
+    );
   }
 });
 
@@ -393,7 +421,7 @@ module.exports.resetPassword = ErrorWrapper(async (req, res, next) => {
   return res.status(200).json({
     success: true,
     message: "Password reset successfully",
-    data: {}
+    data: {},
   });
 });
 
@@ -423,6 +451,6 @@ module.exports.changePassword = ErrorWrapper(async (req, res, next) => {
   return res.status(200).json({
     success: true,
     message: "Password changed successfully",
-    data: {}
+    data: {},
   });
 });
