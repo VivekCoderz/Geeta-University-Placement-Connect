@@ -88,6 +88,7 @@ module.exports.updateStatus = ErrorWrapper(async (req, res, next) => {
       }
       app.rounds.push(roundData);
     }
+    app.markModified("rounds");
   }
 
   await app.save();

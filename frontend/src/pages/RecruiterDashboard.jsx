@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { 
   Building2, Briefcase, Users, Calendar, DollarSign, Award, Plus, Check, Eye, FileText, ArrowRight, Clock, MapPin, 
-  Globe, Phone, User, AlertCircle, RefreshCw, CheckCircle2, XCircle, ChevronRight, Download, Send
+  Globe, Phone, User, AlertCircle, RefreshCw, CheckCircle2, XCircle, ChevronRight, Download, Send, Lock
 } from 'lucide-react';
 import { setUser } from '../redux/authSlice';
 import api from '../utils/api';
@@ -611,84 +611,191 @@ const RecruiterDashboard = () => {
                             </div>
                             
                             {/* Round-specific evaluation updates */}
-                            {(app.status === 'Shortlisted' || app.status === 'Rejected') && (
-                              <div className="w-full mt-4 pt-3.5 border-t border-dashed border-[#E5E7EB] flex flex-col sm:flex-row items-center justify-between gap-3 bg-white p-3 rounded-xl border border-[#E5E7EB] shadow-sm animate-in fade-in duration-200">
-                                <div className="flex items-center gap-2">
-                                  <span className="text-[10px] font-bold text-[#94A3B8] uppercase tracking-wider">Round Evaluation:</span>
-                                  <select
-                                    id={`round-select-${app._id}`}
-                                    className="bg-[#F8FAFC] border border-[#E5E7EB] rounded-lg text-xs font-semibold py-1 px-2 text-[#111827] focus:outline-none"
-                                    defaultValue={app.rounds && app.rounds.length > 0 ? app.rounds[app.rounds.length - 1].name : ""}
-                                  >
-                                    {(selectedJob.rounds && selectedJob.rounds.length > 0 ? selectedJob.rounds.map(r => r.name) : [
-                                      'Aptitude Test', 'Group Discussion (GD)', 'Technical Interview', 'HR Round'
-                                    ]).map((rName, idx) => (
-                                      <option key={idx} value={rName}>{rName}</option>
-                                    ))}
-                                  </select>
-                                </div>
-                                <div className="flex items-center gap-1.5 font-bold">
-                                  <button
-                                    onClick={async () => {
-                                      const selRound = document.getElementById(`round-select-${app._id}`).value;
-                                      if (!selRound) return alert("Please select a round.");
-                                      
-                                      setActionLoadingId(`${app._id}-round-pass`);
-                                      try {
-                                        const res = await api.put(`/api/applications/${app._id}/status`, {
-                                          roundName: selRound,
-                                          roundResult: 'Passed',
-                                          status: 'Shortlisted'
-                                        });
-                                        if (res.status === 200) {
-                                          const { playSuccessFanfare } = await import('../utils/audio');
-                                          playSuccessFanfare();
-                                          setActionSuccess(`Marked ${student.name} as Passed for ${selRound}!`);
-                                          handleFetchApplicants(selectedJob, true);
+                            {(app.status === 'Shortlisted' || app.status === 'Rejected' || app.status === 'Selected') && (() => {
+                              const jobRounds = selectedJob.rounds && selectedJob.rounds.length > 0
+                                ? selectedJob.rounds.map(r => r.name)
+                                : ['Aptitude Test', 'Group Discussion (GD)', 'Technical Interview', 'HR Round'];
+
+                              return (
+                                <div className="w-full mt-5 pt-4 border-t border-dashed border-[#E5E7EB] space-y-3.5">
+                                  <div className="flex items-center justify-between">
+                                    <h5 className="text-[10px] font-bold text-[#4B5563] uppercase tracking-wider">Round-by-Round Stages</h5>
+                                    <span className="text-[9px] text-[#94A3B8] font-bold uppercase tracking-wider">Flow: Left to Right</span>
+                                  </div>
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    {jobRounds.map((rName, idx) => {
+                                      // 1. Find result for this round
+                                      const match = app.rounds?.find(r => r.name.toLowerCase() === rName.toLowerCase());
+                                      const currentResult = match ? match.result : 'Pending';
+
+                                      // 2. Check if any prior round failed or is pending
+                                      let hasFailedPrior = false;
+                                      let hasPendingPrior = false;
+                                      for (let j = 0; j < idx; j++) {
+                                        const priorMatch = app.rounds?.find(r => r.name.toLowerCase() === jobRounds[j].toLowerCase());
+                                        const priorResult = priorMatch ? priorMatch.result : 'Pending';
+                                        if (priorResult === 'Failed') {
+                                          hasFailedPrior = true;
+                                        } else if (priorResult === 'Pending') {
+                                          hasPendingPrior = true;
                                         }
-                                      } catch (err) {
-                                        alert(err.response?.data?.message || err.message || "Failed to update round status");
-                                      } finally {
-                                        setActionLoadingId(null);
                                       }
-                                    }}
-                                    disabled={actionLoadingId !== null}
-                                    className="px-2.5 py-1.5 text-[10px] bg-emerald-50 border border-emerald-200 text-emerald-600 hover:bg-emerald-100 rounded-lg transition-all flex items-center gap-1 active:scale-95 disabled:opacity-50"
-                                  >
-                                    Mark Passed
-                                  </button>
-                                  <button
-                                    onClick={async () => {
-                                      const selRound = document.getElementById(`round-select-${app._id}`).value;
-                                      if (!selRound) return alert("Please select a round.");
-                                      
-                                      setActionLoadingId(`${app._id}-round-fail`);
-                                      try {
-                                        const res = await api.put(`/api/applications/${app._id}/status`, {
-                                          roundName: selRound,
-                                          roundResult: 'Failed',
-                                          status: 'Rejected'
-                                        });
-                                        if (res.status === 200) {
-                                          const { playFailureBuzz } = await import('../utils/audio');
-                                          playFailureBuzz();
-                                          setActionSuccess(`Marked ${student.name} as Failed for ${selRound}. Overall status set to Rejected.`);
-                                          handleFetchApplicants(selectedJob, true);
+
+                                      // 3. Check if any subsequent round has been evaluated (to disable reset)
+                                      let isSubsequentEvaluated = false;
+                                      for (let k = idx + 1; k < jobRounds.length; k++) {
+                                        const subMatch = app.rounds?.find(r => r.name.toLowerCase() === jobRounds[k].toLowerCase());
+                                        if (subMatch && subMatch.result !== 'Pending') {
+                                          isSubsequentEvaluated = true;
                                         }
-                                      } catch (err) {
-                                        alert(err.response?.data?.message || err.message || "Failed to update round status");
-                                      } finally {
-                                        setActionLoadingId(null);
                                       }
-                                    }}
-                                    disabled={actionLoadingId !== null}
-                                    className="px-2.5 py-1.5 text-[10px] bg-rose-50 border border-rose-200 text-rose-650 hover:bg-rose-100 rounded-lg transition-all flex items-center gap-1 active:scale-95 disabled:opacity-50"
-                                  >
-                                    Mark Failed
-                                  </button>
+
+                                      // Determine state variables for this round
+                                      let stageStatus = 'Pending';
+                                      let statusText = 'Pending';
+                                      let badgeColor = 'bg-amber-50/50 text-amber-600 border-amber-200/50';
+                                      let icon = <Clock className="w-3.5 h-3.5 text-amber-500 animate-pulse" />;
+
+                                      if (hasFailedPrior) {
+                                        stageStatus = 'Rejected';
+                                        statusText = 'Rejected (Failed Prior)';
+                                        badgeColor = 'bg-rose-50/30 text-rose-450 border-rose-100 opacity-60';
+                                        icon = <XCircle className="w-3.5 h-3.5 text-rose-400" />;
+                                      } else if (hasPendingPrior) {
+                                        stageStatus = 'Locked';
+                                        statusText = 'Locked';
+                                        badgeColor = 'bg-slate-50 text-slate-400 border-slate-200/60';
+                                        icon = <Lock className="w-3.5 h-3.5 text-slate-400" />;
+                                      } else if (currentResult === 'Passed') {
+                                        stageStatus = 'Passed';
+                                        statusText = 'Passed';
+                                        badgeColor = 'bg-emerald-50 text-emerald-600 border-emerald-250';
+                                        icon = <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />;
+                                      } else if (currentResult === 'Failed') {
+                                        stageStatus = 'Failed';
+                                        statusText = 'Failed';
+                                        badgeColor = 'bg-rose-50 text-rose-600 border-rose-250';
+                                        icon = <XCircle className="w-3.5 h-3.5 text-rose-500" />;
+                                      }
+
+                                      return (
+                                        <div 
+                                          key={idx} 
+                                          className={`flex items-center justify-between p-3 rounded-xl border transition-all duration-200 bg-white ${
+                                            stageStatus === 'Locked' ? 'border-[#F1F5F9] bg-[#F8FAFC]/50 opacity-65' : 
+                                            stageStatus === 'Rejected' ? 'border-rose-100 bg-rose-50/10' :
+                                            'border-[#E5E7EB] hover:shadow-sm'
+                                          }`}
+                                        >
+                                          <div className="flex flex-col gap-1">
+                                            <span className="text-xs font-bold text-[#111827]">{rName}</span>
+                                            <div className="flex">
+                                              <span className={`inline-flex items-center gap-1.5 text-[9px] px-2.5 py-0.5 rounded-full border font-bold uppercase tracking-wider ${badgeColor}`}>
+                                                {icon}
+                                                {statusText}
+                                              </span>
+                                            </div>
+                                          </div>
+
+                                          {/* Action Buttons */}
+                                          {stageStatus === 'Pending' && (
+                                            <div className="flex items-center gap-1.5 font-bold">
+                                              <button
+                                                onClick={async () => {
+                                                  setActionLoadingId(`${app._id}-${rName}-pass`);
+                                                  try {
+                                                    const res = await api.put(`/api/applications/${app._id}/status`, {
+                                                      roundName: rName,
+                                                      roundResult: 'Passed',
+                                                      status: 'Shortlisted'
+                                                    });
+                                                    if (res.status === 200) {
+                                                      const { playSuccessFanfare } = await import('../utils/audio');
+                                                      playSuccessFanfare();
+                                                      setActionSuccess(`Marked ${student.name} as Passed for ${rName}!`);
+                                                      handleFetchApplicants(selectedJob, true);
+                                                    }
+                                                  } catch (err) {
+                                                    alert(err.response?.data?.message || err.message || "Failed to update round status");
+                                                  } finally {
+                                                    setActionLoadingId(null);
+                                                  }
+                                                }}
+                                                disabled={actionLoadingId !== null}
+                                                className="px-2.5 py-1 text-[10px] bg-emerald-50 border border-emerald-200 text-emerald-600 hover:bg-emerald-100 rounded-lg transition-all flex items-center gap-1 active:scale-95 disabled:opacity-50"
+                                              >
+                                                {actionLoadingId === `${app._id}-${rName}-pass` ? (
+                                                  <span className="w-2.5 h-2.5 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin" />
+                                                ) : 'Pass'}
+                                              </button>
+                                              <button
+                                                onClick={async () => {
+                                                  setActionLoadingId(`${app._id}-${rName}-fail`);
+                                                  try {
+                                                    const res = await api.put(`/api/applications/${app._id}/status`, {
+                                                      roundName: rName,
+                                                      roundResult: 'Failed',
+                                                      status: 'Rejected'
+                                                    });
+                                                    if (res.status === 200) {
+                                                      const { playFailureBuzz } = await import('../utils/audio');
+                                                      playFailureBuzz();
+                                                      setActionSuccess(`Marked ${student.name} as Failed for ${rName}. Candidate overall status set to Rejected.`);
+                                                      handleFetchApplicants(selectedJob, true);
+                                                    }
+                                                  } catch (err) {
+                                                    alert(err.response?.data?.message || err.message || "Failed to update round status");
+                                                  } finally {
+                                                    setActionLoadingId(null);
+                                                  }
+                                                }}
+                                                disabled={actionLoadingId !== null}
+                                                className="px-2.5 py-1 text-[10px] bg-rose-50 border border-rose-200 text-rose-600 hover:bg-rose-100 rounded-lg transition-all flex items-center gap-1 active:scale-95 disabled:opacity-50"
+                                              >
+                                                {actionLoadingId === `${app._id}-${rName}-fail` ? (
+                                                  <span className="w-2.5 h-2.5 border-2 border-rose-600 border-t-transparent rounded-full animate-spin" />
+                                                ) : 'Fail'}
+                                              </button>
+                                            </div>
+                                          )}
+
+                                          {/* Reset Button */}
+                                          {(stageStatus === 'Passed' || stageStatus === 'Failed') && (
+                                            <button
+                                              onClick={async () => {
+                                                setActionLoadingId(`${app._id}-${rName}-reset`);
+                                                try {
+                                                  const res = await api.put(`/api/applications/${app._id}/status`, {
+                                                    roundName: rName,
+                                                    roundResult: 'Pending',
+                                                    status: 'Shortlisted'
+                                                  });
+                                                  if (res.status === 200) {
+                                                    setActionSuccess(`Reset evaluation for ${rName}.`);
+                                                    handleFetchApplicants(selectedJob, true);
+                                                  }
+                                                } catch (err) {
+                                                  alert(err.response?.data?.message || err.message || "Failed to reset round status");
+                                                } finally {
+                                                  setActionLoadingId(null);
+                                                }
+                                              }}
+                                              disabled={actionLoadingId !== null || isSubsequentEvaluated}
+                                              title={isSubsequentEvaluated ? "Reset subsequent rounds first" : "Reset this stage to Pending"}
+                                              className="px-2 py-1 text-[9px] bg-slate-50 border border-slate-200 text-slate-500 hover:bg-slate-100 rounded-lg transition-all active:scale-95 disabled:opacity-50 font-bold uppercase tracking-wider"
+                                            >
+                                              {actionLoadingId === `${app._id}-${rName}-reset` ? (
+                                                <span className="w-2.5 h-2.5 border-2 border-slate-500 border-t-transparent rounded-full animate-spin" />
+                                              ) : 'Reset'}
+                                            </button>
+                                          )}
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
                                 </div>
-                              </div>
-                            )}
+                              );
+                            })()}
                           </div>
                         </div>
                       </div>
